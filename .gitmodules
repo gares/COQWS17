@@ -1,0 +1,4 @@
+[submodule "coqdoc"]
+	path = coqdoc
+	url = https://github.com/gares/coq.git
+	branch = coqdoc

@@ -1,11 +1,16 @@
 COQC=/home/gares/COQ/coq/bin/coqc
 MC=/home/gares/INRIA/MathComp/math-comp/mathcomp
-COQDOC=/home/gares/work-area/jscoq-coq/bin/coqdoc
+COQDOC=coqdoc/bin/coqdoc
 WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16/
 
 HTML=test.html lesson1.html
 
-all: $(HTML)
+all: coqdoc/bin/coqdoc $(HTML)
+
+coqdoc/bin/coqdoc:
+	git submodule init
+	git submodule update
+	cd coqdoc && ./configure -local && make bin/coqdoc
 
 upload:
 	cp $(HTML) FileSaver.js Blob.js $(WEB)
