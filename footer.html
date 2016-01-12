@@ -81,7 +81,7 @@
   </script>
 
   <script type="text/javascript">
-  var coq = new CoqManager (coqdoc_ids, { prelude: true, coq_packages: ['all_ssreflect'] });
+  var coq = new CoqManager (coqdoc_ids, { prelude: true, coq_packages: [@@COQ_PACKAGES@@] });
 
   function load_coq_snippet() {
     while (coq.sentences.length > 0) { coq.goPrev(); }

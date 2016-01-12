@@ -3,7 +3,8 @@ MC=/home/gares/INRIA/MathComp/math-comp/mathcomp
 COQDOC=coqdoc/bin/coqdoc
 WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16/
 
-HTML=test.html lesson1.html
+VS=$(wildcard *.v)
+HTML=test.html $(VS:%.v=%.html)
 
 all: coqdoc/bin/coqdoc $(HTML)
 
@@ -16,7 +17,26 @@ upload:
 	cp $(HTML) FileSaver.js Blob.js $(WEB)
 
 
-%.html: %.v header.html footer.html Makefile
+%.html.tmp: %.v header.html footer.html Makefile
 	$(COQC) -R $(MC) mathcomp -I $(MC) $<
-	$(COQDOC) --backend=jscoq --with-header header.html --with-footer footer.html \
-		--parse-comments $<
+	$(COQDOC) --backend=jscoq \
+		--with-header header.html \
+		--with-footer footer.html \
+		--parse-comments $< -o $@
+
+test.html: test.html.tmp
+	sed 's/@@COQ_PACKAGES@@//' $< > $@
+lesson1.html: lesson1.html.tmp
+	sed 's/@@COQ_PACKAGES@@//' $< > $@
+lesson2.html: lesson2.html.tmp
+	sed 's/@@COQ_PACKAGES@@//' $< > $@
+lesson3.html: lesson3.html.tmp
+	sed 's/@@COQ_PACKAGES@@//' $< > $@
+lesson4.html: lesson4.html.tmp
+	sed 's/@@COQ_PACKAGES@@//' $< > $@
+lesson5.html: lesson5.html.tmp
+	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+lesson6.html: lesson6.html.tmp
+	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+lesson7.html: lesson7.html.tmp
+	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
