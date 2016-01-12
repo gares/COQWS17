@@ -4,7 +4,7 @@ COQDOC=coqdoc/bin/coqdoc
 WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16/
 
 VS=$(wildcard *.v)
-HTML=test.html $(VS:%.v=%.html)
+HTML=$(VS:%.v=%.html)
 
 all: coqdoc/bin/coqdoc $(HTML)
 
@@ -40,3 +40,17 @@ lesson6.html: lesson6.html.tmp
 	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
 lesson7.html: lesson7.html.tmp
 	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+exercise1.html: exercise1.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+exercise2.html: exercise2.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+exercise3.html: exercise3.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+exercise4.html: exercise4.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+exercise5.html: exercise5.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+exercise6.html: exercise6.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+exercise7.html: exercise7.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
