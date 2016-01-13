@@ -13,8 +13,8 @@ coqdoc/bin/coqdoc:
 	git submodule update
 	cd coqdoc && ./configure -local && make bin/coqdoc
 
-upload:
-	cp $(HTML) FileSaver.js Blob.js $(WEB)
+#upload:
+#	cp $(HTML) FileSaver.js Blob.js $(WEB)
 
 
 %.html.tmp: %.v header.html footer.html Makefile
