@@ -258,10 +258,21 @@ Qed.
 ** rewrite, one command to rule them all
   - rewrite
   - side condition and // ? 
+  - rewrite a boolean predicate (is_true hides an eqaution)
 *)
 
-
-
+Lemma test_leq_cond p : prime p -> p.-1.+1 + p = p.*2.
+Proof.
+(*
+move=> pr_p.
+Search _ predn in ssrnat.
+rewrite prednK.
+  by rewrite addnn.
+Search _ prime leq 0.
+by apply: prime_gt0.
+*)
+by move=> pr_p; rewrite prednK ?addnn // prime_gt0.
+Qed.
 
 (**
 ---
@@ -307,98 +318,16 @@ Proof. by move=> /myeqP ->. Qed.
 
 End reflect_for_eqP.
 
-
-
 (**
---- Connectives and views
-
+---
+** Connectives and views
+   - 
 
 *)
-
-(*
-
-Lemma leqW m n : m <= n = true -> m <= n.+1 = true.
+Lemma example_boolviews n m :
+  (n < m) && (n != 0) -> (m != 0) && (n <= m).
 Proof.
-(* move=> leq_nm. move: leq_nm. move: m. move: n. *)
-(* move=> n m leq_nm. move: n m leq_nm => n m leq_nm. *)
-(*move: n m leq_nm; elim.*)
-(*
-elim: n m leq_nm => [ // |n IHn m leq_Snm].
-case: m leq_Snm => [ // | m leq_SnSm /=].
-by apply: IHn.
-*)
-(*
-elim: n m leq_nm => [ // |n IHn [ // |m] /= leq_Snm].
-exact: IHn.
-*)
-by elim: m n => // n IHn [|m] // /IHn.
-*)
-
-
-
-
-(** --------------------------------------------------------- *)
-
-(* lesson 2 *)
-
-(** ** Recap:
-   - => intro pattern (names, views, //, /=, {}, [])
-   - rewrite lem -lem // /= /def
-   - naming convention: addnC, eqP, orbN, orNb, ...
-   - notations: .+1, if-is-then-else
-
-*)
-
-(** ** Spec lemmas
-   - Inductive predicates to drive the proof
-*)
-CoInductive leq_xor_gtn m n : bool -> bool -> Set :=
-  | LeqNotGtn of m <= n : leq_xor_gtn m n true false
-  | GtnNotLeq of n < m  : leq_xor_gtn m n false true.
-
-Lemma leqP m n : leq_xor_gtn m n (m <= n) (n < m).
-Proof.
-by rewrite ltnNge; case le_mn: (m <= n); constructor; rewrite // ltnNge le_mn.
+About andP.
+Search _ 0 leq (_ <= _) in ssrnat.
+by move=> /andP[leq_nm nn0]; rewrite lt0n_neq0 /= (leq_trans _ leq_nm).
 Qed.
-
-(*
-Lemma test_leqP m n1 n2 : (m <= minn n1 n2) = (m <= n1) && (m <= n2).
-Proof.
-rewrite /minn ltnNge. case: (leqP n2 n1); case: (leqP m).
-give_up.
-wlog le_n21: n1 n2 / n2 <= n1.
-  by case/orP: (leq_total n2 n1) => ?; last rewrite minnC andbC; auto.
-by rewrite /minn ltnNge le_n21 /= andbC; case: leqP => // /leq_trans->.
-Qed.
-*)
-
-CoInductive compare_nat m n : bool -> bool -> bool -> Set :=
-  | CompareNatLt of m < n : compare_nat m n true false false
-  | CompareNatGt of m > n : compare_nat m n false true false
-  | CompareNatEq of m = n : compare_nat m n false false true.
-
-Lemma ltngtP m n : compare_nat m n (m < n) (n < m) (m == n).
-Proof.
-rewrite ltn_neqAle eqn_leq; case: ltnP; first by constructor.
-by rewrite leq_eqVlt orbC; case: leqP; constructor; first apply/eqnP.
-Qed.
-
-
-
-(** ** Sequences
-  - an alias for lists (used to be differnt)
-  - many notations
-*)
-Check [:: 3 ; 4].
-Check [::] ++ [:: true ; false].
-Eval compute in [seq x.+1 | x <- [:: 1; 2; 3]].
-Eval compute in rcons [:: 4; 5] 3.
-Eval compute in [seq x <- [::3; 4; 5] | odd x ].
-Eval compute in 3 \in [:: 7; 4; 3].
-Eval compute in all odd [:: 3; 5]. 
-
-
-
-
-(* have, seq, elim/foo, case: leqP *)
-
