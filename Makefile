@@ -6,6 +6,7 @@ WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16/
 VS=$(wildcard *.v)
 HTML=$(VS:%.v=%.html)
 
+
 all: coqdoc/bin/coqdoc $(HTML)
 
 coqdoc/bin/coqdoc:
