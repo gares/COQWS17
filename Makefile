@@ -1,10 +1,11 @@
-COQC=/home/gares/COQ/coq/bin/coqc
-MC=/home/gares/INRIA/MathComp/math-comp/mathcomp
+# COQC=/home/gares/COQ/coq/bin/coqc
+# MC=/home/gares/INRIA/MathComp/math-comp/mathcomp
 COQDOC=coqdoc/bin/coqdoc
 WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16/
 
 VS=$(wildcard *.v)
 HTML=$(VS:%.v=%.html)
+
 
 all: coqdoc/bin/coqdoc $(HTML)
 
@@ -17,8 +18,9 @@ coqdoc/bin/coqdoc:
 #	cp $(HTML) FileSaver.js Blob.js $(WEB)
 
 
+#	$(COQC) -R $(MC) mathcomp -I $(MC) $<
 %.html.tmp: %.v header.html footer.html Makefile
-	$(COQC) -R $(MC) mathcomp -I $(MC) $<
+	$(COQC)  $<
 	$(COQDOC) --backend=jscoq \
 		--with-header header.html \
 		--with-footer footer.html \

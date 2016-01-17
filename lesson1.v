@@ -60,8 +60,8 @@ Module BooleanReflection.
   - in the library things are done in a slightly different way
 
 ----
-*** The first predicate
-   - order ralation on nat is a program
+*** Example:
+   - order relation on nat is a program
    - if-is-then syntax (simply a 2-way match-with-end)
    - [.+1] syntax (postfix notations [.something] are recurrent)
 
