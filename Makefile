@@ -43,7 +43,7 @@ lesson7.html: lesson7.html.tmp
 exercise1.html: exercise1.html.tmp
 	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
 exercise2.html: exercise2.html.tmp
-	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+	sed -e 's/^(\*D\*).*$$//' -e 's/@@COQ_PACKAGES@@//' $< > $@
 exercise3.html: exercise3.html.tmp
 	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
 exercise4.html: exercise4.html.tmp

@@ -60,7 +60,7 @@ Module BooleanReflection.
   - in the library things are done in a slightly different way
 
 ----
-*** Example:
+*** The first predicate
    - order ralation on nat is a program
    - if-is-then syntax (simply a 2-way match-with-end)
    - [.+1] syntax (postfix notations [.something] are recurrent)
@@ -75,23 +75,23 @@ Fixpoint leq (n m : nat) : bool :=
 Arguments leq !n !m.
 Infix "<=" := leq.
 
-(** *** Example:
+(** *** The first proof about leq
    - [... = true] to "state" something
    - proof by computation
    - [by []] to say, provable by trivial means (no mean is inside []).
-   - [by tac] to say "tac should solve the goal (up to trivial leftovers)"
+   - [by tac] to say: tac must solve the goal (up to trivial leftovers)
 *)
 Lemma leq0n n : (0 <= n) = true.
 Proof. (* compute. *) by []. Qed.
 
-(** *** Example:
+(** *** Another lemma about leq
    - equality as a double implication
    - naming convention
 *)
 Lemma leqSS n m : (n.+1 <= m.+1) = (n <= m).
 Proof. (* simpl. *) by []. Qed.
 
-(** *** Example:
+(** *** Lets "use" these lemmas
    - elim with naming and automatic clear of n
    - indentation for subgoals
    - no need to mention lemmas proved by computation
@@ -99,16 +99,14 @@ Proof. (* simpl. *) by []. Qed.
 *)
 Lemma leqnn n : (n <= n) = true.
 Proof.
-(*
+(*#
 elim: n => [|m IHm].
-  by apply: leq0n.  (* exact: leq0m. *)
+  by apply: leq0n.  exact: leq0m.
 by rewrite leqSS IHm.
-*)
+#*)
 by elim: n. Qed.
 
-(** *** Example:
-   - connectives can be booleans too
-*)
+(** *** Connectives can be booleans too *)
 Definition andb (b1 b2 : bool) : bool :=
   if b1 then b2 else false.
 Infix "&&" := andb.
@@ -121,7 +119,7 @@ Definition negb b : bool :=
   if b then false else true.
 Notation "~~ b" := (negb b).
 
-(** *** Example:
+(** *** Proofs by truth tables
    - we can use EM to reason about boolean predicates
      and connectives
    - case
@@ -137,7 +135,7 @@ by case: b2.
 *)
 by case: b1; case: b2. Qed.
 
-(** *** Example:
+(** *** Bookkeeping 101
    - defective case (stack model, the _top_ implicit tactic argument)
    - tactic=>
    - tactic:        (caveat: tactic != apply or exact)
@@ -164,7 +162,7 @@ End BooleanReflection.
    - naming convetion
 
 
------
+----
 ** Now we use the real MathComp library
   
    Things to know:
@@ -187,95 +185,55 @@ Check (3 != 4).
 Lemma test_is_true_coercion : true.
 Proof. unfold is_true. by []. Qed.
 
-
 (**
 
----
+----
 ** Equality:
    - privileged role (many lemmas are stated with = or is_true)
-   - the eqP view: "is_true (a == b)   <->    a = b"
-   - => /eqP (both directions)
-   - => -> (on the fly rewrite, "subst")
-   - notation .*2
+   - the [eqP] view: "is_true (a == b)   <->    a = b"
+   - [=> /eqP] (both directions)
+   - [=> ->] (on the fly rewrite, "subst")
+   - notation [.*2]
 
 *)
 Lemma test_eqP n m : n == m -> n.+1 + m.+1 = m.+1.*2.
 Proof.
-(*
+(*#
 move=> /eqP. move=> /eqP. move=> /eqP Enm. rewrite Enm.
 Search _ (_ + _) _.*2 in ssrnat.
 exact: addnn.
-*)
+#*)
 by move=> /eqP ->; rewrite -addnn. Qed.
 
-(**
-
----
-** (_ == _) is overloaded
+(** ** [(_ == _)] is overloaded
    - and [eqP] is too
 *)
 Lemma test2_eqP b1 b2 : b1 == ~~ b2 -> b1 || b2.
 Proof.
-(*
+(*#
 Search _ orb in ssrbool.
 by move: E => /eqP ->; rewrite orNb.
-*)
+#*)
 by move=> /eqP->; exact: orNb.
 Qed.
 
 (**
----
+----
 ** Views are just lemmas (plus some automatic adaptors)
-   - lemmas like A->B can be used as views too
+   - lemmas like [A -> B] can be used as views too
    - boolean aconnectives have associated views
    - => [ ... ]
 *)
 
 Lemma test_leqW i j k : (i <= k) && (k.+1 <= j) -> i <= j.+1.
 Proof.
-(* move=> /andP. case. move=> /leqW. move=> leq_ik1. *)
+(*# move=> /andP. case. move=> /leqW. move=> leq_ik1. #*)
 move=> /andP[/leqW leq_ik1 /leqW leq_k1j1].
 exact: leq_trans leq_ik1 leq_k1j1.
 Qed.
 
 (**
----
-** Trivial branches
-   - => [ | ].
-   - => //
-*)
-Lemma my_leqW m n : m <= n -> m <= n.+1.
-Proof.
-(*
-elim: m n => [ // |n IHn [ // |m] /= leq_Snm].
-exact: IHn.
-*)
-by elim: m n => // n IHn [|m] // /IHn.
-Qed.
-
-(** 
----
-** rewrite, one command to rule them all
-  - rewrite
-  - side condition and // ? 
-  - rewrite a boolean predicate (is_true hides an eqaution)
-*)
-
-Lemma test_leq_cond p : prime p -> p.-1.+1 + p = p.*2.
-Proof.
-(*
-move=> pr_p.
-Search _ predn in ssrnat.
-rewrite prednK.
-  by rewrite addnn.
-Search _ prime leq 0.
-by apply: prime_gt0.
-*)
-by move=> pr_p; rewrite prednK ?addnn // prime_gt0.
-Qed.
-
-(**
----
+----
 ** The reflect predicate
    - [reflect P b] is the preferred way to state that
      the predicate [P] (in [Prop]) is logically equivalent
@@ -283,6 +241,8 @@ Qed.
    - This is a fake example (no overloading)
 *)
 Module reflect_for_eqP.
+
+Print reflect.
 
 Fixpoint eqn m n :=
   match m, n with
@@ -292,42 +252,59 @@ Fixpoint eqn m n :=
   end.
 Arguments eqn !m !n.
 
-(** *** Example:
-    - elim: n m.
-    - iffP
-    - congr
+(** *** Proving the reflection lemma for eqn
+    - the convenience lemma [iffP]
+    - the [congr] tactic
+    - trivial branches //
+    - loaded induction [elim: n m]
 *)
 Lemma myeqP m n : reflect (m = n) (eqn m n).
 Proof.
-(*
+(*#
 apply: (iffP idP) => [|->]; last by elim: n.
 elim: m n; first by case.
 move=> n IHn m eq_n1m.
 case: m eq_n1m => // m eq_n1m1.
 congr (_.+1).
 exact: IHn.
-*)
+#*)
 apply: (iffP idP) => [|->]; last by elim: n.
 by elim: m n => [|m IHm] // [|n] // /IHm->.
 Qed.
-
-Print reflect.
 
 Lemma test_myeqP n m : (eqn n m) -> m = n.
 Proof. by move=> /myeqP ->. Qed.
 
 End reflect_for_eqP.
 
+(** 
+----
+** rewrite, one command to rule them all
+  - rewrite
+  - side condition and // ? 
+  - rewrite a boolean predicate (is_true hides an eqaution)
+*)
+
+Lemma test_leq_cond p : prime p -> p.-1.+1 + p = p.*2.
+Proof.
+(*#
+move=> pr_p.
+Search _ predn in ssrnat.
+rewrite prednK.
+  by rewrite addnn.
+Search _ prime leq 0.
+by apply: prime_gt0.
+#*)
+by move=> pr_p; rewrite prednK ?addnn // prime_gt0.
+Qed.
+
 (**
----
-** Connectives and views
-   - 
+----
+** References for this lesson:
+  - SSReflect #<a href="https://hal.inria.fr/inria-00258384">manual</a>#
+  - documentation of the
+       #<a href="http://math-comp.github.io/math-comp/htmldoc/libgraph.html">library</a>#
+    - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrbool.html">ssrbool</a>#
+    - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrnat.html">ssrnat</a>#
 
 *)
-Lemma example_boolviews n m :
-  (n < m) && (n != 0) -> (m != 0) && (n <= m).
-Proof.
-About andP.
-Search _ 0 leq (_ <= _) in ssrnat.
-by move=> /andP[leq_nm nn0]; rewrite lt0n_neq0 /= (leq_trans _ leq_nm).
-Qed.
