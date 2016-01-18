@@ -17,11 +17,13 @@ From mathcomp Require Import all_ssreflect.
 
 ----
 ** Today:
-   - The seq library
+   - The [seq] library
    - forward reasoning with [have]
    - spec lemmas
-   - rewrite patterns
+   - [rewrite] patterns
 
+
+----
 ----
 ** Sequences:
   - an alias for lists (used to be differnt)
@@ -75,13 +77,20 @@ Check forall T : eqType, forall x : T, x \in [:: x ].
 *)
 Lemma test_in l : 3 \in [:: 4; 5] ++ l -> l != [::].
 Proof.
-by rewrite !inE => /=; apply: contraL => /eqP->; rewrite in_nil.
+by rewrite !inE => /=; apply: contraL => /eqP->.
 Qed.
 
-(** Forward reasoning
+(* Example of simplifying context *)
+Eval simpl in (3 \in [:: 4; 3]). (* && *)
+
+(**
+
+----
+** Forward reasoning
    - have
    - have :=
    - have + views
+   - do I need eqType here?
 *)
 (**
 Definition of all
@@ -200,6 +209,15 @@ Qed.
 (**
 
 ----
+** Last, (_ =P _)
+  - Just eqP but with the right implicit arguments
+*)
+Lemma test_eqP (n m : nat) : n == m.
+Proof. case: (n =P m). Abort.
+
+(**
+
+----
 ** Rewrite on steroids *)
 Lemma ugly_goal n m :
   n + (m * 2).+1 = n + (m + m.+1).
@@ -217,6 +235,11 @@ Lemma ugly_goal n m :
 Proof.
 rewrite addnC.
 rewrite [in RHS]addnC.
+Abort.
+
+Lemma no_pattern n : n + 0 = n.
+Proof.
+rewrite -[n in RHS]addn0.
 Abort.
 
 (**
