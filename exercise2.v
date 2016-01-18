@@ -50,18 +50,22 @@ Qed.
     - prove that by induction
 *)
 Lemma filter_all T a (s : seq T) : all a (filter a s).
-Proof. by elim: s => //= x s IHs; case: ifP => //= ->. Qed.
+Proof. 
+(*D*)by elim: s => //= x s IHs; case: ifP => //= ->. 
+Qed.
 
 (** Exercise 7:
   - prove that view (one branch is by induction)
 *)
 Lemma all_filterP T a (s : seq T) : reflect (filter a s = s) (all a s).
 Proof.
-apply: (iffP idP) => [| <-]; last exact: filter_all.
-by elim: s => //= x s IHs /andP[-> Hs]; rewrite IHs.
+(*D*)apply: (iffP idP) => [| <-]; last exact: filter_all.
+(*D*)by elim: s => //= x s IHs /andP[-> Hs]; rewrite IHs.
 Qed.
 
 (** Exercise 8:
     - one last induction for today *)
 Lemma mem_cat (T : eqType) (x : T) s1 s2 : (x \in s1 ++ s2) = (x \in s1) || (x \in s2).
-Proof. by elim: s1 => //= y s1 IHs; rewrite !inE /= -orbA -IHs. Qed.
+Proof.
+(*D*)by elim: s1 => //= y s1 IHs; rewrite !inE /= -orbA -IHs.
+Qed.
