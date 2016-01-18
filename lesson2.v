@@ -1,11 +1,19 @@
+Require Import mathcomp.ssreflect.ssreflect.
 From mathcomp Require Import all_ssreflect.
-
 (** ** Recap:
    - => intro pattern (names, views, //, /=, {}, [])
    - rewrite lem -lem // /= /def
    - naming convention: addnC, eqP, orbN, orNb, ...
    - notations: .+1, if-is-then-else
    - reflect P b
+
+
+----
+** Lessons learnt yesterday
+   - Search _ (_ + _) in ssrnat.
+   - Search _ addn "C" i ssrnat.
+   - Use the HTML doc!
+
 
 ----
 ** Today:
@@ -15,9 +23,10 @@ From mathcomp Require Import all_ssreflect.
    - rewrite patterns
 
 ----
-** Sequences
+** Sequences:
   - an alias for lists (used to be differnt)
   - many notations
+
 *)
 Check [:: 3 ; 4].
 Check [::] ++ [:: true ; false].
@@ -26,27 +35,37 @@ Eval compute in rcons [:: 4; 5] 3.
 Eval compute in [seq x <- [::3; 4; 5] | odd x ].
 Eval compute in all odd [:: 3; 5].
 
-Module poly.
+Module polylist.
 
+(**
+
+----
+** Polymorphic lists
+   - This statement makes no assumptions on T
+   - recap: // /= ->
+*)
 Lemma size_cat T (s1 s2 : seq T) : size (s1 ++ s2) = size s1 + size s2.
 Proof. by elim: s1 => //= x s1 ->. Qed.
 
-End poly.
+End polylist.
 
 Eval compute in 3 \in [:: 7; 4; 3].
 
 Fail Check forall T : Type, forall x : T, x \in [:: x ].
 
 (** 
+
 ----
 ** Had-hoc polymorphism
-  - T : Type |- l : list A  !=  T : eqType |- l : list T
+  - T : Type |- l : list T 
+  - T : eqType |- l : list T
   - eqType means: a type with a decidable equality (_ == _)
 *)
 
 Check forall T : eqType, forall x : T, x \in [:: x ].
 
 (**
+
 ----
 ** The \in notation
    - overloaded as [(_ == _)]
@@ -61,6 +80,7 @@ Qed.
 
 (** Forward reasoning
    - have
+   - have :=
    - have + views
 *)
 (**
@@ -76,52 +96,95 @@ A lemma linking the two concepts *)
 Lemma all_count (T : eqType) (a : pred T) s : all a s = (count a s == size s).
 Proof.
 elim: s => //= x s.
-(* case: (a x) => _ //=.*)
+have EM_a : a x || ~~ a x.
+  by exact: orbN.
+move: EM_a => /orP EM_a. case: EM_a => [-> | /negbTE-> ] //= _.
 (*# have /orP[ ax | n_ax ] : a x || ~~ a x by case: (a x). #*)
-have [// | a'x _ /=] := boolP (a x).
 Search _ count size.
-rewrite add0n eqn_leq. rewrite andbC.
-rewrite ltnNge. by rewrite count_size.
+by rewrite add0n eqn_leq andbC ltnNge count_size.
 Qed.
 
 (**
+
+----
 ----
 ** Spec lemmas
    - Inductive predicates to drive the proof
 *)
 
+Module myreflect1.
+
+Inductive reflect (P : Prop) (b : bool) : Prop :=
+  | ReflectT (p : P) (e : b = true)
+  | ReflectF (np : ~ P) (e : b = false).
+
+Fixpoint eqn m n :=
+  match m, n with
+  | 0, 0 => true
+  | j.+1,k.+1 => eqn j k
+  | _, _ => false
+  end.
+Arguments eqn !m !n.
+
+Axiom eqP : forall m n, reflect (m = n) (eqn m n).
+
+Lemma test_reflect1 m n : ~~ (eqn m n) || (n <= m <= n).
+Proof.
+case: (eqn m n) => /=.
+(*# case: (eqP m n) => [Enm -> | nE_mn ->] /=. #*)
+Admitted.
+
+End myreflect1.
+
+(*#
+Module myreflect2.
+
+Inductive reflect (P : Prop) : bool-> Prop :=
+  | ReflectT (p : P) : reflect P true
+  | ReflectF (np : ~ P) : reflect P false.
+
+Fixpoint eqn m n :=
+  match m, n with
+  | 0, 0 => true
+  | j.+1,k.+1 => eqn j k
+  | _, _ => false
+  end.
+Arguments eqn !m !n.
+
+Axiom eqP : forall m n, reflect (m = n) (eqn m n).
+
+Lemma test_reflect1 m n : ~~ (eqn m n) || (n <= m <= n).
+Proof.
+case: (eqP m n) => [Enm | nE_mn ] /=.
+by case: eqP => [->|] //=; rewrite leqnn.
+Check (eqP _ _).
+Qed.
+
+End myreflect2.
+#*)
+
 Inductive leq_xor_gtn m n : bool -> bool -> Set :=
   | LeqNotGtn of m <= n : leq_xor_gtn m n true false
   | GtnNotLeq of n < m  : leq_xor_gtn m n false true.
 
-Lemma leqP m n : leq_xor_gtn m n (m <= n) (n < m).
-Proof.
-by rewrite ltnNge; case le_mn: (m <= n); constructor; rewrite // ltnNge le_mn.
-Qed.
+Axiom leqP : forall m n : nat, leq_xor_gtn m n (m <= n) (n < m).
 
-Lemma test_leqP m n1 n2 : (m <= minn n1 n2) = (m <= n1) && (m <= n2).
-Proof.
-rewrite /minn; case: (leqP n2 n1); case: (leqP m); rewrite ?andbF //=.
-  by move=> /leq_trans-H /H->.
-by move=> /leq_trans-H /ltnW /H->.
-Qed.
+(**
 
-(** Another spec
-<<
-Inductive compare_nat m n : bool -> bool -> bool -> Set :=
-  | CompareNatLt of m < n : compare_nat m n true false false
-  | CompareNatGt of m > n : compare_nat m n false true false
-  | CompareNatEq of m = n : compare_nat m n false false true.
->>
-And the relevant lemma using it
+----
+** Let's try out leqP on an ugly goal
 *)
-Lemma ltngtP m n : compare_nat m n (m < n) (n < m) (m == n).
+Lemma test_leqP m n1 n2 :
+  (m <= (if n1 < n2 then n1 else n2)) =
+  (m <= n1) && (m <= n2) && ((n1 < n2) || (n2 <= n1)).
 Proof.
-rewrite ltn_neqAle eqn_leq; case: ltnP; first by constructor.
-by rewrite leq_eqVlt orbC; case: leqP; constructor; first apply/eqnP.
+case: leqP => [leqn21 | /ltnW ltn12 ]; rewrite /= andbT.
+  by rewrite andb_idl // => /leq_trans /(_ leqn21).
+by rewrite andb_idr // => /leq_trans->.
 Qed.
 
 (**
+
 ----
 ** Another commodity: [ifP]
    - a spec lemma for if-then-else
@@ -131,16 +194,33 @@ Qed.
 Lemma test_ifP n m : if n <= m then 0 <= m - n else m - n == 0.
 Proof.
 case: ifP; first by rewrite -subn_eq0.
-by move/negbT; rewrite subn_eq0 leqNgt negbK=> /ltnW.
+by move=> /negbT; rewrite subn_eq0 leqNgt negbK=> /ltnW.
 Qed.
 
-(** TODO
-- eqP is also (x =P y).
-- boolP
-- rewrite [in RHS]
-*)
+(**
+
+----
+** Rewrite on steroids *)
+Lemma ugly_goal n m :
+  n + (m * 2).+1 = n + (m + m.+1).
+Proof.
+rewrite addnC.
+rewrite (addnC m).
+rewrite [_ + m]addnC.
+rewrite [in n + _]addnC.
+rewrite [X in _ = X + n]addnC.
+rewrite [in RHS]addnC.
+Abort.
+
+Lemma ugly_goal n m :
+  n + m = n + m.
+Proof.
+rewrite addnC.
+rewrite [in RHS]addnC.
+Abort.
 
 (**
+
 ----
 ** References for this lesson:
   - SSReflect #<a href="https://hal.inria.fr/inria-00258384">manual</a>#
@@ -148,4 +228,27 @@ Qed.
        #<a href="http://math-comp.github.io/math-comp/htmldoc/libgraph.html">library</a>#
     - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.seq.html">seq</a>#
 
+
+----
+** Demo:
+   - you should be now able to read this proof
+
 *)
+
+Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
+Proof.
+case: m => //= m; elim: n => //= n IHn; rewrite ltnS leq_eqVlt.
+by move=> /orP[ /eqP-> | /IHn]; [apply: dvdn_mulr | apply: dvdn_mull].
+Qed.
+
+Lemma prime_above m : {p | m < p & prime p}.
+Proof.
+Check pdivP.
+have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
+exists p => //; rewrite ltnNge; apply: contraL p_dv_m1 => p_le_m.
+Check dvdn_addr.
+by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
+Qed.
+    
+
+
