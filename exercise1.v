@@ -4,14 +4,14 @@ Implicit Type p q r : bool.
 Implicit Type m n a b c : nat.
 
 (** *** Exercise 1:
-    - use no lemma to prove the following
+    - use no lemma to prove the following statement
 *)
 Lemma orbC p q : p || q = q || p.
 (*D*)Proof. by case: p; case: q. Qed.
 
 (** *** Exercise 2:
-   - look up what [==>] is and the relevant views
-   - prove that as you like 
+   - look up what [==>] is check if there are relevant views
+   - prove that as you like
 *)
 Lemma Pirce p q : ((p ==> q) ==> p) ==> p.
 (*D*)Proof. by case: p; case: q. Qed. 
@@ -24,7 +24,7 @@ Lemma bool_gimmics1 a : a != a.-1 -> a != 0.
 
 (** *** Exercise 4:
     - what is [(+)] ?
-    - find the right view to prove this
+    - find the right view to prove this statement
     - now find another proof without the view
 *)
 Lemma find_me p q :  ~~ p = q -> p (+) q.
@@ -47,23 +47,23 @@ Lemma bool_gimmics2 p q r : ~~ p && (r == q) -> q ==> (p || r).
 
 (** *** Exercise 7:
     - look up the definition of [iter]
-    - prove that by induction
+    - prove this tatement by induction
 *)
 Lemma iterSr A n (f : A -> A) x : iter n.+1 f x = iter n f (f x).
 (*D*)Proof. by elim: n => //= n <-. Qed.
 
 (** *** Exercise 8:
     - look up the definition of [iter] (note there is an accumulator)
-    - prove that by induction
+    - prove the following statement by induction
 *)
 Lemma iter_predn m n : iter n predn m = m - n.
 (*D*)Proof. by elim: n m => /= [|n IHn] m; rewrite ?subn0 // IHn subnS. Qed.
 
 (** *** Exercise 9:
-   - The only tactics allowed are [rewrite] and [by]
-   - Use Search to find the relevant lemmas (all are good but for
+   - the only tactics allowed are [rewrite] and [by]
+   - use [Search] to find the relevant lemmas (all are good but for
      [ltn_neqAle]) or browse the #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrnat.html">online doc</a>#
-   - Proof sketch
+   - proof sketch:
 <<
         m < n = ~~ (n <= m)
               = ~~ (n == m || n < m)
@@ -74,9 +74,9 @@ Lemma ltn_neqAle m n : (m < n) = (m != n) && (m <= n).
 (*D*)Proof. by rewrite ltnNge leq_eqVlt negb_or -leqNgt eq_sym. Qed.
 
 (** *** Exercise 10:
-  - There is no need to prove [reflect] with [iffP]: here just use [rewrite] and [apply]
-  - Check out the definitions and theory of [leq] and [maxn]
-  - Proof sketch:
+  - there is no need to prove [reflect] with [iffP]: here just use [rewrite] and [apply]
+  - check out the definitions and theory of [leq] and [maxn]
+  - proof sketch:
 <<
    n <= m = n - m == 0
           = m + n - m == m + 0

@@ -1,5 +1,8 @@
 (** 
 
+To play this document inside your browser use ALT-N and ALT-P.
+
+----
 ** Objective of this course
 
   Give you access to the Mathematical Components library
@@ -37,6 +40,8 @@
 
 
 ----
+
+----
 ** The SSR approach
 
   - when a concept is "computable", lets represent it as a
@@ -60,8 +65,8 @@ Module BooleanReflection.
   - in the library things are done in a slightly different way
 
 ----
-*** Example:
-   - order relation on nat is a program
+*** The first predicate
+   - order ralation on nat is a program
    - if-is-then syntax (simply a 2-way match-with-end)
    - [.+1] syntax (postfix notations [.something] are recurrent)
 
@@ -91,7 +96,7 @@ Proof. (* compute. *) by []. Qed.
 Lemma leqSS n m : (n.+1 <= m.+1) = (n <= m).
 Proof. (* simpl. *) by []. Qed.
 
-(** *** Lets "use" these lemmas
+(** *** Lets (not) use these lemmas
    - elim with naming and automatic clear of n
    - indentation for subgoals
    - no need to mention lemmas proved by computation
@@ -123,7 +128,7 @@ Notation "~~ b" := (negb b).
    - we can use EM to reason about boolean predicates
      and connectives
    - case
-   - bookkeeping /=
+   - bookkeeping [/=]
    - naming convention: C suffix
 *)
 Lemma andbC b1 b2 : (b1 && b2) = (b2 && b1).
@@ -166,7 +171,7 @@ End BooleanReflection.
 ** Now we use the real MathComp library
   
    Things to know:
-   - [Search head_symbol (pat _ tern) "string" name]
+   - [Search head_symbol (pat _ term) "string" name]
    - [(a < b)] is a notation for [(a.+1 <= b)]
    - [==] stands for computable equality (overloaded)
    - [is_true] coercion
@@ -199,6 +204,7 @@ Proof. unfold is_true. by []. Qed.
 Lemma test_eqP n m : n == m -> n.+1 + m.+1 = m.+1.*2.
 Proof.
 (*#
+Check eqP.
 move=> /eqP. move=> /eqP. move=> /eqP Enm. rewrite Enm.
 Search _ (_ + _) _.*2 in ssrnat.
 exact: addnn.
@@ -210,10 +216,9 @@ by move=> /eqP ->; rewrite -addnn. Qed.
 *)
 Lemma test2_eqP b1 b2 : b1 == ~~ b2 -> b1 || b2.
 Proof.
-(*#
+(*
 Search _ orb in ssrbool.
-by move: E => /eqP ->; rewrite orNb.
-#*)
+*)
 by move=> /eqP->; exact: orNb.
 Qed.
 
@@ -222,7 +227,7 @@ Qed.
 ** Views are just lemmas (plus some automatic adaptors)
    - lemmas like [A -> B] can be used as views too
    - boolean aconnectives have associated views
-   - => [ ... ]
+   - [=> [ ... ]]
 *)
 
 Lemma test_leqW i j k : (i <= k) && (k.+1 <= j) -> i <= j.+1.
