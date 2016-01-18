@@ -64,6 +64,7 @@ Module BooleanReflection.
   - these examples are artificial
   - in the library things are done in a slightly different way
 
+
 ----
 *** The first predicate
    - order ralation on nat is a program
@@ -168,6 +169,7 @@ End BooleanReflection.
 
 
 ----
+----
 ** Now we use the real MathComp library
   
    Things to know:
@@ -243,7 +245,6 @@ Qed.
    - [reflect P b] is the preferred way to state that
      the predicate [P] (in [Prop]) is logically equivalent
      to [b=true]
-   - This is a fake example (no overloading)
 *)
 Module reflect_for_eqP.
 
