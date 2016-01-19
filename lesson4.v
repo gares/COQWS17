@@ -201,8 +201,8 @@ Search connect in fingraph.
 End Connect.
 
 (**
-  ** Kosaraju's algorithn
-    - 2 dfs traversal 
+  ** Kosaraju's algorithm
+    - 2 dfs traversals 
     - one to build a post-fixed stack
     - one on the reverse graph to collect the components
 *)
@@ -238,7 +238,6 @@ Variable T : finType.
 Variable r : rel T.
 Implicit Type p : {set T} * seq (seq T).
 
-(** Kosaraju's algorithm *)
 Definition kosaraju :=
   let f := pdfs (rgraph [rel x y | r y x]) in 
   (foldl  (fun p x => if x \in p.1 then p else 
