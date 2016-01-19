@@ -78,9 +78,6 @@ End AlgebraicStructuresTypicalScheme1.
 Section AlgebraicStructuresTypicalScheme2.
 End AlgebraicStructuresTypicalScheme2.
 
-
-End my_struct_theory.
-
 (* End of the lessson *)
 
 
