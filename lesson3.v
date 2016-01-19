@@ -18,14 +18,14 @@ Unset Printing Implicit Defensive.
 ----
 ** Lesson 3 
 
-- The SSR gives some support finite types.
+- The SSR gives some support for finite types.
 - 'I_n is the the set of natural numbers smaller than n.
 - a : 'I_n is composed of a value m and a proof that m <= n.
 
-- Example : onext_id modifies the proof part with an equivalent one.
+- Example : oid modifies the proof part with an equivalent one.
 *)
 
-Definition onext_id n (x : 'I_n) : 'I_n.
+Definition oid n (x : 'I_n) : 'I_n.
 pose v := nat_of_ord x.
 pose H := ltn_ord x.
 pose H1 := leq_trans H (leqnn n).
@@ -55,7 +55,7 @@ Qed.
 
 Definition i3 := Ordinal (isT : 3 < 4).
 
-Lemma ieq : onext_id i3 == i3.
+Lemma ieq : oid i3 == i3.
 Proof.
 exact: eqxx.
 Defined.
@@ -326,7 +326,6 @@ have H := eq_big.
 apply: eq_big => [u|i Hi]; first by case: odd.
 by rewrite addnn.
 Qed.
-Check mulKn.
 
 (**
   ** Monoid structure

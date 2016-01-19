@@ -1,5 +1,4 @@
-From Ssreflect Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq choice fintype.
-From MathComp Require Import finfun bigop div.
+From mathcomp Require Import all_ssreflect.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -9,451 +8,249 @@ Unset Printing Implicit Defensive.
 ----
 ** Lesson 4
 
-  - introduction on finite sets
-  - finite graph in SSR
-  - Exercise Kosaraju's algorithm
+  - Introduction to finite sets
+  - Finite graph in SSR
+  - Proving Kosaraju's algorithm
 
 *)
 
-(** predicate 
+(**
+  ** Finite sets 
 
-   * 
-Definition onext_id n (x : 'I_n) : 'I_n.
-pose v := nat_of_ord x.
-pose H := ltn_ord x.
-pose H1 := leq_trans H (leqnn n).
-exact: Ordinal H1.
-Defined.
-
-(** 
-
- ** Note 
-   - nat_of_ord is a coercion (see H)
-   - 'I_0 is an empty type
+   * In SSR, they are sets over a finite type T
+   * a set encapsulates an indicator function {ffun T -> bool}
+   * sets share the collective predicate _ \in _ with lists
 *)
 
-Lemma empty_i0 (x : 'I_0) : false.
-Proof. 
-case x. 
+Definition x0 : 'I_10 := inZp 0.
+Definition x1 : 'I_10 := inZp 1.
+Definition x2 : 'I_10 := inZp 2.
+Definition x3 : 'I_10 := inZp 3.
+Definition x4 : 'I_10 := inZp 4.
+Definition x5 : 'I_10 := inZp 5.
+Definition x6 : 'I_10 := inZp 6.
+Definition x7 : 'I_10 := inZp 7.
+Definition x8 : 'I_10 := inZp 8.
+Definition x9 : 'I_10 := inZp 9.
+
+Definition zs : {set 'I_10} := set0.
+
+Lemma zs0 : x0 \notin zs.
+Proof.
+rewrite inE.
 by [].
 Qed.
 
-(** 
-  ** Equality
+Definition alls : {set 'I_10} := setT.
 
-  - Every finite type is also an equality type.
-  - For 'I_n, only the value matters
-
-*)
-
-Definition i3 := Ordinal (isT : 3 < 4).
-
-Lemma ieq : onext_id i3 == i3.
+Lemma alls0 : x0 \in alls.
 Proof.
-exact: eqxx.
-Defined.
-
-
-(** 
-  ** Sequence 
- - a finite type can be seen as a sequence
- - enum T gives this sequence.
- - it is duplicate free.
- - it relates to the cardinal of a finite type
-*)
-
-Lemma iseq n (x : 'I_n) : x \in 'I_n.
-Proof.
-have mem_enum := mem_enum.
-have enum_uniq := mem_enum.
-have cardT := cardT.
-have cardE := cardE.
+rewrite inE.
 by [].
 Qed.
 
-(** 
-  ** Booleans 
- - for finite type, boolean reflection can be extended to quantifiers
-*)
-
-Lemma iforall (n : nat) : [forall x: 'I_n, x < n].
-Proof. 
-apply/forallP.
-rewrite /=.
+Lemma disjoint_az : [disjoint zs & alls].
+Proof.
+apply/pred0P.
 move=> x.
-exact: ltn_ord.
+rewrite /=.
+rewrite !inE.
+by [].
 Qed.
 
-Lemma iexists  (n : nat) : (n == 0) || [exists x: 'I_n, x == 0 :> nat].
+Definition odds := [set x : 'I_10 | odd x].
+
+Lemma odds5 : x5 \in odds.
 Proof.
-case: n.
+rewrite inE.
 by [].
-move=> n.
-apply/existsP.
-pose H : 0 < n.+1 := isT.
-pose x := Ordinal H.
-exists x.
-by [].
+Qed.
+
+Definition evens := x0 |: (x2 |: (x4 |: (x6 |: (x8 |: zs)))).
+
+Lemma oddUeven :  odds :|: evens = alls.
+Proof.
+apply/setP.
+move=> i.
+rewrite !inE.
+rewrite /=.
+case: i.
+rewrite /=.
+case => //.
+by do 9 (case => //).
+Qed.
+ 
+Lemma oddIeven :  odds :&: evens = zs.
+Proof.
+apply/setP.
+move=> i.
+rewrite !inE.
+by case i; do 10 (case => //).
 Qed.
 
 (** 
-  ** Selecting an element
- - pick selects an element that has a given property 
- - pickP triggers the reflection
-*)
+  ** Path 
+    - path r x p : r relation, x is an element, p is a list
+                   (x :: p) is a path starting at x and ending
+                   at (last x p) of r related element
+ *)
 
-Check pick.
+Fixpoint _path {T : finType} r x (p : seq T) :=
+  if p is y :: p' then r x y && _path r y p' else true.
 
-Definition izero n (x : 'I_n) := odflt x [pick i : 'I_n | i == 0 :> nat].
+Definition rels := [rel x y : 'I_10 | y == x.+2 :> nat].
 
-Lemma izero_def n (x : 'I_n.+1) : izero x == 0 :> nat.
+Lemma paths0 : path rels x0 [::x2; x4].
 Proof.
-rewrite /izero.
-case: pickP.
-rewrite /=.
-by [].
-rewrite /=.
-move=> H.
-have := H (Ordinal (isT : 0 < n.+1)).
-rewrite /=.
+have pathP := pathP.
+have cat_path := cat_path.
+have rcons_path := rcons_path.
 by [].
 Qed.
 
 (**
-  ** Building finite types
-  - SSR automatically discovers the pair of two finite types is finite
-  - For functions there is an explicit construction [ffun x => body] 
+  ** Graph
+   - a graph is manipulated either by its adjacency relation
+     or its adjacency function 
+   - the functions grel and rgraph let you change representation
 *)
 
-Lemma ipair : [forall x : 'I_3 * 'I_4, x.1 * x.2 < 12].
+Definition nexts :=
+   fun x : 'I_10 =>
+      if x == x0 then [::x2]
+      else if x == x1 then [::x3]
+      else if x == x2 then [::x4]
+      else if x == x3 then [::x5]
+      else if x == x4 then [::x6]
+      else if x == x5 then [::x7]
+      else if x == x6 then [::x8]
+      else if x == x7 then [::x9]
+      else [::].
+
+Lemma grels : rels =2 grel nexts.
 Proof.
-apply/forallP.
-rewrite /=.
-case.
-rewrite /=.
-move=> a b.
-have H := ltn_mul.
-rewrite -[12]/(3 * 4).
-by apply: H.
+move=> x y.
+rewrite /nexts /=.
+case: x.
+do 8 (case; rewrite /= ?inE //).
+move=> x _.
+rewrite in_nil.
+apply/eqP => H.
+have := ltn_ord y.
+by rewrite H.
 Qed.
 
-Lemma ifun : [exists f : {ffun 'I_3 -> 'I_4}, forall x, f x == x :> nat].
+Lemma gnexts : forall x, rgraph rels x =i nexts x.
 Proof.
-apply/existsP.
-rewrite /=.
-have H : forall n x, x < n -> x < n.+1.
-move=> n x H.
-rewrite ltnS.
-by rewrite ltnW.
-exists [ffun x : 'I_3 => Ordinal (H 3 x (ltn_ord x))].
-apply/forallP.
-move=> x.
-have H1 := ffunE.
-rewrite H1.
-rewrite /=.
-by [].
-Qed.
-
-(**
-   ----
-   ----
- **)
-
-
-(**
-  ** Big operators
-   --  provide a library to manipulate iterations in SSR
-   -- this is an encapsulation of the fold function
- **)
-
-Section F.
-
-Definition f (x : nat) := 2 * x.
-Definition g x y := x + y.
-Definition r := [::1; 2; 3].
-
-Lemma bfold : foldr (fun val res => g (f val) res) 0 r = 12.
-Proof.
-rewrite /=.
-rewrite /f.
-rewrite /g.
-by [].
-Qed.
-
-End F.
-
-(** 
-   ** Notation
-
-   - iteration is provided by the \big notation
-   - the basic operation is on list
-   - special notations are introduced for usual case (\sum, \prod, \bigcap ..) 
-*)
-
-Lemma bfoldl : \big[addn/0]_(i <- [::1; 2; 3]) i.*2 = 12.
-Proof.
-rewrite big_cons.
-rewrite big_cons.
-rewrite big_cons.
-rewrite big_nil.
-by [].
-Qed.
-
-Lemma bfoldlm : \big[muln/1]_(i <- [::1; 2; 3]) i.*2 = 48.
-Proof.
-rewrite big_cons.
-rewrite big_cons.
-rewrite big_cons.
-rewrite big_nil.
-by [].
+have rgraphK := rgraphK. 
+move=> x y.
+rewrite /rgraph /nexts.
+rewrite mem_enum.
+rewrite -!topredE /=.
+have F : forall x y : 'I_10, (x == y) = (x == y :> nat).
+  by move=> x1 y1; apply/eqP/idP => [->//|H]; apply/val_eqP.
+case: x.
+do 8 (case; rewrite /= ?F; first by case: eqP).
+move=> x _.
+apply/eqP => H.
+have := ltn_ord y.
+by rewrite H.
 Qed.
 
 (** 
-   ** Range 
-   - different ranges are provided
+  ** Depth-First Search
+     - defs f n x v : 
+           returns the nodes visited by a dfs at depth n avoiding the nodes in v
 *)
 
-Lemma bfoldl1 : \sum_(1 <= i < 4) i.*2 = 12.
-Proof.
-have H := big_ltn.
-have H1 := big_geq.
-rewrite big_ltn.
-  rewrite big_ltn.
-    rewrite big_ltn.
-      rewrite big_geq.
-        by [].
-      by [].
-    by [].
-  by [].
-by [].
-Qed.
+Section Dfs.
 
-Lemma bfoldl2 : \sum_(i < 4) i.*2 = 12.
-Proof.
-rewrite big_ord_recl.
-rewrite /=.
-rewrite big_ord_recl.
-rewrite /=.
-rewrite big_ord_recl.
-rewrite big_ord_recl.
-rewrite big_ord0.
-by [].
-Qed.
+Variable T : finType.
+Variable g : T -> seq T.
 
-Lemma bfoldl3 : \sum_(i : 'I_4) i.*2 = 12.
-Proof.
-exact: bfoldl2.
-Qed.
+Fixpoint _dfs n (v : seq T) x :=
+  if x \in v then v else
+  if n is n'.+1 then foldl (_dfs n') (x :: v) (g x) else v.
+
+End Dfs.
+
+Compute [seq nat_of_ord i | i <- dfs nexts 1 [::] x0].
+Compute [seq nat_of_ord i | i <- dfs nexts 2 [::] x0].
+Compute [seq nat_of_ord i | i <- dfs nexts 3 [::] x0].
+Compute [seq nat_of_ord i | i <- dfs nexts 4 [::] x0].
+Compute [seq nat_of_ord i | i <- dfs nexts 5 [::] x0].
+Compute [seq nat_of_ord i | i <- dfs nexts 6 [::] x0].
+Compute [seq nat_of_ord i | i <- dfs nexts 10 [::] x0].
+Compute [seq nat_of_ord i | i <- dfs nexts 10 [::] x1].
+Compute [seq nat_of_ord i | i <- dfs nexts 10 [::] x2].
 
 (** 
-   ** Filtering 
-   - it is possible to filter elements from the range 
+  ** Connection
+     - boolean relation that indicates if two nodes are connected 
+ *)
+
+
+Section Connect.
+
+Variable T : finType.
+Variable r : rel T.
+Definition _connect : rel T := fun x y => y \in _dfs (rgraph r)  #|T| [::] x.
+
+Search connect in fingraph.
+
+End Connect.
+
+(**
+  ** Kosaraju's algorithn
+    - 2 dfs traversal 
+    - one to build a post-fixed stack
+    - one on the reverse graph to collect the components
 *)
 
-Lemma bfoldl4 : \sum_(i <- [::1; 2; 3; 4; 5; 6] | ~~ odd i) i = 12.
-Proof.
-have big_pred0 := big_pred0.
-have big_hasC := big_hasC.
-pose x :=  \sum_(i < 8 | ~~ odd i) i.
-pose y :=  \sum_(0 <= i < 8 | ~~ odd i) i.
-rewrite big_cons.
-rewrite /=.
-rewrite big_cons.
-rewrite /=.
-rewrite big_cons.
-rewrite /=.
-rewrite big_cons.
-rewrite /=.
-rewrite big_cons.
-rewrite /=.
-rewrite big_cons.
-rewrite /=.
-rewrite big_nil.
-by [].
-Qed.
+Section Pdfs.
 
-(** 
-   ** Switching range
-   - it is possible to change representation (big_nth, big_mkord).
-*)
+Variable T : finType.
+Variable g : T -> seq T.
 
-Lemma bswitch :  \sum_(i <- [::1; 2; 3]) i.*2 = \sum_(i < 3) (nth 0 [::1; 2; 3] i).*2.
-Proof.
-have H := big_nth.
-rewrite (big_nth 0).
-rewrite /=.
-have H1 := big_mkord.
-rewrite big_mkord.
-by [].
-Qed.
+Fixpoint rpdfs m (p : {set T} * seq T) x :=
+  if x \in p.1  then p else 
+  if m is m1.+1 then 
+     let p1 := foldl (rpdfs m1) (x |: p.1, p.2) (g x) in (p1.1, x :: p1.2)
+  else p.
 
-(**
-  ** Big operators and equality
-  - one can exchange function and/or predicate 
- *)
+Definition pdfs := rpdfs #|T|.
 
-Lemma beql : 
-  \sum_(i < 4 | odd i || ~~ odd i) i.*2 =  \sum_(i < 4) i.*2.
-Proof.
-have H := eq_bigl.
-apply: eq_bigl.
-move=> u.
-by case: odd.
-Qed.
+End Pdfs.
 
-Lemma beqr : 
-  \sum_(i < 4) i.*2 = \sum_(i < 4) (i + i).
-Proof.
-have H := eq_bigr.
-apply: eq_bigr.
-rewrite /=.
-move=> u _.
-rewrite addnn.
-by [].
-Qed.
+Section Stack.
 
-Lemma beq : 
-  \sum_(i < 4 | odd i || ~~ odd i) i.*2 = \sum_(i < 4) (i + i).
-Proof.
-have H := eq_big.
-apply: eq_big => [u|i Hi]; first by case: odd.
-by rewrite addnn.
-Qed.
-Check mulKn.
+Variable T : finType.
+Variable r : rel T.
 
-(**
-  ** Monoid structure
-  - one can use associativity to reorder the bigop
- *)
+Definition stack :=
+  (foldl (pdfs (rgraph r)) (set0, [::]) (enum T)).2.
 
-Lemma bmon1 : \sum_(i <- [::1; 2; 3]) i.*2 = 12.
-Proof.
-have H := big_cat.
-rewrite -[[::1; 2; 3]]/([::1] ++ [::2; 3]).
-rewrite big_cat.
-rewrite /=.
-rewrite !big_cons !big_nil.
-by [].
-Qed.
+End Stack.
 
-Lemma bmon2 : \sum_(1 <= i < 4) i.*2 = 12.
-Proof.
-have H := big_cat_nat.
-rewrite (big_cat_nat _ _ _ (isT: 1 <= 2)).
-  rewrite /=.
-  rewrite big_ltn //=.
-  rewrite big_geq //.
-  by rewrite 2?big_ltn //= big_geq.
-by [].
-Qed.
+Section Kosaraju.
 
-Lemma bmon3 : \sum_(i < 4) i.*2 = 12.
-Proof.
-have H := big_ord_recl.
-have H1 := big_ord_recr.
-rewrite big_ord_recr.
-rewrite /=.
-rewrite !big_ord_recr //=.
-rewrite big_ord0.
-by [].
-Qed.
+Variable T : finType.
+Variable r : rel T.
+Implicit Type p : {set T} * seq (seq T).
 
-Lemma bmon4 : \sum_(i < 8 | ~~ odd i) i = 12.
-Proof.
-have H := big_mkcond.
-rewrite big_mkcond.
-rewrite /=.
-rewrite !big_ord_recr /=.
-rewrite big_ord0.
-by [].
-Qed.
+(** Kosaraju's algorithm *)
+Definition kosaraju :=
+  let f := pdfs (rgraph [rel x y | r y x]) in 
+  (foldl  (fun p x => if x \in p.1 then p else 
+                      let p1 := f (p.1, [::]) x in  (p1.1, p1.2 :: p.2))
+          (set0, [::]) (stack r)).2.
 
-(**
-  ** Abelian Monoid structure
-  - one can use communitativity to massage the bigop
- *)
+Lemma kosaraju_correct :
+    let l := flatten kosaraju in 
+ [/\ uniq l, forall i, i \in l &
+     forall c : seq T, c \in kosaraju -> 
+        exists x, forall y, (y \in c) = (connect r x y && connect r y x)]. 
 
-
-Lemma bab : \sum_(i < 4) i.*2 = 12.
-Proof.
-have H := bigD1.
-pose x := Ordinal (isT: 2 < 4).
-rewrite (bigD1 x).
-  rewrite /=.
-  rewrite big_mkcond /=.
-  rewrite !big_ord_recr /= big_ord0.
-  by [].
-by [].
-Qed.
-
-Lemma bab1 : \sum_(i < 4) (i + i.*2) = 18.
-Proof.
-have H := big_split.
-rewrite big_split /=.
-rewrite !big_ord_recr ?big_ord0 /=.
-by [].
-Qed.
-
-Lemma bab2 : \sum_(i < 3) \sum_(j < 4) (i + j) = \sum_(i < 4) \sum_(j < 3) (i + j).
-Proof.
-have H := exchange_big.
-have H1 := reindex_inj.
-rewrite exchange_big.
-rewrite /=.
-apply: eq_bigr.
-move=> i _.
-apply: eq_bigr.
-move=> j _.
-by rewrite addnC.
-Qed.
-
-(**
-  ** Distributivity
-  - one can use exchange sum and product 
- *)
-
-Lemma bab3 : \sum_(i < 4) (2 * i) = 2 * \sum_(i < 4) i.
-Proof.
-have H := big_distrr.
-by rewrite big_distrr.
-Qed.
-
-Lemma bab4 : 
-  (\prod_(i < 3) \sum_(j < 4) (i ^ j)) = 
-  \sum_(f : {ffun 'I_3 -> 'I_4}) \prod_(i < 3) (i ^ (f i)).
-Proof.
-have H := big_distr_big.
-have H1 := big_distr_big_dep.
-rewrite  (big_distr_big ord0).
-rewrite /=.
-apply: eq_bigl.
-move=> f.
-rewrite /=.
-apply/forallP.
-rewrite /=.
-by [].
-Qed.
-
-
-(**
-  ** Property, Relation and Morphism 
- *)
-
-Lemma bap n : ~~ odd (\sum_(i < n) i.*2). 
-Proof.
-have H := big_ind.
-have H1 := big_ind2.
-have H2 := big_morph.
-elim/big_ind: _.
-- by [].
-- move=> x y.
-  rewrite odd_add.
-  case: odd.
-     by [].
-  by [].
-move=> i _.
-by rewrite odd_double.
-Qed.
-
+End Kosaraju.
 
 
