@@ -14,7 +14,6 @@ Unset Printing Implicit Defensive.
 
 *)
 
-
 (**
 ----
 ** Lesson 3 
@@ -423,10 +422,25 @@ Qed.
 Lemma bab3 : \sum_(i < 4) (2 * i) = 2 * \sum_(i < 4) i.
 Proof.
 have H := big_distrr.
-have H1 := big_distr_big.
-have H2 := big_distr_big_dep.
 by rewrite big_distrr.
 Qed.
+
+Lemma bab4 : 
+  (\prod_(i < 3) \sum_(j < 4) (i ^ j)) = 
+  \sum_(f : {ffun 'I_3 -> 'I_4}) \prod_(i < 3) (i ^ (f i)).
+Proof.
+have H := big_distr_big.
+have H1 := big_distr_big_dep.
+rewrite  (big_distr_big ord0).
+rewrite /=.
+apply: eq_bigl.
+move=> f.
+rewrite /=.
+apply/forallP.
+rewrite /=.
+by [].
+Qed.
+
 
 (**
   ** Property, Relation and Morphism 
