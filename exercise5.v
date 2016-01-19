@@ -10,25 +10,6 @@ Local Open Scope ring_scope.
 
 Section PreliminaryLemma.
 
-Fact muleq1_eq0 (R : ringType) (x y : R) : x * y = 1 -> x != 0.
-Proof. by apply: contra_eqN => /eqP ->; rewrite mul0r eq_sym oner_eq0. Qed.
-
-Fact muleq1_unit (R : comUnitRingType) (x y : R) : x * y = 1 -> x \is a GRing.unit.
-Proof. by move=> xy_eq1; apply/unitrP; exists y; split=> //; rewrite mulrC. Qed.
-
-Fact muleq1VE (R : comUnitRingType) (x y : R) : x * y = 1 -> x = y^-1.
-Proof.
-move=> /(fun x => (x, x)) [/muleq1_unit x_unit].
-by move=> /(canRL (mulKr x_unit)) ->; rewrite mulr1 invrK.
-Qed.
-
-Fact muleq1_neq0AV (R : comUnitRingType) (x y : R) : x * y = 1 -> 
- [/\ x != 0, y != 0 & x = y^-1].
-Proof. 
-move=> xy_eq1; split; [apply: muleq1_eq0 xy_eq1| |apply: muleq1VE] => //.
-by move: xy_eq1; rewrite mulrC => /muleq1_eq0.
-Qed.
-
 Lemma algReM (x y : algC) : 'Re (x * y) = 'Re x * 'Re y - 'Im x * 'Im y.
 Proof.
 rewrite {1}[x]algCrect {1}[y]algCrect mulC_rect algRe_rect //.
@@ -88,8 +69,8 @@ Canonical GI_smulrPred := SmulrPred GI_subring.
 Canonical GI_subringPred := SubringPred GI_subring.
 
 Record GI := GIof {
- algGI :> algC;
- _ : algGI \is a gaussInteger
+  algGI :> algC;
+  _ : algGI \is a gaussInteger
 }.
 
 Definition gi (x : GI) mkGI : GI :=
@@ -163,8 +144,9 @@ Qed.
 
 Fact unitGIP (x y : GI) : y * x = 1 -> unitGI x.
 Proof.
-move=> /(congr1 val) /= /muleq1_neq0AV [y_neq0 x_neq0 y_eq].
-by rewrite /unitGI /= x_neq0 /= -y_eq.
+rewrite /unitGI => /(congr1 val) /=.
+have [-> /eqP|x_neq0] := altP (x =P 0); first by rewrite mulr0 eq_sym oner_eq0.
+by move=> /(canRL (mulfK x_neq0)); rewrite mul1r => <- /=.
 Qed.
 
 Fact out_unitGI : {in [predC unitGI], invGI =1 id}.
@@ -224,6 +206,5 @@ rewrite normC2_rect // -real_normK // -[Dv ^+ _]real_normK //.
 by rewrite oneV2 ltr_add // approxP2 // ?Creal_Re ?Creal_Im.
 Qed.
 
+End GaussIntegers.
 (* End of exercices *)
-
-
