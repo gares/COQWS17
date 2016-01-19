@@ -11,7 +11,7 @@ From mathcomp Require Import all_ssreflect.
 ----
 ** Lessons learnt yesterday
    - Search _ (_ + _) in ssrnat.
-   - Search _ addn "C" i ssrnat.
+   - Search _ addn "C" in ssrnat.
    - Use the HTML doc!
 
 
@@ -30,11 +30,12 @@ From mathcomp Require Import all_ssreflect.
   - many notations
 
 *)
+Check [::].
 Check [:: 3 ; 4].
 Check [::] ++ [:: true ; false].
 Eval compute in [seq x.+1 | x <- [:: 1; 2; 3]].
-Eval compute in rcons [:: 4; 5] 3.
 Eval compute in [seq x <- [::3; 4; 5] | odd x ].
+Eval compute in rcons [:: 4; 5] 3.
 Eval compute in all odd [:: 3; 5].
 
 Module polylist.
@@ -47,7 +48,7 @@ Module polylist.
    - recap: // /= ->
 *)
 Lemma size_cat T (s1 s2 : seq T) : size (s1 ++ s2) = size s1 + size s2.
-Proof. by elim: s1 => //= x s1 ->. Qed.
+Proof.  by elim: s1 => //= x s1 ->. Qed.
 
 End polylist.
 
@@ -102,7 +103,8 @@ Definition of count
 Fixpoint count s := if s is x :: s' then a x + count s' else 0.
 >>
 A lemma linking the two concepts *)
-Lemma all_count (T : eqType) (a : pred T) s : all a s = (count a s == size s).
+Lemma all_count (T : eqType) (a : pred T) s :
+  all a s = (count a s == size s).
 Proof.
 elim: s => //= x s.
 have EM_a : a x || ~~ a x.
@@ -172,7 +174,7 @@ Qed.
 End myreflect2.
 #*)
 
-Inductive leq_xor_gtn m n : bool -> bool -> Set :=
+Inductive leq_xor_gtn m n : bool -> bool -> Prop :=
   | LeqNotGtn of m <= n : leq_xor_gtn m n true false
   | GtnNotLeq of n < m  : leq_xor_gtn m n false true.
 
@@ -182,6 +184,9 @@ Axiom leqP : forall m n : nat, leq_xor_gtn m n (m <= n) (n < m).
 
 ----
 ** Let's try out leqP on an ugly goal
+   - matching of indexes
+   - generalization of unresolved implicits
+   - instantiation by matching
 *)
 Lemma test_leqP m n1 n2 :
   (m <= (if n1 < n2 then n1 else n2)) =
@@ -218,7 +223,11 @@ Proof. case: (n =P m). Abort.
 (**
 
 ----
-** Rewrite on steroids *)
+** Rewrite on steroids
+   - keyed matching
+   - instantiation
+   - localization
+*)
 Lemma ugly_goal n m :
   n + (m * 2).+1 = n + (m + m.+1).
 Proof.
