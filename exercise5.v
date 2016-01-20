@@ -141,20 +141,22 @@ Canonical GI_comRingType := ComRingType GI GI_comRingMixin.
 (**
 
  - Now we build the unitRing and comUnitRing structure of gauss
-integers. Contrarily to the previous structures, the operator is not
-the same as on algebraics. Indeed the invertible algebraics are not
-necessarily invertible gauss integers.
+   integers. Contrarily to the previous structures, the operator is
+   not the same as on algebraics. Indeed the invertible algebraics are
+   not necessarily invertible gauss integers.
+
  - Hence, we define the inverse of gauss integers as follow : if the
-algebraic inverse happens to be a gauss integer we recover the proof
-and package it together with the element and get a gauss integer,
-otherwise, we default to the identity.
- - Samewise, a gauss integer is invertible if the algbraic inverse is a
-gauss integer.
+   algebraic inverse happens to be a gauss integer we recover the
+   proof and package it together with the element and get a gauss
+   integer, otherwise, we default to the identity.
+
+ - A gauss integer is invertible if the algbraic inverse is a gauss
+   integer.
 
 *)
 Definition invGI (x : GI) := insubd x (x : algC)^-1.
-Definition unitGI (x : GI) := (x != 0) && ((x : algC)^-1 \is a
-gaussInteger).
+Definition unitGI (x : GI) :=
+  (x != 0) && ((x : algC)^-1 \is a gaussInteger).
 (**
 
 ** Question 3: prove a few facts in order to find a comUnitRingMixin
