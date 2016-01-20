@@ -4,7 +4,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import GRing.Theory Num.Theory UnityRootTheory.
-Local Open Scope ring_scope.
+Open Scope ring_scope.
 
 Section PreliminaryLemmas.
 (**
@@ -19,12 +19,12 @@ Note that we do not consider nat but the copy of nat which is embeded
 in the algebraic numbers algC. The theorem already exists for nat, and
 we suggest you use a compatibility lemma numbers between nat and Cnat
 *)
-Lemma mulCnat_eq1 : {in Cnat &, forall x y, (x * y == 1) = (x == 1) && (y == 1)}.
+Lemma Cnat_mul_eq1 : {in Cnat &, forall x y, (x * y == 1) = (x == 1) && (y == 1)}.
 Proof.
 (*D*)by move=> x y /CnatP [n ->] /CnatP [m ->]; rewrite -natrM !pnatr_eq1 muln_eq1.
 (*A*)Qed.
 
-Lemma addCnat_eq1 : {in Cnat &, forall x y,
+Lemma Cnat_add_eq1 : {in Cnat &, forall x y,
    (x + y == 1) = ((x == 1) && (y == 0)) || ((x == 0) && (y == 1))}.
 Proof.
 (*D*)move=> x y /CnatP [n ->] /CnatP [m ->]; rewrite -natrD !pnatr_eq1 ?pnatr_eq0.
@@ -33,7 +33,8 @@ Proof.
 (**
 ** Question -1: The real part of product
 *)
-Lemma algReM (x y : algC) : 'Re (x * y) = 'Re x * 'Re y - 'Im x * 'Im y.
+Lemma algReM (x y : algC) : 
+  'Re (x * y) = 'Re x * 'Re y - 'Im x * 'Im y.
 Proof.
 (*D*)rewrite {1}[x]algCrect {1}[y]algCrect mulC_rect algRe_rect //;
 (*D*)by rewrite rpredD ?rpredN // rpredM // ?Creal_Re ?Creal_Im.
@@ -78,7 +79,7 @@ Proof.
 Lemma GI_subring : subring_closed gaussInteger.
 Proof.
 (*D*)split => [|x y /andP[??] /andP[??]|x y /andP[??] /andP[??]].
-(*D*)- by rewrite qualifE (Creal_ReP _ _) ?(Creal_ImP _ _) // rpred1 rpred0.
+(*D*)- by rewrite Cint_GI.
 (*D*)- by rewrite qualifE !raddfB /= ?rpredB.
 (*D*)by rewrite qualifE algReM algImM rpredB ?rpredD // rpredM.
 (*A*)Qed.
@@ -146,6 +147,8 @@ Definition GI_ringMixin := [ringMixin of GI by <:].
 Canonical GI_ringType := RingType GI GI_ringMixin.
 Definition GI_comRingMixin := [comRingMixin of GI by <:].
 Canonical GI_comRingType := ComRingType GI GI_comRingMixin.
+(* Definition GI_unitRingMixin := [unitRingMixin of GI by <:]. *)
+(* Canonical GI_unitRingType := UnitRingType GI GI_unitRingMixin. *)
 (**
 
  - Now we build the unitRing and comUnitRing structure of gauss
@@ -171,6 +174,7 @@ Definition unitGI (x : GI) :=
 for GI, and then instantiate the interfaces of unitRingType and
 comUnitRingType.
 
+
 *)
 (*D*)Fact mulGIr : {in unitGI, left_inverse 1 invGI *%R}.
 (*D*)Proof.
@@ -185,7 +189,7 @@ comUnitRingType.
 (*D*)by move=> /(canRL (mulfK x_neq0)); rewrite mul1r => <- /=.
 (*D*)Qed.
 (*D*)
-(*D*)Fact out_unitGI : {in [predC unitGI], invGI =1 id}.
+(*D*)Fact unitGI_out : {in [predC unitGI], invGI =1 id}.
 (*D*)Proof.
 (*D*)move=> x; rewrite inE /= -topredE /= /unitGI.
 (*D*)rewrite negb_and negbK => /predU1P [->|/negPf xGIF];
@@ -193,7 +197,7 @@ comUnitRingType.
 (*D*)Qed.
 (*D*)
 Definition GI_comUnitRingMixin :=
-(*D*)  ComUnitRingMixin mulGIr unitGIP out_unitGI.
+(*D*)  ComUnitRingMixin mulGIr unitGIP unitGI_out.
 Canonical GI_unitRingType := UnitRingType GI GI_comUnitRingMixin.
 Canonical GI_comUnitRingType := [comUnitRingType of GI].
 (**
@@ -258,20 +262,42 @@ Lemma gaussNormM : {morph gaussNorm : x y / x * y}.
 Lemma unitGIE (x : GI) : (x \in GRing.unit) =
 (*D*) (val x \in 4.-unity_root).
 (*D*)Proof.
+(*D*)have eq_algC a b : (a == b) = ('Re a == 'Re b) && ('Im a == 'Im b).
+(*D*)  rewrite {1}[a]algCrect {1}[b]algCrect -subr_eq0 opprD addrACA -mulrBr.
+(*D*)  rewrite -normr_eq0 -sqrf_eq0 normC2_rect ?rpredB ?Creal_Re ?Creal_Im //.
+(*D*)  rewrite paddr_eq0 ?real_exprn_even_ge0 // ?rpredB ?Creal_Re ?Creal_Im //.
+(*D*)  by rewrite !expf_eq0 /= !subr_eq0.
+(*D*)have N1Creal : -1 \is Creal by rewrite rpredN.
+(*D*)have oneE :    1 = 1 + 'i * 0     by rewrite mulr0 addr0.
+(*D*)have N1E  :  - 1 = - 1 + 'i * 0   by rewrite mulr0 addr0.
+(*D*)have iE   :   'i = 0 + 'i * 1     by rewrite mulr1 add0r.
+(*D*)have NiE  : - 'i = 0 + 'i * (- 1) by rewrite mulrN1 add0r.
+(*D*)have onerN1 : (1 == -1 :> algC) = false.
+(*D*)  by rewrite -subr_eq0 opprK paddr_eq0 ?oner_eq0 ?ler01.
+(*D*)pose my := @id algC.
 (*D*)transitivity (gaussNorm (val x) == 1).
 (*D*)  apply/idP/eqP; last first.
 (*D*)    by move=> gNx; apply/unitrPr; exists (conjGI x); apply: val_inj.
 (*D*)  move=> x_unit; have /(congr1 (gaussNorm \o val)) /= /eqP := mulrV x_unit.
-(*D*)  by rewrite gaussNormM gaussNorm1 mulCnat_eq1 //= => /andP [/eqP].
-(*D*)rewrite (@mem_unity_roots _ 4 [:: 1; -1; 'i; -'i]) //; last 2 first.
+(*D*)  by rewrite gaussNormM gaussNorm1 Cnat_mul_eq1 //= => /andP [/eqP].
+(*D*)rewrite (@mem_unity_roots _ 4 (map my [:: 1; -1; 'i; -'i])) //; last 2 first.
 (*D*)- rewrite /= !unity_rootE /= [(- 'i) ^+ _]exprNn expr1n  -signr_odd ?expr0.
 (*D*)  by rewrite -[4]/(2 * 2)%N exprM sqrCi -signr_odd ?expr0 mulr1 !eqxx.
-(*D*)- rewrite /= !in_cons !in_nil /=.
-(*D*)  admit.
+(*D*)- rewrite /= ![my _](iE, oneE, N1E, NiE).
+(*D*)  rewrite /= !in_cons !in_nil /= !negb_or -!andbA !andbT /=.
+(*D*)  rewrite ![_ + 'i * _ == _]eq_algC ?algRe_rect ?algIm_rect //.
+(*D*)  rewrite ![_ == -1]eq_sym ![_ == 1]eq_sym oppr_eq0.
+(*D*)  by rewrite eqxx onerN1 oner_eq0.
 (*D*)rewrite gaussNormE [val x]algCrect normC2_rect ?Creal_Re ?Creal_Im //.
-(*D*)(*rewrite addCnat_eq1 ?Cnat_exp_even // expr_eq0.*)
-(*D*)(*rewrite sqrrD mulrCA addrAC. normC2_rect.*)
-(*A*)Admitted.
+(*D*)rewrite Cnat_add_eq1 ?Cnat_exp_even ?expf_eq0 //=.
+(*D*)rewrite -Cint_normK // -Cint_normK //.
+(*D*)rewrite !expr2 !Cnat_mul_eq1 ?andbb ?Cnat_norm_Cint //.
+(*D*)rewrite !real_eqr_norml ?Creal_Re ?Creal_Im ?ler01 ?andbT //=.
+(*D*)rewrite !inE ![my _](iE, oneE, N1E, NiE).
+(*D*)rewrite ![_ + 'i * _ == _]eq_algC
+(*D*)   ?algRe_rect ?algIm_rect // ?Creal_Re ?Creal_Im //.
+(*D*)by rewrite andb_orl andb_orr -orbA.
+(*A*)Qed.
 (**
 
 ** Question 8: Prove that GI euclidean for the stasm gaussNorm.
