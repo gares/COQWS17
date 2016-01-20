@@ -5,6 +5,7 @@ Unset Printing Implicit Defensive.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 (**
+
 * Linear algebra in mathematical components
 
 Extensive documentation in the header of:
@@ -33,17 +34,22 @@ Module DefinitionMatrices.
 End DefinitionMatrices.
 (**
 ----
+
 * Main Theorems
 
 - matrixP
 - mxE
 
+
 ----
+
 * Help with depend types
 - castmx
 - ssr depend case.
 
+
 ----
+
 * Vector spaces as matrices
 - kernel
 - rank
