@@ -1,4 +1,52 @@
-From mathcomp Require Import all_algebra.
+From mathcomp Require Import all_ssreflect all_algebra.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
 
-(* some stuff *)
+(**
+* Linear algebra in mathematical components
+
+Extensive documentation in the header of:
+- #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.matrix.html">matrix</a>#
+- #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#
+
+----
+
+* Roadmap for the lesson:
+ - definition of matrices
+ - main theorems
+ - help with depend types
+ - vector spaces as matrices
+
+----
+*)
+Module DefinitionMatrices.
+(**
+
+----
+* Defining Matrices
+
+*)
+End DefinitionMatrices.
+(**
+----
+* Main Theorems
+
+- matrixP
+- mxE
+
+----
+* Help with depend types
+- castmx
+- ssr depend case.
+
+----
+* Vector spaces as matrices
+- kernel
+- rank
+- submx
+
+*)
+
+
 

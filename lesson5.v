@@ -31,7 +31,9 @@ Unset Printing Implicit Defensive.
   equality: the operator (_ == _) is available on all of them.
 
 - #<a href="http://www-sop.inria.fr/teams/marelle/advanced-coq-16/mc_hieralg.pdf">  Here is a picture of the begining of the hierarchy</a>#
-
+  Extensive documentation in the header of:
+ - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a>#
+ - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a>#
 
 - In addition there are structures for maps (additive morphisms, ring
   morphisms, etc...), and substructures (subgroup, subsemiring, subring,
