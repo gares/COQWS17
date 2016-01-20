@@ -1,37 +1,41 @@
+From mathcomp Require Import all_ssreflect.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
 (**
 
 * The algebra library
 
-This is a central part of the mathematical components library.
-This library register a various range of (mathematical) structures.
- - types with decidable equality: eqType
- - types with a finite number of elements: finType
- - finite groups: finGroupType
- - abelian (not possibly finite) groups: zmodType
- - rings: ringType
- - rings with invertible elements: unitRingType
- - commutative rings: comRingType
- - integral domains: idomainType
- - fields: fieldType
- - left modules: lmodType
- - left algebra: lalgType
- - algebra: algType
- - finite dimensional vector spaces: vectType
- - ...
+ - This is a central part of the mathematical components library.
+ - This library register a various range of (mathematical) structures.
+  - types with decidable equality: eqType
+  - types with a finite number of elements: finType
+  - finite groups: finGroupType
+  - abelian (not possibly finite) groups: zmodType
+  - rings: ringType
+  - rings with invertible elements: unitRingType
+  - commutative rings: comRingType
+  - integral domains: idomainType
+  - fields: fieldType
+  - left modules: lmodType
+  - left algebra: lalgType
+  - algebra: algType
+  - finite dimensional vector spaces: vectType
+  - ...
 
-Some of these structures share operators: e.g. the operator (_ + _),
-introduced for abelian groups (zmodType), is also available for all
-the structures that require it (rings, domains, fields, etc...)
+- Some of these structures share operators: e.g. the operator (_ + _),
+  introduced for abelian groups (zmodType), is also available for all
+  the structures that require it (rings, domains, fields, etc...)
 
-All of these structures are discrete: they all have decidable
-equality: the operator (_ == _) is available on all of them.
+- All of these structures are discrete: they all have decidable
+  equality: the operator (_ == _) is available on all of them.
 
-#<div><a href="http://www-sop.inria.fr/teams/marelle/advanced-coq-16/mc_hieralg.pdf">Here is a picture of the begining of the hierarchy</a></div>#
+- #<a href="http://www-sop.inria.fr/teams/marelle/advanced-coq-16/mc_hieralg.pdf">  Here is a picture of the begining of the hierarchy</a>#
 
 
-In addition there are structures for maps (additive morphisms, ring
-morphisms, etc...), and substructures (subgroup, subsemiring, subring,
-subfield, etc...)
+- In addition there are structures for maps (additive morphisms, ring
+  morphisms, etc...), and substructures (subgroup, subsemiring, subring,
+  subfield, etc...)
 
 ----
 
@@ -44,11 +48,6 @@ subfield, etc...)
 
 ----
 *)
-From mathcomp Require Import all_ssreflect.
-Set Implicit Arguments.
-Unset Strict Implicit.
-Unset Printing Implicit Defensive.
-
 Module AlgebraicStructures.
 (**
 
@@ -183,15 +182,15 @@ End AlgebraicStructuresInheritance.
 * Inhabiting the mathematical structures hierarchy.
 
  - We now show on the example of integers how to instantiate the
-mathematical structures that integers satisfy.
+   mathematical structures that integers satisfy.
 
  - As a step to minimize the work of the user, the library provides a
-  way to provide only the mixin. The general pattern is to build the
-  mixin of a structure, declare the canonical structure associated
-  with it and go one with creating the next mixin and creating the new
-  structure. Each time we build a new structure, we provide only the
-  mixin, as the class can be inferred from the previous canonical
-  structures
+   way to provide only the mixin. The general pattern is to build the
+   mixin of a structure, declare the canonical structure associated
+   with it and go one with creating the next mixin and creating the new
+   structure. Each time we build a new structure, we provide only the
+   mixin, as the class can be inferred from the previous canonical
+   structures
 
  - We now show three different ways to build mixins here and an
    additional fourth will be shown in the exercices
@@ -210,7 +209,7 @@ Local Open Scope ring_scope.
 
 (**
 
-*** First we define int
+** First we define int
 
 *)
 CoInductive int : Set := Posz of nat | Negz of nat.
@@ -219,6 +218,8 @@ Local Coercion Posz : nat >-> int.
 Notation "n %:Z" := (Posz n)
   (at level 2, left associativity, format "n %:Z", only parsing).
 (**
+
+** Equality, countable and choice types, by injection
 
 We provide an injection with explicit partial inverse, grom int to nat
 + nat, this will be enough to provide the mixins for equality,
@@ -249,6 +250,8 @@ Canonical int_choiceType := ChoiceType int int_choiceMixin.
 Definition int_countMixin := CanCountMixin natsum_of_intK.
 Canonical int_countType := CountType int int_countMixin.
 (**
+
+** Abelian group structure, from scratch
 
 We now create the abelian group structure of integers (here called
 Z-module), from scratch, introducing the operators and proving exactly
@@ -284,13 +287,29 @@ End intZmod.
 End intZmod.
 
 Canonical int_ZmodType := ZmodType int intZmod.Mixin.
+(**
 
+Remark: we may develop here a piece of abelian group theory which is
+specific to the theory of integers.
+
+*)
 Section intZmoduleTheory.
 
 Lemma PoszD : {morph Posz : n m / (n + m)%N >-> n + m}.
 Proof. by []. Qed.
 
 End intZmoduleTheory.
+(**
+
+*** Ring and Commutative ring structure, the stronger the better
+
+This time, we will build directly a rich commutative ring mixin first
+and use it to instanciate both the ring structure and the commutative
+ring struture at the same time. This is not only a structural economy
+of space, but a mathematical economy of proofs, since the
+commutativity property reduces the number of ring axioms to prove.
+
+*)
 
 Module intRing.
 Section intRing.
@@ -303,15 +322,13 @@ Definition mulz (m n : int) :=
     | Negz n', Posz m' => - (m' * (n'.+1%N))%N%:Z
   end.
 
-Lemma mul0z : left_zero 0 mulz. Admitted.
-Lemma mulzC : commutative mulz. Admitted.
-Lemma mulz0 : right_zero 0 mulz. Admitted.
 Lemma mulzA : associative mulz. Admitted.
+Lemma mulzC : commutative mulz. Admitted.
 Lemma mul1z : left_id (Posz 1) mulz. Admitted.
 Lemma mulz_addl : left_distributive mulz (+%R). Admitted.
-Lemma nonzero1z : (Posz 1) != 0. Proof. by []. Qed.
+Lemma onez_neq0 : (Posz 1) != 0. Proof. by []. Qed.
 
-Definition comMixin := ComRingMixin mulzA mulzC mul1z mulz_addl nonzero1z.
+Definition comMixin := ComRingMixin mulzA mulzC mul1z mulz_addl onez_neq0.
 
 End intRing.
 End intRing.
@@ -323,7 +340,13 @@ End InstantiationInteger.
 (**
 ----
 * Naming conventions.
+*)
+Module Conventions.
+From mathcomp Require Import ssralg ssrnum.
+Import GRing.Theory.
+Local Open Scope ring_scope.
 
+(**
 ** Names in the library are usually obeying one of following the convention:
 
  - (condition_)?mainSymbol_suffixes
@@ -360,7 +383,7 @@ Where :
         orbACA : (a || b) || (c || d) = (a || c) || (b || d).
   - b -- a boolean argument, as in andbb : idempotent andb.
   - C -- commutativity, as in andbC : commutative andb,
-        or predicate complement, as in predC.
+    or predicate complement, as in predC.
   - CA -- left commutativity.
   - D -- predicate difference, as in predD.
   - E -- elimination, as in negbFE : ~~ b = false -> b.
@@ -393,5 +416,18 @@ Where :
 ** Examples:
 *)
 
+Search _ *%R "A".
+
+Search _ "unit" in ssralg.
+
+Search _ "inj" in ssralg.
+
+Search _ "rmorph" "M".
+
+Search _ "rpred" "D".
+
+
+End Conventions.
 (**
+----
 End of the lesson *)

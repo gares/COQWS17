@@ -45,10 +45,8 @@ End PreliminaryLemmas.
 ----
 * The ring of Gauss integers
 
-Ref: exercices de mathematiques oraux X-ENS algebre 1
-*)
-(**
-Exercice 3.10. ENS Lyon
+ - Ref: exercices de mathematiques oraux X-ENS algebre 1
+ - Exercice 3.10. ENS Lyon
 
 *)
 Section GaussIntegers.
@@ -142,19 +140,15 @@ Definition GI_comRingMixin := [comRingMixin of GI by <:].
 Canonical GI_comRingType := ComRingType GI GI_comRingMixin.
 (**
 
-Now we build the unitRing and comUnitRing structure of gauss
+ - Now we build the unitRing and comUnitRing structure of gauss
 integers. Contrarily to the previous structures, the operator is not
 the same as on algebraics. Indeed the invertible algebraics are not
 necessarily invertible gauss integers.
-*)
-(**
-Hence, we define the inverse of gauss integers as follow : if the
+ - Hence, we define the inverse of gauss integers as follow : if the
 algebraic inverse happens to be a gauss integer we recover the proof
 and package it together with the element and get a gauss integer,
 otherwise, we default to the identity.
-*)
-(**
-Samewise, a gauss integer is invertible if the algbraic inverse is a
+ - Samewise, a gauss integer is invertible if the algbraic inverse is a
 gauss integer.
 
 *)
@@ -245,13 +239,10 @@ Lemma gaussNormM : {morph gaussNorm : x y / x * y}.
 
 ** Question 7: Find the invertible elements of GI
 
-(This is question 1 of the CPGE exercice)
+ - This is question 1 of the CPGE exercice
 
-*)
-(**
-
-Suggested strategy: sketch the proof on a paper first, don't let Coq
-divert you from your proofsketch
+ - Suggested strategy: sketch the proof on a paper first, don't let
+   Coq divert you from your proofsketch
 
 *)
 Lemma unitGIE (x : GI) : (x \in GRing.unit) =
@@ -266,15 +257,10 @@ Proof.
 
 ** Question 8: Prove that GI euclidean for the stasm gaussNorm.
 
-i.e. ∀ (a, b) ∈ GI × GI*, ∃ (q, r) ∈ GI² s.t. a = q b + r and φ(r) < φ(b)
-*)
-(**
-(This is question 2 of the CPGE exercice)
-*)
-(**
-
-Suggested strategy: sketch the proof on a paper first, don't let Coq
-divert you from your proofsketch
+ - i.e. ∀ (a, b) ∈ GI × GI*, ∃ (q, r) ∈ GI² s.t. a = q b + r and φ(r) < φ(b)
+ - This is question 2 of the CPGE exercice
+ - Suggested strategy: sketch the proof on a paper first, don't let Coq
+   divert you from your proofsketch
 
 *)
 Lemma euclideanGI (a b : GI) : b != 0 ->
