@@ -3,7 +3,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import GRing.Theory Num.Theory.
+Import GRing.Theory Num.Theory UnityRootTheory.
 Local Open Scope ring_scope.
 
 Section PreliminaryLemmas.
@@ -22,6 +22,13 @@ we suggest you use a compatibility lemma numbers between nat and Cnat
 Lemma mulCnat_eq1 : {in Cnat &, forall x y, (x * y == 1) = (x == 1) && (y == 1)}.
 Proof.
 (*D*)by move=> x y /CnatP [n ->] /CnatP [m ->]; rewrite -natrM !pnatr_eq1 muln_eq1.
+(*A*)Qed.
+
+Lemma addCnat_eq1 : {in Cnat &, forall x y,
+   (x + y == 1) = ((x == 1) && (y == 0)) || ((x == 0) && (y == 1))}.
+Proof.
+(*D*)move=> x y /CnatP [n ->] /CnatP [m ->]; rewrite -natrD !pnatr_eq1 ?pnatr_eq0.
+(*D*)by move: n m => [|[|?]] [|[|?]].
 (*A*)Qed.
 (**
 ** Question -1: The real part of product
@@ -93,33 +100,34 @@ Canonical GI_subringPred := SubringPred GI_subring.
 (**
 
 Finally, we define the type of Gauss Integer, as a sigma type of
-algebraic numbers. We soon prove that this is in fact a sub type. We
-also provide a coercion from algC to gauss integers, so that any gauss
-integer can be where an algebraic number is needed.
+algebraic numbers. We soon prove that this is in fact a sub type.
 
 *)
 Record GI := GIof {
-  algGI :> algC;
+  algGI : algC;
   algGIP : algGI \is a gaussInteger }.
 (** We make the defining property of GI a Hint *)
 Hint Resolve algGIP.
 (**
+
+We provide the subtype property.
+
+- This makes it possible to use the generic operator "val" to get an
+  algC from a Gauss Integer.
+
+*)
+Canonical GI_subType := [subType for algGI].
+(**
 We deduce that the real and imaginary parts of a GI are integers
 *)
-Lemma GIRe (x : GI) : 'Re x \in Cint.
+Lemma GIRe (x : GI) : 'Re (val x) \in Cint.
 Proof. by have /andP [] := algGIP x. Qed.
-Lemma GIIm (x : GI) : 'Im x \in Cint.
+Lemma GIIm (x : GI) : 'Im (val x) \in Cint.
 Proof. by have /andP [] := algGIP x. Qed.
 Hint Resolve GIRe GIIm.
 
 Canonical ReGI x := GIof (Cint_GI (GIRe x)).
 Canonical ImGI x := GIof (Cint_GI (GIIm x)).
-(**
-
-We provide the subtype property
-
-*)
-Canonical GI_subType := [subType for algGI].
 (**
 
 We provide a ring structure to the type GI, using the subring
@@ -154,9 +162,9 @@ Canonical GI_comRingType := ComRingType GI GI_comRingMixin.
    integer.
 
 *)
-Definition invGI (x : GI) := insubd x (x : algC)^-1.
+Definition invGI (x : GI) := insubd x (val x)^-1.
 Definition unitGI (x : GI) :=
-  (x != 0) && ((x : algC)^-1 \is a gaussInteger).
+  (x != 0) && ((val x)^-1 \is a gaussInteger).
 (**
 
 ** Question 3: prove a few facts in order to find a comUnitRingMixin
@@ -200,7 +208,7 @@ Lemma conjGIE x : (x^* \is a gaussInteger) = (x \is a gaussInteger).
 We use this fact to build the conjugation of a gauss Integers
 
 *)
-Fact conjGI_subproof (x : GI) : x^* \is a gaussInteger.
+Fact conjGI_subproof (x : GI) : (val x)^* \is a gaussInteger.
 Proof. by rewrite conjGIE. Qed.
 
 Canonical conjGI x := GIof (conjGI_subproof x).
@@ -224,7 +232,7 @@ Lemma gaussNormE x : gaussNorm x = `|x| ^+ 2.
 ** Question 5: Show that the gaussNorm of an gauss integer is a natural number.
 
 *)
-Lemma gaussNormCnat (x : GI) : gaussNorm x \in Cnat.
+Lemma gaussNormCnat (x : GI) : gaussNorm (val x) \in Cnat.
 (*A*)Proof. by rewrite /gaussNorm -normCK normC2_Re_Im rpredD // Cnat_exp_even. Qed.
 Hint Resolve gaussNormCnat.
 (**
@@ -248,13 +256,22 @@ Lemma gaussNormM : {morph gaussNorm : x y / x * y}.
 
 *)
 Lemma unitGIE (x : GI) : (x \in GRing.unit) =
-(*D*) (gaussNorm x == 1).
-Proof.
-(*D*)apply/idP/eqP; last first.
-(*D*)  by move=> gNx; apply/unitrPr; exists (conjGI x); apply: val_inj.
-(*D*)move=> x_unit; have /(congr1 (gaussNorm \o val)) /= /eqP := mulrV x_unit.
-(*D*)by rewrite gaussNormM gaussNorm1 mulCnat_eq1 //= => /andP [/eqP].
-(*A*)Qed.
+(*D*) (val x \in 4.-unity_root).
+(*D*)Proof.
+(*D*)transitivity (gaussNorm (val x) == 1).
+(*D*)  apply/idP/eqP; last first.
+(*D*)    by move=> gNx; apply/unitrPr; exists (conjGI x); apply: val_inj.
+(*D*)  move=> x_unit; have /(congr1 (gaussNorm \o val)) /= /eqP := mulrV x_unit.
+(*D*)  by rewrite gaussNormM gaussNorm1 mulCnat_eq1 //= => /andP [/eqP].
+(*D*)rewrite (@mem_unity_roots _ 4 [:: 1; -1; 'i; -'i]) //; last 2 first.
+(*D*)- rewrite /= !unity_rootE /= [(- 'i) ^+ _]exprNn expr1n  -signr_odd ?expr0.
+(*D*)  by rewrite -[4]/(2 * 2)%N exprM sqrCi -signr_odd ?expr0 mulr1 !eqxx.
+(*D*)- rewrite /= !in_cons !in_nil /=.
+(*D*)  admit.
+(*D*)rewrite gaussNormE [val x]algCrect normC2_rect ?Creal_Re ?Creal_Im //.
+(*D*)(*rewrite addCnat_eq1 ?Cnat_exp_even // expr_eq0.*)
+(*D*)(*rewrite sqrrD mulrCA addrAC. normC2_rect.*)
+(*A*)Admitted.
 (**
 
 ** Question 8: Prove that GI euclidean for the stasm gaussNorm.
@@ -266,7 +283,8 @@ Proof.
 
 *)
 Lemma euclideanGI (a b : GI) : b != 0 ->
-  exists2 qr : GI * GI, a = qr.1 * b + qr.2 & (gaussNorm qr.2 < gaussNorm b).
+  exists2 qr : GI * GI, a = qr.1 * b + qr.2
+                      & (gaussNorm (val qr.2) < gaussNorm (val b)).
 Proof.
 move=> b_neq0.
 (*D*)have oneV2 : 1 = 2%:R^-1 + 2%:R^-1 :> algC.
@@ -287,13 +305,13 @@ have approxP x : x \is Creal -> `|x - (approx x)%:~R| <= 2%:R^-1.
 (*D*)have approxP2 x (_ : x \is Creal) : `|x - (approx x)%:~R| ^+ 2 < 2%:R^-1.
 (*D*)  rewrite (@ler_lt_trans _ (2%:R^-1 ^+ 2)) // ?ler_expn2r ?qualifE ?approxP //.
 (*D*)  by rewrite exprVn -natrX ltf_pinv ?qualifE ?ltr_nat ?ltr0n.
-(*D*)pose u := 'Re ((a : algC) / (b : algC)); pose v := 'Im ((a : algC) / (b : algC)).
+(*D*)pose u := 'Re (val a / val b); pose v := 'Im (val a / val b).
 (*D*)have qGI : (approx u)%:~R + algCi * (approx v)%:~R \is a gaussInteger.
 (*D*)  by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
 (*D*)pose q := GIof qGI.
 (*D*)exists (q, a - q * b); first by rewrite addrC addrNK.
 (*D*)rewrite !gaussNormE /=.
-(*D*)rewrite -(@ltr_pmul2r _ (`|b : algC| ^-2)) ?invr_gt0 ?exprn_gt0 ?normr_gt0 //.
+(*D*)rewrite -(@ltr_pmul2r _ (`|val b| ^-2)) ?invr_gt0 ?exprn_gt0 ?normr_gt0 //.
 (*D*)rewrite mulfV ?expf_eq0 /= ?normr_eq0 // -exprVn -exprMn.
 (*D*)rewrite -normfV -normrM mulrBl mulfK //.
 (*D*)rewrite [X in X - _]algCrect opprD addrACA -mulrBr -/u -/v.
