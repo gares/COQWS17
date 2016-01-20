@@ -204,7 +204,7 @@ Lemma conjGIE x : (x^* \is a gaussInteger) = (x \is a gaussInteger).
 We use this fact to build the conjugation of a gauss Integers
 
 *)
-Fact conjGI_subproof (x : GI) : (x^* \is a gaussInteger).
+Fact conjGI_subproof (x : GI) : x^* \is a gaussInteger.
 Proof. by rewrite conjGIE. Qed.
 
 Canonical conjGI x := GIof (conjGI_subproof x).
@@ -248,6 +248,12 @@ Lemma gaussNormM : {morph gaussNorm : x y / x * y}.
 (This is question 1 of the CPGE exercice)
 
 *)
+(**
+
+Suggested strategy: sketch the proof on a paper first, don't let Coq
+divert you from your proofsketch
+
+*)
 Lemma unitGIE (x : GI) : (x \in GRing.unit) =
 (*D*) (gaussNorm x == 1).
 Proof.
@@ -265,18 +271,22 @@ i.e. ∀ (a, b) ∈ GI × GI*, ∃ (q, r) ∈ GI² s.t. a = q b + r and φ(r) < 
 (**
 (This is question 2 of the CPGE exercice)
 *)
+(**
+
+Suggested strategy: sketch the proof on a paper first, don't let Coq
+divert you from your proofsketch
+
+*)
 Lemma euclideanGI (a b : GI) : b != 0 ->
   exists2 qr : GI * GI, a = qr.1 * b + qr.2 & (gaussNorm qr.2 < gaussNorm b).
 Proof.
 move=> b_neq0.
-have oneV2 : 1 = 2%:R^-1 + 2%:R^-1 :> algC.
-(*a*)  by rewrite -mulr2n -[_ *+ 2]mulr_natr mulVf ?pnatr_eq0.
+(*D*)have oneV2 : 1 = 2%:R^-1 + 2%:R^-1 :> algC.
+(*D*)  by rewrite -mulr2n -[_ *+ 2]mulr_natr mulVf ?pnatr_eq0.
+(*D*)have V2ge0 : 0 <= 2%:R^-1 :> algC by rewrite invr_ge0 ler0n.
+(*D*)have V2real : 2%:R^-1 \is Creal by rewrite realE V2ge0.
 pose approx (x : algC) : int :=
 (*D*)  floorC x + (if `|x - (floorC x)%:~R| <= 2%:R^-1 then 0 else 1).
-have V2ge0 : 0 <= 2%:R^-1 :> algC by
-(*a*) rewrite invr_ge0 ler0n.
-have V2real : 2%:R^-1 \is Creal by
-(*a*) rewrite realE V2ge0.
 have approxP x : x \is Creal -> `|x - (approx x)%:~R| <= 2%:R^-1.
 (*D*)  rewrite /approx => x_real; have /andP [x_ge x_le] := floorC_itv x_real.
 (*D*)  have [] // := @real_lerP _  `|_ - (floorC _)%:~R| _;
@@ -286,13 +296,13 @@ have approxP x : x \is Creal -> `|x - (approx x)%:~R| <= 2%:R^-1.
 (*D*)  move=> Dx1_gtV2; rewrite real_lerNgt ?rpredB // ?Creal_Cint ?Cint_int //.
 (*D*)  apply/negP=> /ltr_add /(_ Dx1_gtV2); rewrite -oneV2 !addrA addrNK.
 (*a*)  by rewrite [_ + 1]addrC rmorphD /= addrK ltrr.
-have approxP2 x (_ : x \is Creal) : `|x - (approx x)%:~R| ^+ 2 < 2%:R^-1.
+(*D*)have approxP2 x (_ : x \is Creal) : `|x - (approx x)%:~R| ^+ 2 < 2%:R^-1.
 (*D*)  rewrite (@ler_lt_trans _ (2%:R^-1 ^+ 2)) // ?ler_expn2r ?qualifE ?approxP //.
-(*a*)  by rewrite exprVn -natrX ltf_pinv ?qualifE ?ltr_nat ?ltr0n.
-pose u := 'Re ((a : algC) / (b : algC)); pose v := 'Im ((a : algC) / (b : algC)).
-have qGI : (approx u)%:~R + algCi * (approx v)%:~R \is a gaussInteger.
-(*a*)  by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
-pose q := GIof qGI.
+(*D*)  by rewrite exprVn -natrX ltf_pinv ?qualifE ?ltr_nat ?ltr0n.
+(*D*)pose u := 'Re ((a : algC) / (b : algC)); pose v := 'Im ((a : algC) / (b : algC)).
+(*D*)have qGI : (approx u)%:~R + algCi * (approx v)%:~R \is a gaussInteger.
+(*D*)  by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
+(*D*)pose q := GIof qGI.
 (*D*)exists (q, a - q * b); first by rewrite addrC addrNK.
 (*D*)rewrite !gaussNormE /=.
 (*D*)rewrite -(@ltr_pmul2r _ (`|b : algC| ^-2)) ?invr_gt0 ?exprn_gt0 ?normr_gt0 //.
