@@ -349,12 +349,12 @@ Local Open Scope ring_scope.
 (**
 ** Names in the library are usually obeying one of following the convention:
 
- - (condition_)?mainSymbol_suffixes
- - mainSymbol_suffixes(_condition)?
+ - #<pre>(condition_)?mainSymbol_suffixes</pre>#
+ - #<pre>mainSymbol_suffixes(_condition)?</pre>#
 
 Or in the presence of a property denoted by a nary or unary predicate:
- - naryPredicate_mainSymbol+
- - mainSymbol_unaryPredicate
+ - #<pre>naryPredicate_mainSymbol+</pre>#
+ - #<pre>mainSymbol_unaryPredicate</pre>#
 
 Where :
 
@@ -428,6 +428,4 @@ Search _ "rpred" "D".
 
 
 End Conventions.
-(**
-----
-End of the lesson *)
+
