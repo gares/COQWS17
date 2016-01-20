@@ -450,7 +450,7 @@ Where :
 ** Examples:
 *)
 
-Search _ *%R "A" in ssralg.
+Search _ *%R "A" in GRing.Theory.
 
 Search _ "unit" in ssralg.
 
