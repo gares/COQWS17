@@ -73,8 +73,7 @@ Structure my_struct := My_struct {
 
 (* axioms: properties on the symbols *)
   opxc : forall x, op x c = c;
-  opC : forall x y, op x y = op y x
-}.
+  opC : forall x y, op x y = op y x}.
 
 (* Notations and modifiers for the symbols *)
 Arguments op {m} x y.
@@ -116,16 +115,14 @@ Record my_mixin1 dom := My_mixin1 {
   my_op   : dom -> dom -> dom;
 (* axioms: properties on the symbols *)
   my_opxc : forall x, my_op x my_c = my_c;
-  my_opC : forall x y, my_op x y = my_op y x
-}.
+  my_opC : forall x y, my_op x y = my_op y x}.
 
 Definition my_class1 := my_mixin1.
 
 Structure my_struct1 := My_struct1 {
 (* domain/carrier/sort of the structure *)
   dom1 :> Type;
-  class1 : my_mixin1 dom1;
-}.
+  class1 : my_mixin1 dom1}.
 
 Definition op {s : my_struct1} := my_op (class1 s).
 Definition c {s : my_struct1} := my_c (class1 s).
@@ -135,18 +132,15 @@ Record my_mixin2 (dom : my_struct1) := My_mixin2 {
 (* symbols: constants and operators *)
   my_pred   : pred dom;
 (* axioms: properties on the symbols *)
-  my_predc : forall x, my_pred (op c x)
-}.
+  my_predc : forall x, my_pred (op c x)}.
 
 Record my_class2 dom := My_class2 {
   base2 :> my_class1 dom;
-  mixin2 :> my_mixin2 (@My_struct1 dom base2);
-}.
+  mixin2 :> my_mixin2 (@My_struct1 dom base2)}.
 
 Structure my_struct2 := My_struct2 {
   dom2  :> Type;
-  class2 : my_class2 dom2;
-}.
+  class2 : my_class2 dom2}.
 
 Definition pr {s : my_struct2} := my_pred (class2 s).
 
@@ -456,15 +450,15 @@ Where :
 ** Examples:
 *)
 
-Search _ *%R "A".
+Search _ *%R "A" in ssralg.
 
 Search _ "unit" in ssralg.
 
 Search _ "inj" in ssralg.
 
-Search _ "rmorph" "M".
+Search _ "rmorph" "M" in ssralg.
 
-Search _ "rpred" "D".
+Search _ "rpred" "D" in ssralg.
 
 
 End Conventions.
