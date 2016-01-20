@@ -339,6 +339,39 @@ Canonical int_comRing := ComRingType int intRing.mulzC.
 End InstantiationInteger.
 (**
 ----
+* Other structures
+*)
+Module OtherStructures.
+From mathcomp Require Import ssralg ssrnum.
+Import GRing.Theory.
+Local Open Scope ring_scope.
+(**
+** Extensions of rings
+
+- read the documentation of ssralg and ssrnum (algebraic structures
+  with order)
+
+** Structures for morphisms
+*)
+
+Search "linear" in ssralg.
+
+Search "raddf" in ssralg.
+
+Search "rmorph" in ssralg.
+(**
+** Substructures
+*)
+
+Print ssralg.GRing.subring_closed.
+Print ssralg.GRing.subr_2closed.
+Print ssralg.GRing.mulr_2closed.
+
+Search "rpred" in ssralg.
+
+End OtherStructures.
+(**
+----
 * Naming conventions.
 *)
 Module Conventions.
