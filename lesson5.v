@@ -39,6 +39,7 @@ Unset Printing Implicit Defensive.
   morphisms, etc...), and substructures (subgroup, subsemiring, subring,
   subfield, etc...)
 
+
 ----
 
 * Roadmap for the lesson:
@@ -47,6 +48,7 @@ Unset Printing Implicit Defensive.
  - exploration of the theory provided by this structure and naming
    conventions
  - creation of a subalgebraic structure predicate and use
+
 
 ----
 *)
@@ -94,6 +96,7 @@ End AlgebraicStructures.
 
 This packaging is very elementary, and the mathematical components
 library uses a refinement of this.
+
 
 ----
 * Packaging mathematical structures
@@ -180,6 +183,7 @@ End my_struct2_theory.
 
 End AlgebraicStructuresInheritance.
 (**
+
 ----
 * Inhabiting the mathematical structures hierarchy.
 
@@ -446,7 +450,8 @@ Where :
 
 ** This is design to help search. My own search strategy is usually.
 
-- Search _ "suffix1" "suffix2" (symbol|pattern)* in library.
+- #<pre>Search _ "suffix1" "suffix2" (symbol|pattern)* in library.</pre>#
+
 
 ** Examples:
 *)
