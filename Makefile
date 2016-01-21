@@ -64,10 +64,12 @@ exercise7-todo.v : exercise7.v
 	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" exercise7.v > exercise7-todo.v
 exam.html: exam.html.tmp
 	sed -e 's/^(\*A\*).*$$/Admitted./' \
-		-e 's/^(\*X\*).*$$//' \
+		-e 's/(\*a\*).*$$/admit./' \
+		-e '/^(\*X\*).*$$/d' \
 		-e 's/(\*D\*).*(\*D\*)/.../' \
 		-e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
 exam-todo.v: exam.v
 	sed -e 's/^(\*A\*).*$$/Admitted./' \
-		-e 's/^(\*X\*).*$$//' \
+		-e 's/(\*a\*).*$$/admit./' \
+		-e '/^(\*X\*).*$$/d' \
 		-e 's/(\*D\*).*(\*D\*)/.../' $< > $@

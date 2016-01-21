@@ -73,7 +73,128 @@ Proof.
 (*A*)Qed.
 
 
-From mathcomp Require Import  all_algebra.
+From mathcomp Require Import all_algebra.
+From mathcomp Require Import algC.
+
+Section AlgebraicHierarchy.
+Section GaussIntegers.
+Import GRing.Theory Num.Theory.
+Local Open Scope ring_scope.
+
+Definition gaussInteger := [qualify a x | ('Re x \in Cint) && ('Im x \in Cint)].
+Axiom Cint_GI : forall (x : algC), x \in Cint -> x \is a gaussInteger.
+Axiom GI_subring : subring_closed gaussInteger.
+
+Fact GI_key : pred_key gaussInteger. Proof. by []. Qed.
+Canonical GI_keyed := KeyedQualifier GI_key.
+Canonical GI_opprPred := OpprPred GI_subring.
+Canonical GI_addrPred := AddrPred GI_subring.
+Canonical GI_mulrPred := MulrPred GI_subring.
+Canonical GI_zmodPred := ZmodPred GI_subring.
+Canonical GI_semiringPred := SemiringPred GI_subring.
+Canonical GI_smulrPred := SmulrPred GI_subring.
+Canonical GI_subringPred := SubringPred GI_subring.
+
+Record GI := GIof {algGI : algC; algGIP : algGI \is a gaussInteger }.
+Hint Resolve algGIP.
+
+Canonical GI_subType := [subType for algGI].
+Definition GI_eqMixin := [eqMixin of GI by <:].
+Canonical GI_eqType := EqType GI GI_eqMixin.
+Definition GI_choiceMixin := [choiceMixin of GI by <:].
+Canonical GI_choiceType := ChoiceType GI GI_choiceMixin.
+Definition GI_countMixin := [countMixin of GI by <:].
+Canonical GI_countType := CountType GI GI_countMixin.
+Definition GI_zmodMixin := [zmodMixin of GI by <:].
+Canonical GI_zmodType := ZmodType GI GI_zmodMixin.
+Definition GI_ringMixin := [ringMixin of GI by <:].
+Canonical GI_ringType := RingType GI GI_ringMixin.
+Definition GI_comRingMixin := [comRingMixin of GI by <:].
+Canonical GI_comRingType := ComRingType GI GI_comRingMixin.
+
+Lemma conjGIE x : (x^* \is a gaussInteger) = (x \is a gaussInteger).
+Proof. by rewrite ![_ \is a _]qualifE algRe_conj algIm_conj rpredN. Qed.
+
+Fact conjGI_subproof (x : GI) : (val x)^* \is a gaussInteger.
+Proof. by rewrite conjGIE. Qed.
+
+Canonical conjGI x := GIof (conjGI_subproof x).
+
+Definition gaussNorm (x : algC) := x * x^*.
+
+Axiom gaussNormE : forall x, gaussNorm x = `|x| ^+ 2.
+Axiom gaussNormCnat : forall (x : GI), gaussNorm (val x) \in Cnat.
+
+Lemma gaussNorm1 : gaussNorm 1 = 1.
+(*A*)Proof. by rewrite /gaussNorm rmorph1 mulr1. Qed.
+
+Lemma gaussNormM : {morph gaussNorm : x y / x * y}.
+(*A*)Proof. by move=> x y; rewrite /gaussNorm rmorphM mulrACA. Qed.
+(**
+
+** Question: Prove that GI euclidean for the stasm gaussNorm.
+
+ - i.e. ∀ (a, b) ∈ GI × GI*, ∃ (q, r) ∈ GI² s.t. a = q b + r and φ(r) < φ(b)
+ - Suggested strategy: sketch the proof on a paper first, don't let Coq
+   divert you from your proofsketch
+ - We first sketch the "paper proof" here and then do it in Coq:
+  - take a / b = x + i y
+  - take u the closest integer to x, and v the closest integer to y
+  - satisfy the existential with q = u + i v and r = a - q b, 
+    which are both Gauss integers.
+  - We want to show that |a - q b|² < |b|².
+  - It suffices to show |a / b - q|² < 1
+  - But |a / b - q|² = (u - x)² + (v - x)² ≤ ‌½² + ½² < 1
+ - Now we give a Coq proof with holes, fill in the holes.
+*)
+Lemma euclideanGI (a b : GI) : b != 0 ->
+  exists2 qr : GI * GI, a = qr.1 * b + qr.2
+                      & (gaussNorm (val qr.2) < gaussNorm (val b)).
+Proof.
+move=> b_neq0.
+
+(* Trivial preliminaries *)
+have oneV2 : 1 = 2%:R^-1 + 2%:R^-1 :> algC.
+  by rewrite -mulr2n -[_ *+ 2]mulr_natr mulVf ?pnatr_eq0.
+have V2ge0 : 0 <= 2%:R^-1 :> algC by (*a*)rewrite invr_ge0 ler0n.
+have V2real : (2%:R^-1 : algC) \is Num.real by (*a*)rewrite realE V2ge0.
+
+(* Closest integer to x, when x is real *)
+pose approx (x : algC) : int :=
+  floorC x + (if `|x - (floorC x)%:~R| <= 2%:R^-1 then 0 else 1).
+have approxP x : x \is Creal -> `|x - (approx x)%:~R| <= 2%:R^-1.
+  rewrite /approx => x_real; have /andP [x_ge x_le] := floorC_itv x_real.
+  have [] // := @real_lerP _  `|_ - (floorC _)%:~R| _;
+    first by rewrite addr0.
+  rewrite [`|_ - (_ + 1)%:~R|]distrC !ger0_norm ?subr_ge0 //=;
+     last by rewrite ltrW.
+  move=> Dx1_gtV2; rewrite real_lerNgt ?rpredB // ?Creal_Cint ?Cint_int //.
+  apply/negP=> /ltr_add /(_ Dx1_gtV2); rewrite -oneV2 !addrA addrNK.
+  by rewrite [_ + 1]addrC rmorphD /= addrK ltrr.
+have approxP2 x (_ : x \is Creal) : `|x - (approx x)%:~R| ^+ 2 < 2%:R^-1.
+  rewrite (@ler_lt_trans _ (2%:R^-1 ^+ 2)) // ?ler_expn2r ?qualifE ?approxP //.
+  by rewrite exprVn -natrX ltf_pinv ?qualifE ?ltr_nat ?ltr0n.
+
+(* Proper proof *)
+pose u := 'Re (val a / val b); pose v := 'Im (val a / val b).
+have qGI : (approx u)%:~R + algCi * (approx v)%:~R \is a gaussInteger.
+(*a*)  by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
+pose q := GIof qGI.
+exists (q, a - q * b); first by rewrite addrC addrNK.
+rewrite !gaussNormE /=.
+rewrite -(@ltr_pmul2r _ (`|val b| ^-2)) ?invr_gt0 ?exprn_gt0 ?normr_gt0 //.
+rewrite mulfV ?expf_eq0 /= ?normr_eq0 // -exprVn -exprMn.
+rewrite -normfV -normrM mulrBl mulfK //.
+(*X*)rewrite [X in X - _]algCrect opprD addrACA -mulrBr -/u -/v.
+set Du := _ - _; set Dv := _ - _.
+have /andP [DuReal DvReal] : (Du \is Creal) && (Dv \is Creal).
+(*a*)  by rewrite ?rpredB ?Creal_Re ?Creal_Im ?Creal_Cint ?Cint_int.
+(*X*)rewrite normC2_rect // -real_normK // -[Dv ^+ _]real_normK //.
+(*X*)by rewrite oneV2 ltr_add // approxP2 // ?Creal_Re ?Creal_Im.
+(*A*)Qed.
+
+End GaussIntegers.
+End AlgebraicHierarchy.
 
 Section Polynomes.
 
@@ -133,6 +254,66 @@ Proof.
 (*A*)Qed.
 
 End Polynomes.
+
+Section LinearAlgebra.
+Import GRing.Theory Num.Theory.
+Local Open Scope ring_scope.
+(**
+
+* Endomorphisms u such that Ker u ⊕ Im u = E.
+
+The endomorphisms of a space E of finite dimension n, such that u o v
+= 0 and v + u is invertible are exactly the endomorphisms such that
+Ker u ⊕ Im u = E.
+
+ - Assume u o v = 0 and v + u is invertible,
+  - we have rank (v + u) = n
+  - we rank v + rank u = n and we have Im v ⊂ Ker u
+  - Hence we have Im v = Ker u
+  - We deduce that Ker u ⊕ Im u = Im v ⊕ Im u = E
+*)
+Variables (F : fieldType) (n' : nat).
+Let n := n'.+1.
+
+Lemma ex_6_13 (u : 'M[F]_n):
+  reflect (exists2 v : 'M_n, v * u = 0 & v + u \is a GRing.unit)
+          ((kermx u + u == 1)%MS && mxdirect (kermx u + u)).
+Proof.
+apply: (iffP idP) => [|[v vMu vDu]]; last first.
+  have rkvDu: \rank (v + u)%R = n by (*a*)rewrite mxrank_unit.
+  have /eqP rkvDrku : (\rank v + \rank u)%N == n.
+    by rewrite eqn_leq (*a*)mulmx0_rank_max //= -{1}rkvDu mxrank_add //.
+  have sub_v_ku : (v <= kermx u)%MS by (*a*)apply/sub_kermxP.
+  have /eqmxP/eqmx_sym eq_vu: (v == kermx u)%MS.
+    rewrite -(geq_leqif (mxrank_leqif_eq _)) //.
+(*X*)    rewrite -(leq_add2r (\rank u)) rkvDrku.
+    (*a*)by rewrite mxrank_ker subnK // rank_leq_row.
+  rewrite submx1 sub1mx -col_leq_rank mxdirectEgeq /=.
+  (* use addx_eqmx to lift eq_vu to a sum *)
+(*X*)  rewrite eq_vu (adds_eqmx eq_vu (eqmx_refl _)).
+  (* Warning: - (u + v)%R  is a sum of matrices
+              - (u + v)%MS is a sum of spaces
+     use addmx_sub_adds and mxrankS
+     to compare the rank (u + v) with dim (Im u + Im v) *)
+(*X*)  have /mxrankS leq_rk := addmx_sub_adds (submx_refl v) (submx_refl u).
+  (* finish using hypothesis *)
+  (*a*)by rewrite !(leq_trans _ leq_rk) //= ?rkvDu ?rkvDrku.
+move=> /andP [/eqmxP kuDu_eq1 kvDu_direct].
+pose v := proj_mx (kermx u) u; exists v.
+  (*a*)by apply/sub_kermxP; rewrite -[X in (X <= _)%MS]mul1r proj_mx_sub.
+rewrite -row_free_unit -kermx_eq0.
+apply/negP => /negP /rowV0Pn [x /sub_kermxP]; rewrite mulmxDr.
+move=> /(canRL (addrK _)); rewrite sub0r => eq_xv_Nxu.
+apply/negP; rewrite negbK; apply/eqP.
+have : (x *m v <= kermx u :&: u)%MS.
+  (*a*)by rewrite sub_capmx proj_mx_sub eq_xv_Nxu eqmx_opp submxMl.
+(*X*)rewrite (mxdirect_addsP _) ?submx0 // => /eqP xv_eq0.
+(*X*)move/eqP : eq_xv_Nxu; rewrite xv_eq0 eq_sym oppr_eq0 => /eqP.
+(*X*)move=> /sub_kermxP x_in_keru; move: xv_eq0; rewrite proj_mx_id //.
+(*X*)by rewrite (mxdirect_addsP _).
+(*A*)Qed.
+
+End LinearAlgebra.
 
 (*X*)(* 
 (*X*)*** Local Variables: ***
