@@ -59,7 +59,9 @@ exercise6.html: exercise6.html.tmp
 exercise6-todo.v: exercise6.v
 	sed -e 's/^(\*D\*).*$$//' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
 exercise7.html: exercise7.html.tmp
-	sed -e 's/^(\*D\*).*$$/Admitted./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+exercise7-todo.v : exercise7.v
+	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" exercise7.v > exercise7-todo.v
 exam.html: exam.html.tmp
 	sed -e 's/^(\*A\*).*$$/Admitted./' \
 		-e 's/^(\*X\*).*$$//' \
