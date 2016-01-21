@@ -140,3 +140,4 @@ End Polynomes.
 (*X*)*** coq-prog-args: ("-emacs-U" "-R" "/Users/lrg/coq/math-comp/mathcomp" "mathcomp" "-I" "/Users/lrg/coq/math-comp/mathcomp" ) ***
 (*X*)*** End: ***
 (*X*)*)
+
