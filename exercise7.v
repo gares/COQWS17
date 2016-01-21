@@ -203,7 +203,7 @@ End ex_6_12.
 Section ex_6_13.
 (**
 
-* Endomorphisms u such that Ker u = Im u.
+* Endomorphisms u such that Ker u ⊕ Im u = E.
 
 - What are the morphisms such that u o v = 0 and v + u is invertible ?
  
