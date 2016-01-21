@@ -72,3 +72,71 @@ Proof.
 (*X*)by rewrite odd_sub // (negPf Hn).
 (*A*)Qed.
 
+
+From mathcomp Require Import  all_algebra.
+
+Section Polynomes.
+
+Open Scope ring_scope.
+Import GRing.Theory Num.Theory.
+
+Variable n : nat.
+Variables na nb: nat.
+Hypothesis nbne0: nb != 0%N.
+
+Definition a:rat := (Posz na)%:~R.
+Definition b:rat :=(Posz nb)%:~R.
+
+Definition pi := a / b. 
+
+Definition f :{poly rat} := (n`!)%:R^-1 *: ('X^n * (a%:P -  b*:'X)^+n).
+
+Definition F :{poly rat} := \sum_(i:'I_n.+1) (-1)^i *: f^`(2*i).
+
+
+Axiom derive_f_0_int: forall i, f^`(i).[0] \is a Qint.
+
+
+(* 
+exprnP hornerE horner_sum rpred**** 
+*)
+Lemma F0_int : F.[0] \is a Qint.
+Proof.
+(*X*)rewrite /F horner_sum rpred_sum // =>  i _ ; rewrite !hornerE rpredM //.
+(*X*)  by rewrite -exprnP rpredX.
+(*X*)by rewrite derive_f_0_int.
+(*A*)Qed.
+
+Axiom pf_sym:  f \Po (pi%:P -'X) = f.
+
+(* Par induction sur i.
+utilise scale*** mulr*** addr** expr** oppr*  de ssralg
+derivnS derivZ deriv_comp derivE   de poly *)
+Lemma  derivn_fpix: forall i , (f^`(i)\Po(pi%:P -'X))= (-1)^+i *: f^`(i).
+Proof.
+(*X*)elim ; first by rewrite /= expr0 scale1r pf_sym.
+(*X*)move => i Hi.
+(*X*)set fx := _ \Po _.
+(*X*)rewrite derivnS exprS -scalerA -derivZ -Hi deriv_comp !derivE.
+(*X*)by rewrite mulrBr mulr0 add0r mulr1 -derivnS /fx scaleN1r opprK.
+(*A*)Qed.
+
+(* horner_comp sqrr_sign mulnC scale1r *)
+
+Lemma FPi_int : F.[pi] \is a Qint.
+Proof.
+(*X*)rewrite /F horner_sum rpred_sum //.
+(*X*)move=> i _ ; rewrite !hornerE rpredM //.
+(*X*)  by rewrite -exprnP rpredX.
+(*X*)move:(derivn_fpix (2*i)).
+(*X*)rewrite  mulnC exprM sqrr_sign scale1r => <-.
+(*X*)by rewrite horner_comp !hornerE subrr derive_f_0_int.
+(*A*)Qed.
+
+End Polynomes.
+
+(*X*)(* 
+(*X*)*** Local Variables: ***
+(*X*)*** coq-prog-args: ("-emacs-U" "-R" "/Users/lrg/coq/math-comp/mathcomp" "mathcomp" "-I" "/Users/lrg/coq/math-comp/mathcomp" ) ***
+(*X*)*** End: ***
+(*X*)*)
