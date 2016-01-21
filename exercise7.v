@@ -25,7 +25,7 @@ Variables (F : fieldType) (n' : nat).
 Let n := n'.+1.
 
 Section Q1.
-(*
+(**
 
 ** Question 1.
 
@@ -66,19 +66,19 @@ Lemma wS x : (x *m w <= S)%MS.
 Proof.
 unlock w.
 (*D*)by rewrite proj_mx_sub.
-Qed.
+(*A*)Qed.
 
 Lemma vS x : (x *m v <= S)%MS.
 Proof.
 unlock v.
 (*D*)by rewrite mulmxA proj_mx_sub.
-Qed.
+(*A*)Qed.
 
 Lemma w_id x : (x <= S)%MS -> x *m w = x.
 Proof.
 unlock w => xS.
 (*D*)by rewrite proj_mx_id ?(mxdirect_addsP _).
-Qed.
+(*A*)Qed.
 (**
 
 **** Question 1.a.ii.
@@ -91,6 +91,16 @@ Reuse and adapt and the proof in the course.
 Lemma Su_rect x : x = x *m w + (x *m v) *m u.
 Proof.
 unlock v w.
+(*
+remember we had t, z' and z
+y := x *m proj_mx S u
+t := x *m proj_mx u S
+z' := t *m pinvmx u
+z := z' *m proj_mx S u.
+and x = y + z *m u
+    z' *m u = z *m u
+    z' *m u = t
+*)
 (*D*)rewrite -{1}(@add_proj_mx _ _ _ S u x) ?(mxdirect_addsP _) //; last first.
 (*D*)  by rewrite S_u_eq1 submx1.
 (*D*)congr (_ + _); apply/eqP.
