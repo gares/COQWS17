@@ -97,9 +97,8 @@ Definition F :{poly rat} := \sum_(i:'I_n.+1) (-1)^i *: f^`(2*i).
 Axiom derive_f_0_int: forall i, f^`(i).[0] \is a Qint.
 
 
-(* 
-exprnP hornerE horner_sum rpred**** 
-*)
+(** Prove that F at 0 is a Qint.  Hint: relevant lemmas
+are exprnP hornerE horner_sum and the rpred* family *)
 Lemma F0_int : F.[0] \is a Qint.
 Proof.
 (*X*)rewrite /F horner_sum rpred_sum // =>  i _ ; rewrite !hornerE rpredM //.
@@ -109,9 +108,9 @@ Proof.
 
 Axiom pf_sym:  f \Po (pi%:P -'X) = f.
 
-(* Par induction sur i.
-utilise scale*** mulr*** addr** expr** oppr*  de ssralg
-derivnS derivZ deriv_comp derivE   de poly *)
+(** Prove this equation by induction on [i].
+Hint: relevant lemmas are scale* mulr* addr* expr* oppr* in ssralg,
+derivnS derivZ deriv_comp derivE in poly *)
 Lemma  derivn_fpix: forall i , (f^`(i)\Po(pi%:P -'X))= (-1)^+i *: f^`(i).
 Proof.
 (*X*)elim ; first by rewrite /= expr0 scale1r pf_sym.
@@ -121,8 +120,8 @@ Proof.
 (*X*)by rewrite mulrBr mulr0 add0r mulr1 -derivnS /fx scaleN1r opprK.
 (*A*)Qed.
 
-(* horner_comp sqrr_sign mulnC scale1r *)
-
+(** Prove that F at pi is a Qint.
+Hint: relevant lemmas are horner_comp sqrr_sign mulnC scale1r *)
 Lemma FPi_int : F.[pi] \is a Qint.
 Proof.
 (*X*)rewrite /F horner_sum rpred_sum //.
