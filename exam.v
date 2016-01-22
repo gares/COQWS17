@@ -5,7 +5,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-(** 
+(**
 Classical logic is somewhat surprising!
 Prove that given two arbitrary propositions
 a and b, either a implies b or the converse *)
@@ -41,21 +41,15 @@ Hint: it is perfectly fine to state intermediate lemmas
 Lemma filterrev_ok T p (l : seq T) :
   filtrev p [::] l = [seq x <- rev l | p x ].
 Proof.
-(*X*)have: all p [::] by []; rewrite -[rev l]cats0.
-(*X*)elim: l [::] => [? /all_filterP | x xs IH acc p_acc] //.
-(*X*)case: (boolP (p x)) => [px | /negbTE n_px].
-(*X*)  by rewrite /= px IH /= ?px // rev_cons cat_rcons.
-(*X*)by rewrite rev_cons filter_cat filter_rcons /= n_px /= -filter_cat IH.
+(*X*)rewrite -[RHS]cats0; elim: l [::] => [|x l ihl] l' //=.
+(*X*)by case: ifP => px; rewrite ihl rev_cons filter_rcons ?px ?cat_rcons.
 (*A*)Qed.
 
 (** Prove that if (s1 :|: s2) is disjoint from (s1 :|: s3) then
     s1 is empty *)
 Lemma disjoint_setU2l (T : finType) (s1 s2 s3 : {set T}) :
    [disjoint s1 :|: s2 & s1 :|: s3] -> s1 = set0.
-Proof.
-(*X*)move/pred0P=> H; apply/setP => x.
-(*X*)by have := (H x); rewrite !inE; case: (_ \in _).
-(*A*)Qed.
+(*A*)Proof. by rewrite -setI_eq0 -setUIr setU_eq0 => /andP [/eqP]. Qed.
 
 (** Prove the equivalence of these two sums.
     E.g. (n=8)
@@ -66,10 +60,8 @@ Proof.
 Lemma sum_odd n :
   ~~ odd n -> \sum_(i < n | odd i) i = \sum_(i < n | ~~ odd i) (n.-1 - i).
 Proof.
-(*X*)case: n => [|n Hn]; first by rewrite !big_ord0.
-(*X*)rewrite (reindex_inj rev_ord_inj) /=.
-(*X*)apply: eq_big => [i|i//].
-(*X*)by rewrite odd_sub // (negPf Hn).
+(*X*)rewrite (reindex_inj (@rev_ord_inj _)) /= => /negPf n_oddF.
+(*X*)by apply: eq_big => i; rewrite odd_sub ?n_oddF //; case: n i {n_oddF}.
 (*A*)Qed.
 (**
 
@@ -151,7 +143,7 @@ Lemma gaussNormM : {morph gaussNorm : x y / x * y}.
  - We first sketch the "paper proof" here and then do it in Coq:
   - take a / b = x + i y
   - take u the closest integer to x, and v the closest integer to y
-  - satisfy the existential with q = u + i v and r = a - q b, 
+  - satisfy the existential with q = u + i v and r = a - q b,
     which are both Gauss integers.
   - We want to show that |a - q b|² < |b|².
   - It suffices to show |a / b - q|² < 1
@@ -223,7 +215,7 @@ Hypothesis nbne0: nb != 0%N.
 Definition a:rat := (Posz na)%:~R.
 Definition b:rat :=(Posz nb)%:~R.
 
-Definition pi := a / b. 
+Definition pi := a / b.
 
 Definition f :{poly rat} := (n`!)%:R^-1 *: ('X^n * (a%:P -  b*:'X)^+n).
 
@@ -237,9 +229,8 @@ Axiom derive_f_0_int: forall i, f^`(i).[0] \is a Qint.
 are exprnP hornerE horner_sum and the rpred* family *)
 Lemma F0_int : F.[0] \is a Qint.
 Proof.
-(*X*)rewrite /F horner_sum rpred_sum // =>  i _ ; rewrite !hornerE rpredM //.
-(*X*)  by rewrite -exprnP rpredX.
-(*X*)by rewrite derive_f_0_int.
+(*X*)rewrite horner_sum rpred_sum // => i _.
+(*X*)by rewrite hornerE rpredM ?rpredX // derive_f_0_int.
 (*A*)Qed.
 
 Axiom pf_sym:  f \Po (pi%:P -'X) = f.
@@ -249,23 +240,19 @@ Hint: relevant lemmas are scale* mulr* addr* expr* oppr* in ssralg,
 derivnS derivZ deriv_comp derivE in poly *)
 Lemma  derivn_fpix: forall i , (f^`(i)\Po(pi%:P -'X))= (-1)^+i *: f^`(i).
 Proof.
-(*X*)elim ; first by rewrite /= expr0 scale1r pf_sym.
-(*X*)move => i Hi.
-(*X*)set fx := _ \Po _.
-(*X*)rewrite derivnS exprS -scalerA -derivZ -Hi deriv_comp !derivE.
-(*X*)by rewrite mulrBr mulr0 add0r mulr1 -derivnS /fx scaleN1r opprK.
+(*X*)elim => [|i]; first by rewrite !derivn0 pf_sym scale1r.
+(*X*)move=> /(congr1 (fun p => - p^`())); rewrite deriv_comp derivZ -!derivnS.
+(*X*)by rewrite !derivE add0r mulrN1 opprK -scaleNr exprS mulN1r.
 (*A*)Qed.
 
 (** Prove that F at pi is a Qint.
 Hint: relevant lemmas are horner_comp sqrr_sign mulnC scale1r *)
 Lemma FPi_int : F.[pi] \is a Qint.
 Proof.
-(*X*)rewrite /F horner_sum rpred_sum //.
-(*X*)move=> i _ ; rewrite !hornerE rpredM //.
-(*X*)  by rewrite -exprnP rpredX.
-(*X*)move:(derivn_fpix (2*i)).
-(*X*)rewrite  mulnC exprM sqrr_sign scale1r => <-.
-(*X*)by rewrite horner_comp !hornerE subrr derive_f_0_int.
+(*X*)rewrite horner_sum rpred_sum // => i _; rewrite hornerE rpredM ?rpredX //.
+(*X*)have -> : forall p, p.[pi] = (p \Po (pi%:P - 'X)).[0].
+(*X*)  by move=> p; rewrite horner_comp !hornerE.
+(*X*)by rewrite derivn_fpix hornerE rpredM ?rpredX // derive_f_0_int.
 (*A*)Qed.
 
 End Polynomes.
@@ -334,9 +321,8 @@ have : (x *m v <= kermx u :&: u)%MS.
 
 End LinearAlgebra.
 
-(*X*)(* 
+(*X*)(*
 (*X*)*** Local Variables: ***
 (*X*)*** coq-prog-args: ("-emacs-U" "-R" "/Users/lrg/coq/math-comp/mathcomp" "mathcomp" "-I" "/Users/lrg/coq/math-comp/mathcomp" ) ***
 (*X*)*** End: ***
 (*X*)*)
-

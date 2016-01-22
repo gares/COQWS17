@@ -298,55 +298,6 @@ Lemma unitGIE (x : GI) : (x \in GRing.unit) =
 (*D*)   ?algRe_rect ?algIm_rect // ?Creal_Re ?Creal_Im //.
 (*D*)by rewrite andb_orl andb_orr -orbA.
 (*A*)Qed.
-(**
-
-** Question 8: Prove that GI euclidean for the stasm gaussNorm.
-
- - i.e. ∀ (a, b) ∈ GI × GI*, ∃ (q, r) ∈ GI² s.t. a = q b + r and φ(r) < φ(b)
- - This is question 2 of the CPGE exercice
- - Suggested strategy: sketch the proof on a paper first, don't let Coq
-   divert you from your proofsketch
-
-*)
-Lemma euclideanGI (a b : GI) : b != 0 ->
-  exists2 qr : GI * GI, a = qr.1 * b + qr.2
-                      & (gaussNorm (val qr.2) < gaussNorm (val b)).
-Proof.
-move=> b_neq0.
-(*D*)have oneV2 : 1 = 2%:R^-1 + 2%:R^-1 :> algC.
-(*D*)  by rewrite -mulr2n -[_ *+ 2]mulr_natr mulVf ?pnatr_eq0.
-(*D*)have V2ge0 : 0 <= 2%:R^-1 :> algC by rewrite invr_ge0 ler0n.
-(*D*)have V2real : 2%:R^-1 \is Creal by rewrite realE V2ge0.
-pose approx (x : algC) : int :=
-(*D*)  floorC x + (if `|x - (floorC x)%:~R| <= 2%:R^-1 then 0 else 1).
-have approxP x : x \is Creal -> `|x - (approx x)%:~R| <= 2%:R^-1.
-(*D*)  rewrite /approx => x_real; have /andP [x_ge x_le] := floorC_itv x_real.
-(*D*)  have [] // := @real_lerP _  `|_ - (floorC _)%:~R| _;
-(*D*)  first by rewrite addr0.
-(*D*)  rewrite [`|_ - (_ + 1)%:~R|]distrC !ger0_norm ?subr_ge0 //=;
-(*D*)     last by rewrite ltrW.
-(*D*)  move=> Dx1_gtV2; rewrite real_lerNgt ?rpredB // ?Creal_Cint ?Cint_int //.
-(*D*)  apply/negP=> /ltr_add /(_ Dx1_gtV2); rewrite -oneV2 !addrA addrNK.
-(*a*)  by rewrite [_ + 1]addrC rmorphD /= addrK ltrr.
-(*D*)have approxP2 x (_ : x \is Creal) : `|x - (approx x)%:~R| ^+ 2 < 2%:R^-1.
-(*D*)  rewrite (@ler_lt_trans _ (2%:R^-1 ^+ 2)) // ?ler_expn2r ?qualifE ?approxP //.
-(*D*)  by rewrite exprVn -natrX ltf_pinv ?qualifE ?ltr_nat ?ltr0n.
-(*D*)pose u := 'Re (val a / val b); pose v := 'Im (val a / val b).
-(*D*)have qGI : (approx u)%:~R + algCi * (approx v)%:~R \is a gaussInteger.
-(*D*)  by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
-(*D*)pose q := GIof qGI.
-(*D*)exists (q, a - q * b); first by rewrite addrC addrNK.
-(*D*)rewrite !gaussNormE /=.
-(*D*)rewrite -(@ltr_pmul2r _ (`|val b| ^-2)) ?invr_gt0 ?exprn_gt0 ?normr_gt0 //.
-(*D*)rewrite mulfV ?expf_eq0 /= ?normr_eq0 // -exprVn -exprMn.
-(*D*)rewrite -normfV -normrM mulrBl mulfK //.
-(*D*)rewrite [X in X - _]algCrect opprD addrACA -mulrBr -/u -/v.
-(*D*)set Du := _ - _; set Dv := _ - _.
-(*D*)have /andP [DuReal DvReal] : (Du \is Creal) && (Dv \is Creal).
-(*D*)   by rewrite ?rpredB ?Creal_Re ?Creal_Im ?Creal_Cint ?Cint_int.
-(*D*)rewrite normC2_rect // -real_normK // -[Dv ^+ _]real_normK //.
-(*D*)by rewrite oneV2 ltr_add // approxP2 // ?Creal_Re ?Creal_Im.
-(*A*)Qed.
 
 End GaussIntegers.
 (* End of exercices *)
