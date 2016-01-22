@@ -133,7 +133,7 @@ Axiom gaussNormE : forall x, gaussNorm x = `|x| ^+ 2.
 Axiom gaussNormCnat : forall (x : GI), gaussNorm (val x) \in Cnat.
 (**
 
-Prove these two facts. (Reminder: conjugation is a morphism)
+Prove these two facts. (Hint: conjugation is a morphism)
 
 *)
 Lemma gaussNorm1 : gaussNorm 1 = 1.
@@ -189,6 +189,7 @@ have approxP2 x (_ : x \is Creal) : `|x - (approx x)%:~R| ^+ 2 < 2%:R^-1.
 (* Proper proof *)
 pose u := 'Re (val a / val b); pose v := 'Im (val a / val b).
 have qGI : (approx u)%:~R + algCi * (approx v)%:~R \is a gaussInteger.
+  (* Hint: use qualifE, alg*_rect and lemmas about Creal, Cint and _%:~R *)
   (*a*)by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
 pose q := GIof qGI.
 exists (q, a - q * b); first by rewrite addrC addrNK.
@@ -197,9 +198,11 @@ rewrite -(@ltr_pmul2r _ (`|val b| ^-2)) ?invr_gt0 ?exprn_gt0 ?normr_gt0 //.
 rewrite mulfV ?expf_eq0 /= ?normr_eq0 // -exprVn -exprMn.
 rewrite -normfV -normrM mulrBl mulfK //.
 suff uvP : `|u - (approx u)%:~R + 'i * (v - (approx v)%:~R)| ^+ 2 < 1.
+  (* Hint: use algCrect and algebraic transformations *)
   (*a*)by rewrite [X in X - _]algCrect opprD addrACA -mulrBr.
 set Du := _ - _; set Dv := _ - _.
 have /andP [DuReal DvReal] : (Du \is Creal) && (Dv \is Creal).
+(* Hint: use rpred*, Creal_*, normC2_rect, ream_normK and approxP2 *)
 (*a*)  by rewrite ?rpredB ?Creal_Re ?Creal_Im ?Creal_Cint ?Cint_int.
 (*X*)rewrite normC2_rect // oneV2.
 (*X*)by rewrite ltr_add // -real_normK // approxP2 ?Creal_Re ?Creal_Im.
@@ -321,6 +324,7 @@ apply/negP => /negP /rowV0Pn [x /sub_kermxP]; rewrite mulmxDr.
 move=> /(canRL (addrK _)); rewrite sub0r => eq_xv_Nxu.
 apply/negP; rewrite negbK; apply/eqP.
 have : (x *m v <= kermx u :&: u)%MS.
+(* Hint: use sub_*, proj_mx*, eqmx_*, mxdirect_addsP, *)
   (*a*)by rewrite sub_capmx proj_mx_sub eq_xv_Nxu eqmx_opp submxMl.
 (*X*)rewrite (mxdirect_addsP _) ?submx0 // => /eqP xv_eq0.
 (*X*)move/eqP : eq_xv_Nxu; rewrite xv_eq0 eq_sym oppr_eq0 => /eqP.
