@@ -71,8 +71,11 @@ Proof.
 (*X*)apply: eq_big => [i|i//].
 (*X*)by rewrite odd_sub // (negPf Hn).
 (*A*)Qed.
+(**
 
+Now, some algebra.
 
+*)
 From mathcomp Require Import all_algebra.
 From mathcomp Require Import algC.
 
@@ -80,7 +83,11 @@ Section AlgebraicHierarchy.
 Section GaussIntegers.
 Import GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
+(**
 
+We remind what Gauss integer are and recall some theory about it.
+
+*)
 Definition gaussInteger := [qualify a x | ('Re x \in Cint) && ('Im x \in Cint)].
 Axiom Cint_GI : forall (x : algC), x \in Cint -> x \is a gaussInteger.
 Axiom GI_subring : subring_closed gaussInteger.
@@ -124,7 +131,11 @@ Definition gaussNorm (x : algC) := x * x^*.
 
 Axiom gaussNormE : forall x, gaussNorm x = `|x| ^+ 2.
 Axiom gaussNormCnat : forall (x : GI), gaussNorm (val x) \in Cnat.
+(**
 
+Prove these two facts. (Reminder: conjugation is a morphism)
+
+*)
 Lemma gaussNorm1 : gaussNorm 1 = 1.
 (*A*)Proof. by rewrite /gaussNorm rmorph1 mulr1. Qed.
 
@@ -178,19 +189,20 @@ have approxP2 x (_ : x \is Creal) : `|x - (approx x)%:~R| ^+ 2 < 2%:R^-1.
 (* Proper proof *)
 pose u := 'Re (val a / val b); pose v := 'Im (val a / val b).
 have qGI : (approx u)%:~R + algCi * (approx v)%:~R \is a gaussInteger.
-(*a*)  by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
+  (*a*)by rewrite qualifE /= algRe_rect ?algIm_rect // ?Creal_Cint ?Cint_int.
 pose q := GIof qGI.
 exists (q, a - q * b); first by rewrite addrC addrNK.
 rewrite !gaussNormE /=.
 rewrite -(@ltr_pmul2r _ (`|val b| ^-2)) ?invr_gt0 ?exprn_gt0 ?normr_gt0 //.
 rewrite mulfV ?expf_eq0 /= ?normr_eq0 // -exprVn -exprMn.
 rewrite -normfV -normrM mulrBl mulfK //.
-(*X*)rewrite [X in X - _]algCrect opprD addrACA -mulrBr -/u -/v.
+suff uvP : `|u - (approx u)%:~R + 'i * (v - (approx v)%:~R)| ^+ 2 < 1.
+  (*a*)by rewrite [X in X - _]algCrect opprD addrACA -mulrBr.
 set Du := _ - _; set Dv := _ - _.
 have /andP [DuReal DvReal] : (Du \is Creal) && (Dv \is Creal).
 (*a*)  by rewrite ?rpredB ?Creal_Re ?Creal_Im ?Creal_Cint ?Cint_int.
-(*X*)rewrite normC2_rect // -real_normK // -[Dv ^+ _]real_normK //.
-(*X*)by rewrite oneV2 ltr_add // approxP2 // ?Creal_Re ?Creal_Im.
+(*X*)rewrite normC2_rect // oneV2.
+(*X*)by rewrite ltr_add // -real_normK // approxP2 ?Creal_Re ?Creal_Im.
 (*A*)Qed.
 
 End GaussIntegers.
@@ -268,9 +280,10 @@ Ker u ⊕ Im u = E.
 
  - Assume u o v = 0 and v + u is invertible,
   - we have rank (v + u) = n
-  - we rank v + rank u = n and we have Im v ⊂ Ker u
+  - we have rank v + rank u = n and we have Im v ⊂ Ker u
   - Hence we have Im v = Ker u
   - We deduce that Ker u ⊕ Im u = Im v ⊕ Im u = E
+
 *)
 Variables (F : fieldType) (n' : nat).
 Let n := n'.+1.
@@ -279,17 +292,19 @@ Lemma ex_6_13 (u : 'M[F]_n):
   reflect (exists2 v : 'M_n, v * u = 0 & v + u \is a GRing.unit)
           ((kermx u + u == 1)%MS && mxdirect (kermx u + u)).
 Proof.
+(* Hint: use mxrank* lemmas and search on addsmx, submx and eqmx
+sometimes. Don't forget about mxdirect_addsP and sub_kermxP. *)
 apply: (iffP idP) => [|[v vMu vDu]]; last first.
   have rkvDu: \rank (v + u)%R = n by (*a*)rewrite mxrank_unit.
   have /eqP rkvDrku : (\rank v + \rank u)%N == n.
-    by rewrite eqn_leq (*a*)mulmx0_rank_max //= -{1}rkvDu mxrank_add //.
+    by rewrite eqn_leq; (*a*)rewrite mulmx0_rank_max //= -{1}rkvDu mxrank_add.
   have sub_v_ku : (v <= kermx u)%MS by (*a*)apply/sub_kermxP.
   have /eqmxP/eqmx_sym eq_vu: (v == kermx u)%MS.
     rewrite -(geq_leqif (mxrank_leqif_eq _)) //.
 (*X*)    rewrite -(leq_add2r (\rank u)) rkvDrku.
     (*a*)by rewrite mxrank_ker subnK // rank_leq_row.
   rewrite submx1 sub1mx -col_leq_rank mxdirectEgeq /=.
-  (* use addx_eqmx to lift eq_vu to a sum *)
+  (* use adds_eqmx to lift eq_vu to a sum *)
 (*X*)  rewrite eq_vu (adds_eqmx eq_vu (eqmx_refl _)).
   (* Warning: - (u + v)%R  is a sum of matrices
               - (u + v)%MS is a sum of spaces

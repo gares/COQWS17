@@ -218,7 +218,7 @@ Proof.
 (*D*)apply: (iffP idP) => [|[v vMu vDu]]; last first.
 (*D*)  have rkvDu: \rank (v + u)%R = n by rewrite mxrank_unit.
 (*D*)  have /eqP rkvDrku : (\rank v + \rank u)%N == n.
-(*D*)    by rewrite eqn_leq mulmx0_rank_max //= -{1}rkvDu mxrank_add //.
+(*D*)    by rewrite eqn_leq mulmx0_rank_max //= -{1}rkvDu mxrank_add.
 (*D*)  have /eqmxP/eqmx_sym eq_vu: (v == kermx u)%MS.
 (*D*)    rewrite -(geq_leqif (mxrank_leqif_eq _)); last by apply/sub_kermxP.
 (*D*)    rewrite -(leq_add2r (\rank u)) rkvDrku.
