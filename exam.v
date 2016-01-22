@@ -60,7 +60,7 @@ Lemma disjoint_setU2l (T : finType) (s1 s2 s3 : {set T}) :
 Lemma sum_odd n :
   ~~ odd n -> \sum_(i < n | odd i) i = \sum_(i < n | ~~ odd i) (n.-1 - i).
 Proof.
-(*X*)rewrite (reindex_inj (@rev_ord_inj _)) /= => /negPf n_oddF.
+(*X*)rewrite (reindex_inj rev_ord_inj) /= => /negPf n_oddF.
 (*X*)by apply: eq_big => i; rewrite odd_sub ?n_oddF //; case: n i {n_oddF}.
 (*A*)Qed.
 (**
