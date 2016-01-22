@@ -203,7 +203,7 @@ have /andP [DuReal DvReal] : (Du \is Creal) && (Dv \is Creal).
 End GaussIntegers.
 End AlgebraicHierarchy.
 
-Section Polynomes.
+Section Polynomials.
 
 Open Scope ring_scope.
 Import GRing.Theory Num.Theory.
@@ -250,12 +250,11 @@ Hint: relevant lemmas are horner_comp sqrr_sign mulnC scale1r *)
 Lemma FPi_int : F.[pi] \is a Qint.
 Proof.
 (*X*)rewrite horner_sum rpred_sum // => i _; rewrite hornerE rpredM ?rpredX //.
-(*X*)have -> : forall p, p.[pi] = (p \Po (pi%:P - 'X)).[0].
-(*X*)  by move=> p; rewrite horner_comp !hornerE.
-(*X*)by rewrite derivn_fpix hornerE rpredM ?rpredX // derive_f_0_int.
+(*X*)have ppi p : p.[pi] = (p \Po (pi%:P - 'X)).[0] by rewrite horner_comp !hornerE.
+(*X*)by rewrite ppi derivn_fpix hornerE rpredM ?rpredX // derive_f_0_int.
 (*A*)Qed.
 
-End Polynomes.
+End Polynomials.
 
 Section LinearAlgebra.
 Import GRing.Theory Num.Theory.
