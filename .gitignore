@@ -6,3 +6,6 @@ udoc/
 *~
 *swp
 *html
+cheat-sheet/*out
+cheat-sheet/*log
+cheat-sheet/*pdf

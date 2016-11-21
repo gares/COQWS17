@@ -55,10 +55,11 @@ check-ocaml-ver-%:
 	  | sort -n -k 4 -k 3 -k 2 -k 1 | head -n 1 | cut -d ' ' -f 1)`; \
 	if `test $$V = 2`; then echo "OCaml must be >= $*"; false; fi
 
-upload: $(HTML) jscoq.tgz
+upload: $(HTML) cheat-sheet/cheatsheet.pdf jscoq.tgz
 	mkdir -p $(WEB)
 	[ -d $(WEB)/jscoq ] || tar -xzf jscoq.tgz -C $(WEB)
-	cp $(HTML) FileSaver.js Blob.js local.css $(WEB)
+	cp $(HTML) FileSaver.js Blob.js local.css cheat-sheet/cheatsheet.pdf \
+		$(WEB)
 
 %.html.tmp: %.v footer Makefile udoc/udoc.byte
 	# if does not work, then html ok but no links
