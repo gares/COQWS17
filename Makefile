@@ -1,73 +1,131 @@
-# COQC=/home/gares/COQ/coq/bin/coqc
-# MC=/home/gares/INRIA/MathComp/math-comp/mathcomp
-COQDOC=coqdoc/bin/coqdoc
-WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16/
+COQC=/home/gares/COQ/coq/bin/coqc
+MC=/home/gares/INRIA/MathComp/math-comp/mathcomp
+WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16-17/
 
 VS=$(wildcard *.v)
 HTML=$(VS:%.v=%.html)
 
+H=@
 
-all: coqdoc/bin/coqdoc $(HTML)
+all: jscoq udoc/udoc.byte cheat-sheet/cheatsheet.pdf $(HTML)
 
-coqdoc/bin/coqdoc:
-	git submodule init
-	git submodule update
-	cd coqdoc && ./configure -local && make bin/coqdoc
+jscoq.orig:
+	git clone https://github.com/ejgallego/jscoq-builds.git --depth 1 jscoq
+	cd jscoq && git checkout c219bd7e4b207846a607ce5a19513412d826ce7a
+	mv jscoq jscoq.orig
 
-#upload:
-#	cp $(HTML) FileSaver.js Blob.js $(WEB)
+jscoq.tgz:
+	rm -rf jscoq
+	cp -rf jscoq.orig jscoq
+	cd jscoq/coq-pkgs/; for X in `ls`; do\
+		if [ $$X != Coq            -a\
+		     $$X != mathcomp       -a\
+		     $$X != math-comp.json -a\
+		     $$X != coq-arith.json -a\
+		     $$X != coq-base.json  -a\
+		     $$X != coq-reals.json -a\
+		     $$X != init.json      -a\
+		     $$X != bcache         -a\
+		     $$X != bcache.list      ]; then \
+		     rm -rf $$X; \
+		fi; done
+	patch -p1 < jscoq.patch
+	rm -rf jscoq/.git
+	tar -czf jscoq.tgz jscoq/
+	rm -rf jscoq
 
+jscoq: jscoq.tgz
+	tar -xzf jscoq.tgz
+	touch jscoq
 
-#	$(COQC) -R $(MC) mathcomp -I $(MC) $<
-%.html.tmp: %.v header.html footer.html Makefile
-	$(COQC)  $<
-	$(COQDOC) --backend=jscoq \
-		--with-header header.html \
-		--with-footer footer.html \
-		--parse-comments $< -o $@
+udoc/udoc.byte: udoc.patch
+	$(MAKE) check-ocaml-ver-4.02.0
+	rm -rf udoc
+	git clone https://github.com/ejgallego/udoc.git
+	cd udoc && git checkout 11fa04a621e8f8bc156430da4f0d3c10d8585ab3
+	cd udoc && patch -p1 < ../udoc.patch
+	cd udoc && make
+
+cheat-sheet/cheatsheet.pdf: cheat-sheet/cheatsheet.tex
+	make -C cheat-sheet
+
+check-ocaml-ver-%:
+	$(H) V=`(echo -n '2 '; ocamlc -version; echo -n '1 '; echo $*) \
+	  | sed 's/\./ /g' \
+	  | sort -n -k 4 -k 3 -k 2 -k 1 | head -n 1 | cut -d ' ' -f 1)`; \
+	if `test $$V = 2`; then echo "OCaml must be >= $*"; false; fi
+
+upload: $(HTML) jscoq.tgz
+	mkdir -p $(WEB)
+	[ -d $(WEB)/jscoq ] || tar -xzf jscoq.tgz -C $(WEB)
+	cp $(HTML) FileSaver.js Blob.js $(WEB)
+
+%.html.tmp: %.v footer Makefile udoc/udoc.byte
+	# if does not work, then html ok but no links
+	-$(COQC) -R $(MC) mathcomp -I $(MC) $<
+	cat $< footer > $<.tmp
+	./udoc/udoc.byte $<.tmp -o $@
+	sed -i 's?^ *<title.*?<title>$*</title>?' $@
+	sed -i 's?^ *<h1>$*</h1>??' $@
+	sed -i '/<\/title>/a\<link rel="stylesheet" href="local.css" />' $@
+	sed -i '/<\/title>/a\<script src="Blob.js" type="text/javascript"></script>' $@
+	sed -i '/<\/title>/a\<script src="FileSaver.js" type="text/javascript"></script>' $@
+
+	rm -f $<.tmp
+
+run: jscoq
+	echo "Go to: http://localhost:8000/lesson1.html"
+	python3 -m http.server 8000 || python -m SimpleHTTPServer 8000
+
 
 test.html: test.html.tmp
-	sed 's/@@COQ_PACKAGES@@//' $< > $@
+	mv $< $@
 lesson1.html: lesson1.html.tmp
-	sed 's/@@COQ_PACKAGES@@//' $< > $@
+	mv $< $@
 lesson2.html: lesson2.html.tmp
-	sed 's/@@COQ_PACKAGES@@//' $< > $@
+	mv $< $@
 lesson3.html: lesson3.html.tmp
-	sed 's/@@COQ_PACKAGES@@//' $< > $@
+	mv $< $@
 lesson4.html: lesson4.html.tmp
-	sed 's/@@COQ_PACKAGES@@//' $< > $@
+	mv $< $@
 lesson5.html: lesson5.html.tmp
-	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	mv $< $@
 lesson6.html: lesson6.html.tmp
-	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	mv $< $@
 lesson7.html: lesson7.html.tmp
-	sed "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	mv $< $@
 exercise1.html: exercise1.html.tmp
-	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise2.html: exercise2.html.tmp
-	sed -e 's/^(\*D\*).*$$//' -e 's/@@COQ_PACKAGES@@//' $< > $@
+	sed -e 's/^(\*D\*).*$$//' $< > $@
 exercise3.html: exercise3.html.tmp
-	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise4.html: exercise4.html.tmp
-	sed -e 's/^(\*D\*).*$$/Admitted./' -e 's/@@COQ_PACKAGES@@//' $< > $@
+	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise5.html: exercise5.html.tmp
-	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./'  $< > $@
 exercise5-todo.v : exercise5.v
-	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" exercise5.v > exercise5-todo.v
+	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./'  exercise5.v > exercise5-todo.v
 exercise6.html: exercise6.html.tmp
-	sed -e 's/^(\*D\*).*$$/Admitted./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise6-todo.v: exercise6.v
-	sed -e 's/^(\*D\*).*$$//' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	sed -e 's/^(\*D\*).*$$//' $< > $@
 exercise7.html: exercise7.html.tmp
-	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' $< > $@
 exercise7-todo.v : exercise7.v
-	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' -e "s/@@COQ_PACKAGES@@/'math-comp'/" exercise7.v > exercise7-todo.v
+	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' exercise7.v > exercise7-todo.v
 exam.html: exam.html.tmp
 	sed -e 's/^(\*A\*).*$$/Admitted./' \
 		-e 's/(\*a\*).*$$/admit./' \
 		-e '/^(\*X\*).*$$/d' \
 		-e 's/(\*D\*).*(\*D\*)/.../' \
-		-e "s/@@COQ_PACKAGES@@/'math-comp'/" $< > $@
+		$< > $@
+exam-todo.html: exam-todo.html.tmp
+	sed -e 's/^(\*A\*).*$$/Admitted./' \
+		-e 's/(\*a\*).*$$/admit./' \
+		-e '/^(\*X\*).*$$/d' \
+		-e 's/(\*D\*).*(\*D\*)/.../' \
+		$< > $@
 exam-todo.v: exam.v
 	sed -e 's/^(\*A\*).*$$/Admitted./' \
 		-e 's/(\*a\*).*$$/admit./' \
