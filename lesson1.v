@@ -3,6 +3,7 @@
 To play this document inside your browser use ALT-N and ALT-P.
 
 ----
+#<div class="slide vfill">#
 ** Objective of this course
 
   Give you access to the Mathematical Components library
@@ -12,24 +13,30 @@ To play this document inside your browser use ALT-N and ALT-P.
   - familiarize with some theories
 
   #<a href="http://math-comp.github.io/math-comp/">MathComp website</a>#
+#</div>#
 
 ----
+#<div class="slide vfill">#
 ** Why another library? Why another language?
   - large, consistent, library organized as a programming language
     library (interfaces, overload, naming conventions, ...)
   - maintainable in the long term (compact, stable, ...)
   - validated on large formalization projects
 
+#</div>#
 
 ----
+#<div class="slide vfill">#
 ** Roadmap of the first 2 lessons
 
   - the small scale reflection approach
   - the ssreflect tactic language
   - basic libraries (ssrbool, ssrnat, seq)
 
+#</div>#
 
 ----
+#<div class="slide vfill">#
 ** Disclaimer: this is not standard Coq
 
   - things are done differently, very differently, than usual
@@ -37,11 +44,12 @@ To play this document inside your browser use ALT-N and ALT-P.
     but we will try hard ;-)
   - not enough time to explain eveything, I'll focus on
     intuition rather than technical details
-
-
-----
+#</div>#
 
 ----
+
+----
+#<div class="slide">#
 ** The SSR approach
 
   - when a concept is "computable", lets represent it as a
@@ -51,6 +59,7 @@ To play this document inside your browser use ALT-N and ALT-P.
   - functions to bool are a "simple" concept in type theory
     - EM holds
     - UIP holds
+#</div>#
 
 *)
 
@@ -60,16 +69,20 @@ Module BooleanReflection.
 (**
 
 ----
+#<div class="slide">#
 ** A taste of boolean reflection by examples
   - these examples are artificial
   - in the library things are done in a slightly different way
+#</div>#
 
 
 ----
+#<div class="slide">#
 *** The first predicate
    - order ralation on nat is a program
    - if-is-then syntax (simply a 2-way match-with-end)
    - [.+1] syntax (postfix notations [.something] are recurrent)
+#</div>#
 
 *)
 Fixpoint leq (n m : nat) : bool :=
@@ -160,6 +173,7 @@ End BooleanReflection.
 (**
 
 ----
+#<div class="slide">#
 ** Recap (ssr approach and basic tactics)
    - boolean predicates and connectives
    - think "up to" computation
@@ -167,9 +181,11 @@ End BooleanReflection.
    - if-is-then-else, .+1
    - naming convetion
 
+#</div>#
 
 ----
 ----
+#<div class="slide">#
 ** Now we use the real MathComp library
   
    Things to know:
@@ -178,6 +194,7 @@ End BooleanReflection.
    - [==] stands for computable equality (overloaded)
    - [is_true] coercion
    - [!=] is [~~ (_ == _)]
+#</div>#
 *)
 Search _ (_ <= _) in ssrnat.
 Locate "_ < _".
@@ -195,12 +212,14 @@ Proof. unfold is_true. by []. Qed.
 (**
 
 ----
+#<div class="slide">#
 ** Equality:
    - privileged role (many lemmas are stated with = or is_true)
    - the [eqP] view: "is_true (a == b)   <->    a = b"
    - [=> /eqP] (both directions)
    - [=> ->] (on the fly rewrite, "subst")
    - notation [.*2]
+#</div>#
 
 *)
 Lemma test_eqP n m : n == m -> n.+1 + m.+1 = m.+1.*2.
@@ -226,10 +245,12 @@ Qed.
 
 (**
 ----
+#<div class="slide">#
 ** Views are just lemmas (plus some automatic adaptors)
    - lemmas like [A -> B] can be used as views too
    - boolean aconnectives have associated views
    - [=> [ ... ]]
+#</div>#
 *)
 
 Lemma test_leqW i j k : (i <= k) && (k.+1 <= j) -> i <= j.+1.
@@ -241,10 +262,12 @@ Qed.
 
 (**
 ----
+#<div class="slide">#
 ** The reflect predicate
    - [reflect P b] is the preferred way to state that
      the predicate [P] (in [Prop]) is logically equivalent
      to [b=true]
+#</div>#
 *)
 Module reflect_for_eqP.
 
@@ -258,12 +281,16 @@ Fixpoint eqn m n :=
   end.
 Arguments eqn !m !n.
 
-(** *** Proving the reflection lemma for eqn
+(**
+----
+#<div class="slide">#
+*** Proving the reflection lemma for eqn
     - the convenience lemma [iffP]
     - the [congr] tactic
     - trivial branches //
     - loaded induction [elim: n m]
-*)
+#</div># *)
+(** -------------------------------------------- *)
 Lemma myeqP m n : reflect (m = n) (eqn m n).
 Proof.
 (*#
@@ -284,12 +311,13 @@ Proof. by move=> /myeqP ->. Qed.
 End reflect_for_eqP.
 
 (** 
-----
+--------------------------------------
+#<div class="slide">#
 ** rewrite, one command to rule them all
   - rewrite
   - side condition and // ? 
   - rewrite a boolean predicate (is_true hides an eqaution)
-*)
+#</div># *)
 
 Lemma test_leq_cond p : prime p -> p.-1.+1 + p = p.*2.
 Proof.
@@ -306,11 +334,12 @@ Qed.
 
 (**
 ----
+#<div class="slide">#
 ** References for this lesson:
   - SSReflect #<a href="https://hal.inria.fr/inria-00258384">manual</a>#
   - documentation of the
        #<a href="http://math-comp.github.io/math-comp/htmldoc/libgraph.html">library</a>#
     - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrbool.html">ssrbool</a>#
     - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrnat.html">ssrnat</a>#
-
+#</div># 
 *)
