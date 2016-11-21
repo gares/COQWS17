@@ -153,7 +153,7 @@ have <pre>(A complicated matrix) i j</pre> in your goal.
 Check mxE.
 (**
 
-** matrixP 
+** matrixP
 
 matrixP is the "extensionality theorem" for matrices, it says two
 matrices are equal if and only if all their coefficients are pairwise
@@ -218,7 +218,7 @@ Locate "\det".
 
 and these notions of inversibility are definitionally equivalent.
 *)
-Lemma test4 (R : comUnitRingType) n (A : 'M[R]_n.+1) : 
+Lemma test4 (R : comUnitRingType) n (A : 'M[R]_n.+1) :
   (unitmx A) = (A \is a GRing.unit)
   /\ (A \is a GRing.unit) = (\det A \is a GRing.unit).
 Proof. split; reflexivity. Qed.
@@ -238,7 +238,7 @@ End MatrixProperties.
 - The doc and the code are in #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#)
 
 - rows can be seen as vectors, and matrix can be seen as the familiy
-  of its row vectors. 
+  of its row vectors.
 
  - #<b>WARNING</b># Following the english convention (which is
     opposite to the french convention), composition/application of
@@ -304,7 +304,7 @@ About eqmx.
 Print eqmx.
 
 About mxdirectE.
-About mxdirect_addsP. 
+About mxdirect_addsP.
 (**
 
 ** Usage.
@@ -339,9 +339,9 @@ Variable (u : 'M[F]_n) (S : 'M[F]_n).
 Hypothesis eq_keru_imu : (kermx u :=: u)%MS.
 Hypothesis S_u_direct : (mxdirect (S + u)).
 Hypothesis S_u_eq1 : (S + u :=: 1)%MS.
-Implicit Types (x y z : 'rV[F]_n). 
+Implicit Types (x y z : 'rV[F]_n).
 
-Lemma Su_rect x : exists2 yz, x = yz.1 + yz.2 *m u 
+Lemma Su_rect x : exists2 yz, x = yz.1 + yz.2 *m u
                               & (yz.1 <= S)%MS && (yz.2 <= S)%MS.
 Proof.
 pose y := x *m proj_mx S u.
@@ -355,7 +355,7 @@ apply/eqP/sub_kermxP.
 by rewrite eq_keru_imu proj_mx_compl_sub ?S_u_eq1 ?submx1.
 Qed.
 
-Lemma Su_dec_eq0 y z : (y <= S)%MS -> (z <= S)%MS -> 
+Lemma Su_dec_eq0 y z : (y <= S)%MS -> (z <= S)%MS ->
   (y + z *m u == 0) = (y == 0) && (z == 0).
 Proof.
 move=> yS zS; apply/idP/idP; last first.
@@ -370,5 +370,3 @@ by rewrite (mxdirect_addsP _) // submx0.
 Qed.
 
 End ex_6_12.
-
-
