@@ -31,8 +31,9 @@ Such proof is not trivial:
   - [filtrev] has an accumulator, [rev] (at least apparently)
     does not.
   - which is the invariant linking the accumulator [acc] and [p]
-    in the code of [filtrev]?  Such invariant must be
-    taken into account by the induction.
+    in the code of [filtrev]?  Depending on how you expose
+    the accumulator on the right hand side of the goal,
+    such invariant may need to be taken into account by the induction.
 
 Relevant keywords for [Search] are: rev cons cat filter rcons
 Hint: it is perfectly fine to state intermediate lemmas
