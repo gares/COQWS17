@@ -58,7 +58,7 @@ check-ocaml-ver-%:
 upload: $(HTML) jscoq.tgz
 	mkdir -p $(WEB)
 	[ -d $(WEB)/jscoq ] || tar -xzf jscoq.tgz -C $(WEB)
-	cp $(HTML) FileSaver.js Blob.js $(WEB)
+	cp $(HTML) FileSaver.js Blob.js local.css $(WEB)
 
 %.html.tmp: %.v footer Makefile udoc/udoc.byte
 	# if does not work, then html ok but no links
