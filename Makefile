@@ -66,11 +66,11 @@ upload: $(HTML) cheat-sheet/cheatsheet.pdf jscoq.tgz
 	-$(COQC) -R $(MC) mathcomp -I $(MC) $<
 	cat $< footer > $<.tmp
 	./udoc/udoc.byte $<.tmp -o $@
-	sed -i 's?^ *<title.*?<title>$*</title>?' $@
-	sed -i 's?^ *<h1>$*</h1>??' $@
-	sed -i '/<\/title>/a\<link rel="stylesheet" href="local.css" />' $@
-	sed -i '/<\/title>/a\<script src="Blob.js" type="text/javascript"></script>' $@
-	sed -i '/<\/title>/a\<script src="FileSaver.js" type="text/javascript"></script>' $@
+	sed -i -e 's?^ *<title.*?<title>$*</title>?' $@
+	sed -i -e 's?^ *<h1>$*</h1>??' $@
+	sed -i -e 's?</title>?</title><link rel="stylesheet" href="local.css" />?' $@
+	sed -i -e 's?</title>?</title><script src="Blob.js" type="text/javascript"></script>?' $@
+	sed -i -e 's?</title>?</title><script src="FileSaver.js" type="text/javascript"></script>?' $@
 
 	rm -f $<.tmp
 
