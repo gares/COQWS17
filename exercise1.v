@@ -53,7 +53,8 @@ Lemma iterSr A n (f : A -> A) x : iter n.+1 f x = iter n f (f x).
 (*D*)Proof. by elim: n => //= n <-. Qed.
 
 (** *** Exercise 8:
-    - look up the definition of [iter] (note there is an accumulator)
+    - look up the definition of [iter] (note there is an accumulator varying
+      during recursion)
     - prove the following statement by induction
 *)
 Lemma iter_predn m n : iter n predn m = m - n.
