@@ -1,13 +1,14 @@
-COQC=/home/gares/COQ/coq/bin/coqc
-MC=/home/gares/INRIA/MathComp/math-comp/mathcomp
+COQC=coqc
+MC=
 WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16-17/
 
 VS=$(wildcard *.v)
-HTML=$(VS:%.v=%.html)
+EX=$(wildcard exercise*.v)
+FILES=$(VS:%.v=%.html) $(VS) $(EX:%.v=%-todo.v)
 
 H=@
 
-all: jscoq udoc/udoc.byte cheat-sheet/cheatsheet.pdf $(HTML)
+all: jscoq udoc/udoc.byte cheat-sheet/cheatsheet.pdf $(FILES)
 
 jscoq.orig:
 	git clone https://github.com/ejgallego/jscoq-builds.git --depth 1 jscoq
@@ -55,15 +56,16 @@ check-ocaml-ver-%:
 	  | sort -n -k 4 -k 3 -k 2 -k 1 | head -n 1 | cut -d ' ' -f 1)`; \
 	if `test $$V = 2`; then echo "OCaml must be >= $*"; false; fi
 
-upload: $(HTML) cheat-sheet/cheatsheet.pdf jscoq.tgz
+upload: $(FILES) cheat-sheet/cheatsheet.pdf jscoq.tgz
 	mkdir -p $(WEB)
 	[ -d $(WEB)/jscoq ] || tar -xzf jscoq.tgz -C $(WEB)
-	cp $(HTML) FileSaver.js Blob.js local.css cheat-sheet/cheatsheet.pdf \
+	cp $(FILES) FileSaver.js Blob.js local.css cheat-sheet/cheatsheet.pdf \
 		$(WEB)
 
 %.html.tmp: %.v footer Makefile udoc/udoc.byte
 	# if does not work, then html ok but no links
 	-$(COQC) -R $(MC) mathcomp -I $(MC) $<
+	# -$(COQC) -R $(MC) mathcomp -I $(MC) $<
 	cat $< footer > $<.tmp
 	./udoc/udoc.byte $<.tmp -o $@
 	sed -i -e 's?^ *<title.*?<title>$*</title>?' $@
@@ -81,6 +83,8 @@ run: jscoq
 
 test.html: test.html.tmp
 	mv $< $@
+
+# Lessons
 lesson1.html: lesson1.html.tmp
 	mv $< $@
 lesson2.html: lesson2.html.tmp
@@ -95,13 +99,23 @@ lesson6.html: lesson6.html.tmp
 	mv $< $@
 lesson7.html: lesson7.html.tmp
 	mv $< $@
+	
+# Exercises
 exercise1.html: exercise1.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
+exercise1-todo.v: exercise1.v
 	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise2.html: exercise2.html.tmp
 	sed -e 's/^(\*D\*).*$$//' $< > $@
+exercise2-todo.v: exercise2.v
+	sed -e 's/^(\*D\*).*$$//' $< > $@
 exercise3.html: exercise3.html.tmp
 	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
+exercise3-todo.v: exercise3.v
+	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise4.html: exercise4.html.tmp
+	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
+exercise4-todo.v: exercise4.v
 	sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise5.html: exercise5.html.tmp
 	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./'  $< > $@
@@ -115,6 +129,8 @@ exercise7.html: exercise7.html.tmp
 	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' $< > $@
 exercise7-todo.v : exercise7.v
 	sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' exercise7.v > exercise7-todo.v
+	
+# Exam
 exam.html: exam.html.tmp
 	sed -e 's/^(\*A\*).*$$/Admitted./' \
 		-e 's/(\*a\*).*$$/admit./' \
