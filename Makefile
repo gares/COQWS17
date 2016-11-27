@@ -2,8 +2,8 @@ COQC=coqc
 MC=
 WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16-17/
 
-VS=$(wildcard *.v)
-EX=$(wildcard exercise*.v)
+VS=$(filter-out %-todo.v,$(wildcard *.v))
+EX=$(filter-out %-todo.v,$(wildcard exercise*.v))
 FILES=$(VS:%.v=%.html) $(VS) $(EX:%.v=%-todo.v)
 
 H=@
