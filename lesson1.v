@@ -205,7 +205,7 @@ End BooleanReflection.
 ------------------------------------------------------
 ------------------------------------------------------
 #<div class="slide">#
-** Now we use the real MathComp library
+** The real MathComp library
   
    Things to know:
    - [Search head_symbol (pat _ term) "string" name]
@@ -231,7 +231,7 @@ Proof. unfold is_true. by []. Qed.
 #</div>#
 -------------------------------------------------------------
 #<div class="slide">#
-** Equality:
+** Equality
    - privileged role (many lemmas are stated with = or is_true)
    - the [eqP] view: "is_true (a == b)   <->    a = b"
    - [=> /eqP] (both directions)
@@ -253,7 +253,7 @@ by move=> /eqP ->; rewrite -addnn. Qed.
 #</div>#
 -------------------------------------------------------------
 #<div class="slide">#
- ** [(_ == _)] is overloaded
+ ** Infix [==] is overloaded
    - and [eqP] is too
 *)
 Lemma test2_eqP b1 b2 : b1 == ~~ b2 -> b1 || b2.
@@ -268,7 +268,8 @@ Qed.
 #</div>#
 ------------------------------------------------------------
 #<div class="slide">#
-** Views are just lemmas (plus some automatic adaptors)
+** Views are just lemmas 
+   (plus some automatic adaptors)
    - lemmas like [A -> B] can be used as views too
    - boolean aconnectives have associated views
    - [=> [ ... ]]
@@ -362,7 +363,7 @@ Qed.
 #</div># 
 ----
 #<div class="slide">#
-** References for this lesson:
+** References for this lesson
   - SSReflect #<a href="https://hal.inria.fr/inria-00258384">manual</a>#
   - documentation of the
        #<a href="http://math-comp.github.io/math-comp/htmldoc/libgraph.html">library</a>#
