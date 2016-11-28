@@ -1,64 +1,100 @@
-From mathcomp Require Import all_ssreflect  all_algebra.
-Open Scope ring_scope.
 
+(** 
 
-(** ** The Polynomials
+----
+#<div class="slide vfill">#
+ ** The Polynomials Library : 
+#<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.poly.html">poly.v</a>#
+  - A  library for univariate polynomials over
+    ring  structures
+  - with extensions for  polynomials whose coefficients range over
+    - commutative rings 
+    - integral domains
+
+#</div>#
+----
+#<div class="slide vfill">#
+ ** The Polynomials
+
+Roadmap of the lesson:
  - Definitions
  - Ring Structure
  - Evaluation
  - Derivative
  - Roots
+#</div>#
+----
+*)
+
+
+
+(** 
+
 
 ----
- ** The Polynomials Library : poly.v
- - A  library for univariate polynomials over
- -  ring  structures
- - with extensions for  polynomials whose coefficients range over
- - commutative rings 
- - integral domains
-
-----
+#<div class="slide">#
 ** Definition 
  - P = a_n X^n + ... + a_2 X^2 + a_1 X + a_0 
- - list of coefficients (decreasing/increasing  degrees)
- - list of pairs (degree, coef)
+   - list of coefficients (decreasing/increasing  degrees)
+   - list of pairs (degree, coef)
+
+----
+
+Math Components library choice:
 
  - P = a_0 + a_1 X + a_2 X^2 + ... + a_n X^n
- - A  normalized (i.e. no trailing 0) sequence of coefficients
-
+   - A  normalized (i.e. no trailing 0) sequence of coefficients
+#</div>#
 *)
+
+
+From mathcomp Require Import all_ssreflect  all_algebra.
+Open Scope ring_scope.
+
 
  Record polynomial (R : ringType) := Polynomial
    {polyseq :> seq R; _ : last 1 polyseq != 0}.
 
 
-(** ** First properties 
- - Polynomials are coercible to sequences:
+(**
+----
+#<div class="slide vfill">#
+
+ ** First properties 
+ 
+Polynomials are coercible to sequences:
  - one can directly take the k_th element of a polynomial
- -  P'_k i.e. retrieve the coefficient of X^k in P.
+   -  P'_k i.e. retrieve the coefficient of X^k in P.
 
  - size of a polynomial 
  - the degree of a polynomial is its size minus 1
+#</div>#
 
 ----
+#<div class="slide vfill">#
 ** Notations
  - {poly R}: polynomials over R (a Ring)
  - Poly s : the polynomial built from sequence s
  - 'X : monomial
  - 'X^n : monomial to the power of n
- - a%:P : constant polynomial
+ - a:P : constant polynomial
  - standard notations of ssralg (+, -, *, *:, ^+)
-
+#</div>#
 ----
-** A polynomial can be defined by extension:
+
+#<div class="slide vfill">#
+** 
+ A polynomial can be defined by extension:
  - poly_(i < n) E i 
- - is the polynomial:
- -  (E 0) + (E 1)  *: 'X + ...  + E (n - 1) *: 'X^(n-1)
+    is the polynomial:
+    - (E 0) + (E 1)  *: 'X + ...  + E (n - 1) *: 'X^(n-1)
+#</div>#
 ----
-
+#<div class="slide">#
 
 ** Ring Structure
  - addition 
+#</div>#
 *)
 Variable R: ringType.
 
@@ -71,17 +107,22 @@ Definition mul_poly (p q : {poly R}) :=
   \poly_(i < (size p + size q).-1)
     (\sum_(j < i.+1) p`_j * q`_(i - j)).
 
-(** ** 
+(** 
+----
+#<div class="slide vfill ">#
+
+** 
  - The type of polynomials has been equipped
- - with a (commutative / integral) ring structure.
+     with a (commutative / integral) ring structure.
 
  - All related lemmas of ssralg can be used.
-
+#</div>#
 ----
-
+#<div class="slide">#
 ** Evaluation
  - (Right-)evaluation of polynomials
  - Warning: type of x 
+#</div>#
 *)
 
 Fixpoint horner s (x:R) :=
@@ -92,8 +133,14 @@ Fixpoint horner s (x:R) :=
 Notation "p .[ x ]" := (horner p x).
 
 
-(** ** Properties of coefficients
- - Lifting a ring predicate to polynomials. *)
+(** 
+----
+#<div class="slide">#
+
+** Properties of coefficients
+ - Lifting a ring predicate to polynomials.
+#</div>#
+ *)
 
 Definition polyOver (S : pred_class) :=
   [qualify a p : {poly R} | all (mem S) p].
@@ -102,22 +149,28 @@ Lemma polyOver_poly (S : pred_class) n E :
   (forall i, (i < n)%N -> E i \in S) -> \poly_(i < n) E i \is a polyOver S.
 Admitted.
 
-(** ** polyOver's lemmas:
+(** 
+----
+#<div class="slide ">#
+** polyOver's lemmas:
  - predicate associate to S: at least an addrPred
- -  polyOver0
- - polyOverC 
- -  polyOverX
- - rpred* (from ssralg)
-
+   -  polyOver0
+   - polyOverC 
+   -  polyOverX
+   - rpred* (from ssralg)
+#</div>#
 *)
 Check polyOver0.
 
 
-(** ** Derivative
+(** 
+----
+#<div class="slide ">#
+** Derivative
  - definition 
  - notation
  - properties
-
+#</div>#
 *)
 
 
@@ -138,9 +191,12 @@ Definition derivn n p := iter n deriv p.
 
 Check polyOver_deriv.
 
-(** ** Roots
+(** 
+----
+#<div class="slide ">#
+** Roots
  -  root p x == x is a root of p 
-
+#</div>#
 *)
 Definition root p : pred R := fun x => p.[x] == 0.
 
