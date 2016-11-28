@@ -2,8 +2,8 @@ COQC=coqc
 MC=
 WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16-17/
 
-VS=$(filter-out %-todo.v,$(wildcard *.v))
-EX=$(filter-out %-todo.v,$(wildcard exercise*.v))
+VS=$(filter-out %tmp.v,$(filter-out %-todo.v,$(wildcard *.v)))
+EX=$(filter-out %tmp.v,$(filter-out %-todo.v,$(wildcard exercise*.v)))
 FILES=$(VS:%.v=%.html) $(VS) $(EX:%.v=%-todo.v)
 
 all: jscoq udoc/udoc.byte cheat-sheet/cheatsheet.pdf $(FILES)
@@ -103,9 +103,9 @@ exercise1.html: exercise1.html.tmp
 exercise1-todo.v: exercise1.v
 	@sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise2.html: exercise2.html.tmp
-	@sed -e 's/^(\*D\*).*$$//' $< > $@
+	@sed -e 's/^(\*D\*).*$$//' -e 's/^(\*A\*).*$$/Admitted./' $< > $@
 exercise2-todo.v: exercise2.v
-	@sed -e 's/^(\*D\*).*$$//' $< > $@
+	@sed -e 's/^(\*D\*).*$$//' -e 's/^(\*A\*).*$$/Admitted./' $< > $@
 exercise3.html: exercise3.html.tmp
 	@sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise3-todo.v: exercise3.v
