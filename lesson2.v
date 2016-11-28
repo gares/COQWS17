@@ -1,30 +1,30 @@
 Require Import mathcomp.ssreflect.ssreflect.
 From mathcomp Require Import all_ssreflect.
-(** ** Recap:
-   - => intro pattern (names, views, //, /=, {}, [])
-   - rewrite lem -lem // /= /def
-   - naming convention: addnC, eqP, orbN, orNb, ...
-   - notations: .+1, if-is-then-else
-   - reflect P b
-
-
-----
-** Lessons learnt yesterday
-   - Search _ (_ + _) in ssrnat.
-   - Search _ addn "C" in ssrnat.
+(**
+#<div class="slide vfill">#
+** Recap:
+   - => intro pattern (names, views, [//], [/=], [{}], [[]])
+   - [rewrite lem -lem // /= /def]
+   - naming convention: [addnC], [eqP], [orbN], [orNb], ...
+   - notations: [.+1], if-is-then-else
+   - [reflect P b]
+   - [Search _ (_ + _) in ssrnat]
+   - [Search _ addn "C" in ssrnat]
    - Use the HTML doc!
 
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide vfill">#
 ** Today:
    - The [seq] library
    - forward reasoning with [have]
    - spec lemmas
    - [rewrite] patterns
 
-
-----
-----
+#</div>#
+--------------------------------------------------------
+--------------------------------------------------------
+#<div class="slide">#
 ** Sequences:
   - an alias for lists (used to be differnt)
   - many notations
@@ -41,8 +41,9 @@ Eval compute in all odd [:: 3; 5].
 Module polylist.
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Polymorphic lists
    - This statement makes no assumptions on T
    - recap: // /= ->
@@ -57,8 +58,9 @@ Eval compute in 3 \in [:: 7; 4; 3].
 Fail Check forall T : Type, forall x : T, x \in [:: x ].
 
 (** 
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Had-hoc polymorphism
   - T : Type |- l : list T 
   - T : eqType |- l : list T
@@ -68,8 +70,9 @@ Fail Check forall T : Type, forall x : T, x \in [:: x ].
 Check forall T : eqType, forall x : T, x \in [:: x ].
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** The \in notation
    - overloaded as [(_ == _)]
    - pushing \in with inE
@@ -85,8 +88,9 @@ Qed.
 Eval simpl in (3 \in [:: 4; 3]). (* && *)
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Forward reasoning
    - have
    - have :=
@@ -96,12 +100,14 @@ Eval simpl in (3 \in [:: 4; 3]). (* && *)
 (**
 Definition of all
 <<
-Fixpoint all s := if s is x :: s' then a x && all s' else true.
->>
+Fixpoint all a s := if s is x :: s' then a x && all a s' else true.
+>> *)
+(** 
 Definition of count
 <<
-Fixpoint count s := if s is x :: s' then a x + count s' else 0.
->>
+Fixpoint count a s := if s is x :: s' then a x + count s' else 0.
+>> *)
+(** 
 A lemma linking the two concepts *)
 Lemma all_count (T : eqType) (a : pred T) s :
   all a s = (count a s == size s).
@@ -116,9 +122,10 @@ by rewrite add0n eqn_leq andbC ltnNge count_size.
 Qed.
 
 (**
-
-----
-----
+#</div>#
+--------------------------------------------------------
+--------------------------------------------------------
+#<div class="slide">#
 ** Spec lemmas
    - Inductive predicates to drive the proof
 *)
@@ -181,8 +188,9 @@ Inductive leq_xor_gtn m n : bool -> bool -> Prop :=
 Axiom leqP : forall m n : nat, leq_xor_gtn m n (m <= n) (n < m).
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Let's try out leqP on an ugly goal
    - matching of indexes
    - generalization of unresolved implicits
@@ -198,8 +206,9 @@ by rewrite andb_idr // => /leq_trans->.
 Qed.
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Another commodity: [ifP]
    - a spec lemma for if-then-else
    - handy with case, since matching spares you to write
@@ -212,8 +221,9 @@ by move=> /negbT; rewrite subn_eq0 leqNgt negbK=> /ltnW.
 Qed.
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Last, (_ =P _)
   - Just eqP but with the right implicit arguments
 *)
@@ -221,8 +231,9 @@ Lemma test_eqP (n m : nat) : n == m.
 Proof. case: (n =P m). Abort.
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Rewrite on steroids
    - keyed matching
    - instantiation
@@ -252,16 +263,18 @@ rewrite -[n in RHS]addn0.
 Abort.
 
 (**
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide vfill">#
 ** References for this lesson:
   - SSReflect #<a href="https://hal.inria.fr/inria-00258384">manual</a>#
   - documentation of the
        #<a href="http://math-comp.github.io/math-comp/htmldoc/libgraph.html">library</a>#
     - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.seq.html">seq</a>#
 
-
-----
+#</div>#
+--------------------------------------------------------
+#<div class="slide">#
 ** Demo:
    - you should be now able to read this proof
 
@@ -282,5 +295,6 @@ Check dvdn_addr.
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 Qed.
     
+(** #</div># *)
 
 

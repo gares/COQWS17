@@ -41,6 +41,31 @@ function select_current() {
     }
   }	
 }
+
+function mk_tooltip(label,text) {
+ var t = document.createElement("div");
+ t.setAttribute('class','slide-tooltip');
+ t.innerHTML = label;
+
+ var s = document.createElement("span");
+ s.setAttribute('class','slide-tooltiptext slide-tooltip-left');
+ s.innerHTML = text;
+
+ t.appendChild(s);
+ return t;
+}
+
+function find_hx(e) {
+  for(var i = 0; i < e.children.length; i++) {
+    var x = e.children[i];
+    if (x.tagName == "H1" ||
+        x.tagName == "H2" ||
+        x.tagName == "H3" ||
+        x.tagName == "H4") return x.textContent;
+  } 
+  return null;
+}
+
 function init_slides() {
   var toolbar = document.getElementById('panel-wrapper');
   if (toolbar) {
@@ -62,7 +87,12 @@ function init_slides() {
     s.setAttribute('id','slideno' + i);
     s.setAttribute('class','slideno');
     s.setAttribute('onclick','goto_slide('+ i +');');
-    s.innerHTML = i;
+    var title = find_hx(slides[i]);
+    if (title == null) {
+      title = "goto slide " + i;
+    }
+    var t = mk_tooltip(i, title);
+    s.appendChild(t)
     tools.appendChild(s);
   }
   select_current();
