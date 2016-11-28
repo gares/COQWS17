@@ -1,7 +1,10 @@
 jscoq/
 udoc/
 *.glob
+*tmp.*
 *.tmp
+*.vo
+*-todo.v
 *.aux
 *~
 *swp
