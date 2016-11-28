@@ -370,6 +370,6 @@ Qed.
     - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrbool.html">ssrbool</a>#
     - in particular #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrnat.html">ssrnat</a>#
   - #<a href="http://math-comp.github.io/mcb/">Book</a># (draft) on the Mathematical Components library
-
+    #<img src="https://math-comp.github.io/mcb/cover-front-web.png"/>#
 #</div># 
 *)
