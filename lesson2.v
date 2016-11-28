@@ -3,13 +3,13 @@ From mathcomp Require Import all_ssreflect.
 (**
 #<div class="slide vfill">#
 ** Recap:
-   - => intro pattern (names, views, //, /=, {}, [[]])
-   - rewrite lem -lem // /= /def
-   - naming convention: addnC, eqP, orbN, orNb, ...
-   - notations: .+1, if-is-then-else
-   - reflect P b
-   - Search _ (_ + _) in ssrnat.
-   - Search _ addn "C" in ssrnat.
+   - => intro pattern (names, views, [//], [/=], [{}], [[]])
+   - [rewrite lem -lem // /= /def]
+   - naming convention: [addnC], [eqP], [orbN], [orNb], ...
+   - notations: [.+1], if-is-then-else
+   - [reflect P b]
+   - [Search _ (_ + _) in ssrnat]
+   - [Search _ addn "C" in ssrnat]
    - Use the HTML doc!
 
 #</div>#
