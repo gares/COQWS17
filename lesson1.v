@@ -271,7 +271,7 @@ Qed.
 ** Views are just lemmas 
    (plus some automatic adaptors)
    - lemmas like [A -> B] can be used as views too
-   - boolean aconnectives have associated views
+   - boolean connectives have associated views
    - [=> [ ... ]]
 
 *)
