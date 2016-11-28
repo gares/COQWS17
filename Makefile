@@ -65,7 +65,8 @@ upload: $(FILES) cheat-sheet/cheatsheet.pdf jscoq.tgz
 	@# if does not work, then html ok but no links
 	-$(COQC) $*tmp.v > /dev/null
 	@# -$(COQC) -R $(MC) mathcomp -I $(MC) $<
-	@./udoc/udoc.byte $*tmp.v -o $@
+	@./udoc/udoc.byte -t $* $*tmp.v -o $@
+	@sed -i -e 's?^ *<h1>$*tmp</h1>??' $@
 	@sed -i -e 's?^ *<title.*?<title>$*</title>?' $@
 	@sed -i -e 's?^ *<h1>$*</h1>??' $@
 	@sed -i -e 's?</title>?</title><link rel="stylesheet" href="local.css" />?' $@
