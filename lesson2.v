@@ -2,20 +2,27 @@ Require Import mathcomp.ssreflect.ssreflect.
 From mathcomp Require Import all_ssreflect.
 (**
 #<div class="slide vfill">#
-** Recap:
-   - => intro pattern (names, views, [//], [/=], [{}], [[]])
+** Recap
+
+ Proof language
+   - [: name], to prepare the goal for a tactic
+   - [=>] [name] [/view] [//] [/=] [{name}] [[]], to post-process the goal
    - [rewrite lem -lem // /= /def]
+   - [apply: lem]
+ Library
    - naming convention: [addnC], [eqP], [orbN], [orNb], ...
-   - notations: [.+1], if-is-then-else
-   - [reflect P b]
+   - notations: [.+1], [if-is-then-else]
    - [Search _ (_ + _) in ssrnat]
    - [Search _ addn "C" in ssrnat]
    - Use the HTML doc!
+ Approach
+   - boolean predicates
+   - [reflect P b] to link bool with Prop
 
 #</div>#
 --------------------------------------------------------
 #<div class="slide vfill">#
-** Today:
+** Today
    - The [seq] library
    - forward reasoning with [have]
    - spec lemmas
@@ -25,7 +32,7 @@ From mathcomp Require Import all_ssreflect.
 --------------------------------------------------------
 --------------------------------------------------------
 #<div class="slide">#
-** Sequences:
+** Sequences
   - an alias for lists (used to be differnt)
   - many notations
 
@@ -46,7 +53,7 @@ Module polylist.
 #<div class="slide">#
 ** Polymorphic lists
    - This statement makes no assumptions on T
-   - recap: // /= ->
+   - recap: [// /= ->]
 *)
 Lemma size_cat T (s1 s2 : seq T) : size (s1 ++ s2) = size s1 + size s2.
 Proof.  by elim: s1 => //= x s1 ->. Qed.
@@ -84,9 +91,6 @@ Proof.
 by rewrite !inE => /=; apply: contraL => /eqP->.
 Qed.
 
-(* Example of simplifying context *)
-Eval simpl in (3 \in [:: 4; 3]). (* && *)
-
 (**
 #</div>#
 --------------------------------------------------------
@@ -117,8 +121,9 @@ have EM_a : a x || ~~ a x.
   by exact: orbN.
 move: EM_a => /orP EM_a. case: EM_a => [-> | /negbTE-> ] //= _.
 (*# have /orP[ ax | n_ax ] : a x || ~~ a x by case: (a x). #*)
-Search _ count size.
+Search _ count size in seq.
 by rewrite add0n eqn_leq andbC ltnNge count_size.
+(*# have := boolP (a x). #*)
 Qed.
 
 (**
@@ -170,15 +175,19 @@ Fixpoint eqn m n :=
 Arguments eqn !m !n.
 
 Axiom eqP : forall m n, reflect (m = n) (eqn m n).
+Arguments eqP {m n}.
 
 Lemma test_reflect1 m n : ~~ (eqn m n) || (n <= m <= n).
 Proof.
-case: (eqP m n) => [Enm | nE_mn ] /=.
+case: (@eqP m n) => [Enm | nE_mn ] /=.
 by case: eqP => [->|] //=; rewrite leqnn.
-Check (eqP _ _).
 Qed.
 
 End myreflect2.
+
+Check (_ =P _).
+Check eqP.
+
 #*)
 
 Inductive leq_xor_gtn m n : bool -> bool -> Prop :=
@@ -216,22 +225,13 @@ Qed.
 *)
 Lemma test_ifP n m : if n <= m then 0 <= m - n else m - n == 0.
 Proof.
-case: ifP; first by rewrite -subn_eq0.
+case: ifP => //.
 by move=> /negbT; rewrite subn_eq0 leqNgt negbK=> /ltnW.
 Qed.
 
 (**
 #</div>#
---------------------------------------------------------
-#<div class="slide">#
-** Last, (_ =P _)
-  - Just eqP but with the right implicit arguments
-*)
-Lemma test_eqP (n m : nat) : n == m.
-Proof. case: (n =P m). Abort.
 
-(**
-#</div>#
 --------------------------------------------------------
 #<div class="slide">#
 ** Rewrite on steroids
