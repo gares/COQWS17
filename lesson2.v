@@ -3,14 +3,21 @@ From mathcomp Require Import all_ssreflect.
 (**
 #<div class="slide vfill">#
 ** Recap
-   - => intro pattern (names, views, [//], [/=], [{}], [[]])
+
+ Proof language
+   - [: name], to prepare the goal for a tactic
+   - [=>] [name] [/view] [//] [/=] [{name}] [[]], to post-process the goal
    - [rewrite lem -lem // /= /def]
+   - [apply: lem]
+ Library
    - naming convention: [addnC], [eqP], [orbN], [orNb], ...
-   - notations: [.+1], if-is-then-else
-   - [reflect P b]
+   - notations: [.+1], [if-is-then-else]
    - [Search _ (_ + _) in ssrnat]
    - [Search _ addn "C" in ssrnat]
    - Use the HTML doc!
+ Approach
+   - boolean predicates
+   - [reflect P b] to link bool with Prop
 
 #</div>#
 --------------------------------------------------------
