@@ -77,7 +77,7 @@ Polynomials are coercible to sequences:
  - Poly s : the polynomial built from sequence s
  - 'X : monomial
  - 'X^n : monomial to the power of n
- - a:P : constant polynomial
+ - [a:%P] : constant polynomial
  - standard notations of ssralg (+, -, *, *:, ^+)
 #</div>#
 ----
@@ -109,7 +109,7 @@ Definition mul_poly (p q : {poly R}) :=
 
 (** 
 ----
-#<div class="slide vfill ">#
+#<div class="slide  ">#
 
 ** 
  - The type of polynomials has been equipped
@@ -118,7 +118,7 @@ Definition mul_poly (p q : {poly R}) :=
  - All related lemmas of ssralg can be used.
 #</div>#
 ----
-#<div class="slide">#
+#<div class="slide vfill">#
 ** Evaluation
  - (Right-)evaluation of polynomials
  - Warning: type of x 
@@ -165,7 +165,7 @@ Check polyOver0.
 
 (** 
 ----
-#<div class="slide ">#
+#<div class="slide vfill ">#
 ** Derivative
  - definition 
  - notation
@@ -193,7 +193,7 @@ Check polyOver_deriv.
 
 (** 
 ----
-#<div class="slide ">#
+#<div class="slide vfill ">#
 ** Roots
  -  root p x == x is a root of p 
 #</div>#
@@ -209,3 +209,14 @@ Theorem max_poly_roots (p: {poly R}) rs :
   p != 0 -> all (root p) rs -> uniq rs -> 
    (size rs < size p)%N.
 Admitted.
+
+
+
+(** 
+----
+#<div class="slide vfill ">#
+** Division: 
+#<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.polydiv.html">polydiv.v</a>#
+
+#</div>#
+*)
