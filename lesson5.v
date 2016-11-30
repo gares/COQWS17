@@ -2,8 +2,9 @@ From mathcomp Require Import all_ssreflect.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-(**
 
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 * The algebra library
 
  - This is a central part of the mathematical components library.
@@ -38,9 +39,9 @@ Unset Printing Implicit Defensive.
 - In addition there are structures for maps (additive morphisms, ring
   morphisms, etc...), and substructures (subgroup, subsemiring, subring,
   subfield, etc...)
-
-
-----
+#</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 * Roadmap for the lesson:
  - introduction of the general definition pattern for algebraic structures
@@ -48,14 +49,11 @@ Unset Printing Implicit Defensive.
  - exploration of the theory provided by this structure and naming
    conventions
  - creation of a subalgebraic structure predicate and use
-
-
-----
 *)
 Module AlgebraicStructures.
-(**
-
-----
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 * Defining a mathematical structure in Coq.
 
 This is how mathematical structures are defined in the library.
@@ -96,8 +94,9 @@ End AlgebraicStructures.
 This packaging is very elementary, and the mathematical components
 library uses a refinement of this.
 
-
-----
+#</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 * Packaging mathematical structures
 
 We briefly explain how to do inheritance with two structures. This is
@@ -176,9 +175,9 @@ Proof. by rewrite -(opcx c) pr_xc. Qed.
 End my_struct2_theory.
 
 End AlgebraicStructuresInheritance.
-(**
-
-----
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 * Inhabiting the mathematical structures hierarchy.
 
  - We now show on the example of integers how to instantiate the
@@ -207,8 +206,9 @@ From mathcomp Require Import ssralg.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 
-(**
-
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 ** First we define int
 
 *)
@@ -249,8 +249,9 @@ Canonical int_choiceType := ChoiceType int int_choiceMixin.
 
 Definition int_countMixin := CanCountMixin natsum_of_intK.
 Canonical int_countType := CountType int int_countMixin.
-(**
-
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 ** Abelian group structure, from scratch
 
 We now create the abelian group structure of integers (here called
@@ -337,8 +338,9 @@ Canonical int_Ring := RingType int intRing.comMixin.
 Canonical int_comRing := ComRingType int intRing.mulzC.
 
 End InstantiationInteger.
-(**
-----
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 * Other structures
 *)
 Module OtherStructures.
@@ -370,17 +372,24 @@ Print ssralg.GRing.mulr_2closed.
 Search "rpred" in ssralg.
 
 End OtherStructures.
-(**
-----
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 * Naming conventions.
-*)
-Module Conventions.
-From mathcomp Require Import ssralg ssrnum.
-Import GRing.Theory.
-Local Open Scope ring_scope.
 
-(**
-** Names in the library are usually obeying one of following the convention:
+The two most important things to get your way out of a situation:
+ - Knowing your math
+ - Searching the library for what you think you know
+
+For that you have the ssreflect Search command. To use its full power, one should combine seach by identifier (Coq definition), pattern (partial terms) and name (a string contained in the name of the theorem).
+
+The two first methods are straightforward to use (except if you instanciate your patterns more than necessary), but searching by name requires to be aware of naming conventions.
+
+*)
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+** Names in the library are usually obeying one of following the convention
 
  - #<pre>(condition_)?mainSymbol_suffixes</pre>#
  - #<pre>mainSymbol_suffixes(_condition)?</pre>#
@@ -389,66 +398,69 @@ Or in the presence of a property denoted by a nary or unary predicate:
  - #<pre>naryPredicate_mainSymbol+</pre>#
  - #<pre>mainSymbol_unaryPredicate</pre>#
 
-Where :
+** Where :
 
  - "mainSymbol" is the most meaningful part of the lemma. It generally
    is the head symbol of the right-hand side of an equation or the
    head symbol of a theorem. It can also simply be the main object of
    study, head symbol or not. It is usually either
 
-  - one of the main symbols of the theory at hand. For example, for
-    ssralg, it will be "opp", "add", "mul", etc...
+  - one of the main symbols of the theory at hand. For example, it will be #<code>opp</code>#, #<code>add</code>#, #<code>mul</code>#, etc...
 
   - or a special "canonical" operation, such as a ring morphism or a
-    subtype predicate. e.g. "linear", "raddf", "rmorph", "rpred", etc ...
+    subtype predicate. e.g. #<code>linear</code>#, #<code>raddf</code>#, #<code>rmorph</code>#, #<code>rpred</code>#, etc ...
 
- - "condition" is used when the lemma applies under some hypothesis. As in
+ - "condition" is used when the lemma applies under some hypothesis.
 
- - "suffixes" are there to refine what shape and/or what other symbols
-   the lemma has. It can either be the name of a symbol ("add", "mul",
-   etc...), or the (short) name of a predicate ("inj" for
-   "injectivity", "id" for "identity", ...) or an abbreviation. We
-   list here the main abbreviations.
+ - "suffixes" are there to refine what shape and/or what other symbols  the lemma has. It can either be the name of a symbol ("add", "mul",  etc...), or the (short) name of a predicate ("#<code>inj</code>#" for "#<code>injectivity</code>#", "#<code>id</code>#" for "identity", ...) or an abbreviation.
 
-  - A -- associativity, as in andbA : associative andb.
+Abbreviations are in the header of the file which introduce them. We list here the main abbreviations.
+
+  - A -- associativity, as in #<code>andbA : associative andb.</code>#
   - AC -- right commutativity.
   - ACA -- self-interchange (inner commutativity), e.g.,
-        orbACA : (a || b) || (c || d) = (a || c) || (b || d).
-  - b -- a boolean argument, as in andbb : idempotent andb.
-  - C -- commutativity, as in andbC : commutative andb,
-    or predicate complement, as in predC.
+        #<code>orbACA : (a || b) || (c || d) = (a || c) || (b || d).</code>#
+  - b -- a boolean argument, as in #<code>andbb : idempotent andb.</code>#
+  - C -- commutativity, as in #<code>andbC : commutative andb</code>#,
+    or predicate complement, as in #<code>predC.</code>#
   - CA -- left commutativity.
-  - D -- predicate difference, as in predD.
-  - E -- elimination, as in negbFE : ~~ b = false -> b.
-  - F or f -- boolean false, as in andbF : b && false = false.
-  - I -- left/right injectivity, as in addbI : right_injective addb or predicate  intersection, as in predI.
-  - l -- a left-hand operation, as andb_orl : left_distributive andb orb.
-  - N or n -- boolean negation, as in andbN : a && (~~ a) = false.
-  - P -- a characteristic property, often a reflection lemma, as in andP : reflec t (a /\ b) (a && b).
-  - r -- a right-hand operation, as orb_andr : rightt_distributive orb andb.
-  - T or t -- boolean truth, as in andbT: right_id true andb.
-  - U -- predicate union, as in predU.
-  - W -- weakening, as in in1W : {in D, forall x, P} -> forall x, P.
+  - D -- predicate difference, as in #<code>predD.</code>#
+  - E -- elimination, as in #<code>negbFE : ~~ b = false -> b</code>#.
+  - F or f -- boolean false, as in #<code>andbF : b && false = false.</code>#
+  - I -- left/right injectivity, as in #<code>addbI : right_injective addb</code># or predicate  intersection, as in #<code>predI.</code>#
+  - l -- a left-hand operation, as #<code>andb_orl : left_distributive andb orb.</code>#
+  - N or n -- boolean negation, as in #<code>andbN : a && (~~ a) = false.</code>#
+  - n -- alternatively, it is a natural number argument
+  - P -- a characteristic property, often a reflection lemma, as in
+     #<code>andP : reflect (a /\ b) (a && b)</code>#.
+  - r -- a right-hand operation, as #<code>orb_andr : right_distributive orb andb.</code>#
+      -- alternatively, it is a ring argument
+  - T or t -- boolean truth, as in #<code>andbT: right_id true andb.</code>#
+  - U -- predicate union, as in #<code>predU</code>#.
+  - W -- weakening, as in #<code>in1W : {in D, forall x, P} -> forall x, P.</code>#
+  - 0 -- ring 0, as in #<code>addr0 : x + 0 = x.</code>#
+  - 1 -- ring 1, as in #<code>mulr1 : x * 1 = x.</code>#
+  - D -- ring addition, as in #<code>linearD : f (u + v) = f u + f v.</code>#
+  - B -- ring subtraction, as in #<code>opprB : - (x - y) = y - x.</code>#
+  - M -- ring multiplication, as in #<code>invfM : (x * y)^-1 = x^-1 * y^-1.</code>#
+  - Mn -- ring by nat multiplication, as in #<code>raddfMn : f (x *+ n) = f x *+ n.</code>#
+  - mx -- a matrix argument
+  - N -- ring opposite, as in #<code>mulNr : (- x) * y = - (x * y).</code>#
+  - V -- ring inverse, as in #<code>mulVr : x^-1 * x = 1.</code>#
+  - X -- ring exponentiation, as in #<code>rmorphX : f (x ^+ n) = f x ^+ n.</code>#
+  - Z -- (left) module scaling, as in #<code>linearZ : f (a *: v)  = s *: f v.</code>#
+  - z -- a int operation
 
-  - 0 -- ring 0, as in addr0 : x + 0 = x.
-  - 1 -- ring 1, as in mulr1 : x * 1 = x.
-  - D -- ring addition, as in linearD : f (u + v) = f u + f v.
-  - B -- ring subtraction, as in opprB : - (x - y) = y - x.
-  - M -- ring multiplication, as in invfM : (x * y)^-1 = x^-1 * y^-1.
-  - Mn -- ring by nat multiplication, as in raddfMn : f (x *+ n) = f x *+ n.
-  - N -- ring opposite, as in mulNr : (- x) * y = - (x * y).
-  - V -- ring inverse, as in mulVr : x^-1 * x = 1.
-  - X -- ring exponentiation, as in rmorphX : f (x ^+ n) = f x ^+ n.
-  - Z -- (left) module scaling, as in linearZ : f (a *: v)  = s *: f v.
+** My most used search pattern
 
+#<pre>Search _ "prefix" "suffix"* (symbol|pattern)* in library.</pre>#
 
-** This is design to help search. My own search strategy is usually.
-
-- #<pre>Search _ "suffix1" "suffix2" (symbol|pattern)* in library.</pre>#
-
-
-** Examples:
+** Examples
 *)
+Module Conventions.
+From mathcomp Require Import ssralg ssrnum.
+Import GRing.Theory.
+Local Open Scope ring_scope.
 
 Search _ *%R "A" in GRing.Theory.
 
@@ -459,7 +471,6 @@ Search _ "inj" in ssralg.
 Search _ "rmorph" "M" in ssralg.
 
 Search _ "rpred" "D" in ssralg.
-
 
 End Conventions.
 
