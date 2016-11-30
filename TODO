@@ -1,0 +1,18 @@
+lesson1:
+- a bit too long, cut/compress the first 4 slides
+- find a way to explain "move=> /foo" v.s. "apply/foo".
+
+lesson2:
+- recap example, not very useful
+- explain nth
+- make specialize explicit in a dedicated slide /(_ x)
+- messy slide about have pulls too many things in
+
+lesson3:
+- simplify ex about parking, maybe a simpler pigeonhole would do
+
+lesson4:
+- explicit example with "rewrite unlock" showing that the computational
+  content is there (but locked)
+
+
