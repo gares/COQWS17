@@ -97,13 +97,16 @@ library uses a refinement of this.
 #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
+
 * Packaging mathematical structures
 
 We briefly explain how to do inheritance with two structures. This is
 another simplified version of what happens in the library.  The
 complete process is described in #<a
 href="https://hal.inria.fr/inria-00368403v1/document">Packaging
-Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a>
+Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a> and
+in the draft book #<a
+href="http://math-comp.github.io/mcb/">Book</a>#.
 
 *)
 Section AlgebraicStructuresInheritance.
@@ -474,3 +477,47 @@ Search _ "rpred" "D" in ssralg.
 
 End Conventions.
 
+
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+ * A short parenthesis on subtyping.
+**)(**
+
+ - In Coq, #<code>sT := {x : T | P x}</code># is a way to form a
+  sigma-type. We say it is a #<b>subtype</b># if there is only one
+  element it #<code>sT</code># for each element in
+  #<code>T</code>#. This happens when #<code>P</code># is a boolean
+  predicate. Another way to form a subtype is to create a record :
+  #<code>Record sT := ST {x : T; px : P x}</code>#.
+
+ - In mathcomp, to deal with subtypes independently from how they are
+   form, we have a ganonical structure.
+*)
+
+Module SubType.
+Section SubType.
+Variables (T : Type) (P : pred T).
+Structure subType : Type := SubType {
+  sub_sort :> Type;
+  val : sub_sort -> T;
+  Sub : forall x, P x -> sub_sort;
+  (* elimination rule for sub_sort *)
+  _ : forall K (_ : forall x Px, K (@Sub x Px)) u, K u;
+  _ : forall x Px, val (@Sub x Px) = x
+}.
+End SubType.
+End SubType.
+(**
+ - The most important operators to know on subtypes are
+  #<code>val : sT -> T</code>#, #<code>insub : T -> option sT</code># and
+  #<code>insubd : sT -> T -> sT</code>#.
+
+- And the most important theorems to know are
+  #<code>val_inj, val_eqE, val_insubd, insubdK</code># and #<code>insub</code>#
+*)
+About val_inj.
+About val_eqE.
+About insubK.
+About val_insubd.
+About insubdK.

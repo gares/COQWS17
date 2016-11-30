@@ -14,8 +14,7 @@ Section PreliminaryLemmas.
 Let's extend the library on rings and algebraic numbers
 with some easy lemmas first.
 
-** Question -2: prove that if a sum of natural numbers is 1 then one
-                of its term is 0 and the other is 1
+** Question -2: prove that if a sum of natural numbers is 1 then one of its term is 0 and the other is 1
 
 Note that we do not consider nat but the copy of nat which is embeded
 in the algebraic numbers algC. The theorem already exists for nat, and
@@ -37,6 +36,7 @@ Proof.
 (*A*)Qed.
 (**
 ** Question 0: The imaginary part of product
+   (it's the same, don't do it if takes more than 5s
 *)
 Lemma algImM (x y : algC) : 'Im (x * y) = 'Re x * 'Im y + 'Re y * 'Im x.
 Proof.
@@ -171,7 +171,8 @@ Definition unitGI := [pred x : GI | (x != 0) && ((val x)^-1 \is a gaussInteger)]
 for GI, and then instantiate the interfaces of unitRingType and
 comUnitRingType.
 
-Hint: search for val_inj.
+Do only one of the following proofs.
+
 
 *)
 Fact mulGIr : {in unitGI, left_inverse 1 invGI *%R}.
@@ -230,6 +231,7 @@ Proof. by []. Qed.
 
 ** Question 4: Show that the gaussNorm of x is the square of the complex modulus of x
 
+Hint: only one rewrite with the right theorem.
 *)
 Lemma gaussNormE x : gaussNorm x = `|x| ^+ 2.
 (*A*)Proof. by rewrite normCK. Qed.
@@ -249,6 +251,7 @@ Hint Resolve gaussNormCnat.
 
 ** Question 6: Show that gaussNorm is multiplicative (on all algC).
 
+Hint: use morphism lemmas #<code>rmorph1</code># and #<code>rmorphM</code>#
 *)
 Lemma gaussNorm1 : gaussNorm 1 = 1.
 (*A*)Proof. by rewrite /gaussNorm rmorph1 mulr1. Qed.
@@ -259,11 +262,11 @@ Lemma gaussNormM : {morph gaussNorm : x y / x * y}.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-** Question 7: Find the invertible elements of GI
+** Question 7 (hard): Find the invertible elements of GI
 
  - This is question 1 of the CPGE exercice
 
-Do unitGI norm first, and come back to side lemmas later.
+Do unitGI_norm1 first, and come back to side lemmas later.
 *)
 
 Lemma rev_unitrPr (R : comUnitRingType) (x y : R) : x * y = 1 -> x \is a GRing.unit.
