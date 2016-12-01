@@ -206,54 +206,15 @@ End AlgebraicHierarchy.
 
 Section Polynomials.
 
+(* Taylor formula for polynomials *)
+
 Open Scope ring_scope.
-Import GRing.Theory Num.Theory.
+Variable R: unitRingType.
+Variable P : {poly R}.
 
-Variable n : nat.
-Variables na nb: nat.
-Hypothesis nbne0: nb != 0%N.
+Lemma Taylor_formula :forall (P : {poly R} ) (x : R) n , size P = n.+1 ->
+P = \sum_ (i < n.+1)  (i`!)%:R^-1 *: (P^`(i).[x] *: ('X - x%:P)^+i). 
 
-Definition a:rat := (Posz na)%:~R.
-Definition b:rat :=(Posz nb)%:~R.
-
-Definition pi := a / b.
-
-Definition f :{poly rat} := (n`!)%:R^-1 *: ('X^n * (a%:P -  b*:'X)^+n).
-
-Definition F :{poly rat} := \sum_(i:'I_n.+1) (-1)^i *: f^`(2*i).
-
-
-Axiom derive_f_0_int: forall i, f^`(i).[0] \is a Qint.
-
-
-(** Prove that F at 0 is a Qint.  Hint: relevant lemmas
-are exprnP hornerE horner_sum and the rpred* family *)
-Lemma F0_int : F.[0] \is a Qint.
-Proof.
-(*X*)rewrite horner_sum rpred_sum // => i _.
-(*X*)by rewrite hornerE rpredM ?rpredX // derive_f_0_int.
-(*A*)Qed.
-
-Axiom pf_sym:  f \Po (pi%:P -'X) = f.
-
-(** Prove this equation by induction on [i].
-Hint: relevant lemmas are scale* mulr* addr* expr* oppr* in ssralg,
-derivnS derivZ deriv_comp derivE in poly *)
-Lemma  derivn_fpix: forall i , (f^`(i)\Po(pi%:P -'X))= (-1)^+i *: f^`(i).
-Proof.
-(*X*)elim => [|i]; first by rewrite !derivn0 pf_sym scale1r.
-(*X*)move=> /(congr1 (fun p => - p^`())); rewrite deriv_comp derivZ -!derivnS.
-(*X*)by rewrite !derivE add0r mulrN1 opprK -scaleNr exprS mulN1r.
-(*A*)Qed.
-
-(** Prove that F at pi is a Qint.
-Hint: relevant lemmas are horner_comp sqrr_sign mulnC scale1r *)
-Lemma FPi_int : F.[pi] \is a Qint.
-Proof.
-(*X*)rewrite horner_sum rpred_sum // => i _; rewrite hornerE rpredM ?rpredX //.
-(*X*)have ppi p : p.[pi] = (p \Po (pi%:P - 'X)).[0] by rewrite horner_comp !hornerE.
-(*X*)by rewrite ppi derivn_fpix hornerE rpredM ?rpredX // derive_f_0_int.
-(*A*)Qed.
 
 End Polynomials.
 
