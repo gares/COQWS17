@@ -58,8 +58,7 @@ Definition i3 := Ordinal (isT : 3 < 4).
 Lemma ieq : oid i3 == i3.
 Proof.
 exact: eqxx.
-Defined.
-
+Qed.
 
 (** 
   ** Sequence 
@@ -72,7 +71,7 @@ Defined.
 Lemma iseq n (x : 'I_n) : x \in 'I_n.
 Proof.
 have mem_enum := mem_enum.
-have enum_uniq := mem_enum.
+have enum_uniq := enum_unique.
 have cardT := cardT.
 have cardE := cardE.
 by [].
