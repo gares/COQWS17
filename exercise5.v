@@ -17,7 +17,7 @@ with some easy lemmas first.
 ** Question -2: prove that if a sum of natural numbers is 1 then one of its term is 0 and the other is 1
 
 Note that we do not consider nat but the copy of nat which is embeded
-in the algebraic numbers algC. The theorem already exists for nat, and
+in the algebraic numbers algC. The theorem is easy to prove for nat, so
 we suggest you use a compatibility lemma numbers between nat and Cnat
 *)
 Lemma Cnat_add_eq1 : {in Cnat &, forall x y,
