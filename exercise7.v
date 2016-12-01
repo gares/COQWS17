@@ -16,7 +16,7 @@ Section ex_6_12.
 
 * Exercices de mathématiques oraux X-ens Algebre 1
 
-Determine the endomorphisms u such that Ker u = Im u.
+* Exercise 6.12: Endomorphisms u such that Ker u = Im u.
 
 Let E be a vector space (any dimension, but in Coq we reason in finite
 dimension).
@@ -42,7 +42,7 @@ Hypothesis eq_keru_imu : (kermx u :=: u)%MS.
 Hypothesis S_u_direct : (S :&: u)%MS = 0.
 Hypothesis S_u_eq1 : (S + u :=: 1)%MS.
 
-Implicit Types (x y z : 'rV[F]_n). 
+Implicit Types (x y z : 'rV[F]_n).
 (**
 
 *** Question 1.a.
@@ -50,6 +50,19 @@ Implicit Types (x y z : 'rV[F]_n).
 Show that for all x in E, there is a unique pair (y, z) in S² such
 that x = y + u (z), and pose v and z so that y = v(x) and z = w(x).
 
+Instead of defining y and z for each x, we now define explicitly the
+matrix that computes y and z from x.
+
+ - A direct consequence of this is that v and w will be morphisms by
+  construction, you can thus skip the part of the paper proof that
+  deals with this.
+
+ - Every morphism induces an ismorphism between a complement of its
+   kernel and its image.  The function #<code>pinvmx</code># is the
+   inverse of this isomporhism, but since the complement of the kernel
+   that was used to produce #<code>pinvmx</code># is arbitrary, we
+   must project the result of #<code>pinvmx</code># on S in order to
+   get the specific inverse with image S.
 *)
 Definition w := locked (proj_mx S u).
 Definition v := locked (proj_mx u S * pinvmx u * proj_mx S u).
@@ -63,6 +76,7 @@ unexpectedly during proofs.
 (** #<div class='slide'>#
 
 **** Question 1.a.i.
+
 Prove the following lemmas.
 
 *)
@@ -120,10 +134,11 @@ and x = y + z *m u
 (** #<div class='slide'>#
 
 **** Question 1.a.iii.
-From the proof 
+
+From the proof
 
 *)
-Lemma Su_dec_eq0 y z : (y <= S)%MS -> (z <= S)%MS -> 
+Lemma Su_dec_eq0 y z : (y <= S)%MS -> (z <= S)%MS ->
   (y + z *m u == 0) = (y == 0) && (z == 0).
 Proof.
 move=> yS zS; apply/idP/idP; last first.
@@ -140,11 +155,11 @@ Qed.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-deduce 
+deduce
 
 *)
-Lemma Su_dec_uniq y y' z z' : (y <= S)%MS -> (z <= S)%MS -> 
-                              (y' <= S)%MS -> (z' <= S)%MS -> 
+Lemma Su_dec_uniq y y' z z' : (y <= S)%MS -> (z <= S)%MS ->
+                              (y' <= S)%MS -> (z' <= S)%MS ->
   (y + z *m u == y' + z' *m u) = (y == y') && (z == z').
 Proof.
 (*D*)move=> yS zS y'S z'S; rewrite -subr_eq0 opprD addrACA -mulmxBl.
@@ -211,6 +226,13 @@ Proof.
 (*A*)Qed.
 
 End Q1.
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+
+** State and prove question 2, and then 3...
+
+*)
 
 End ex_6_12.
 End CPGE.
