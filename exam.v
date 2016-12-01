@@ -303,7 +303,7 @@ apply: (iffP idP) => [|[v vMu vDu]]; last first.
 (*X*)  have /mxrankS leq_rk := addmx_sub_adds (submx_refl v) (submx_refl u).
   (* finish using hypothesis *)
   (*a*)by rewrite !(leq_trans _ leq_rk) //= ?rkvDu ?rkvDrku.
-move=> /andP [/eqmxP kuDu_eq1 kvDu_direct].
+move=> /andP [/eqmxP kuDu_eq1 /mxdirect_addsP kvDu_direct].
 pose v := proj_mx (kermx u) u; exists v.
   (*a*)by apply/sub_kermxP; rewrite -[X in (X <= _)%MS]mul1r proj_mx_sub.
 rewrite -row_free_unit -kermx_eq0.
@@ -313,10 +313,9 @@ apply/negP; rewrite negbK; apply/eqP.
 have : (x *m v <= kermx u :&: u)%MS.
 (* Hint: use sub_*, proj_mx*, eqmx_*, mxdirect_addsP, *)
   (*a*)by rewrite sub_capmx proj_mx_sub eq_xv_Nxu eqmx_opp submxMl.
-(*X*)rewrite (mxdirect_addsP _) ?submx0 // => /eqP xv_eq0.
+(*X*)rewrite kvDu_direct ?submx0 // => /eqP xv_eq0.
 (*X*)move/eqP : eq_xv_Nxu; rewrite xv_eq0 eq_sym oppr_eq0 => /eqP.
-(*X*)move=> /sub_kermxP x_in_keru; move: xv_eq0; rewrite proj_mx_id //.
-(*X*)by rewrite (mxdirect_addsP _).
+(*X*)by move=> /sub_kermxP x_in_keru; move: xv_eq0; rewrite proj_mx_id.
 (*A*)Qed.
 
 End LinearAlgebra.
