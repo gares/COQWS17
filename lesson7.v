@@ -4,7 +4,9 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import GRing.Theory.
 Local Open Scope ring_scope.
-(**
+
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 * Linear algebra in mathematical components
 
@@ -13,21 +15,18 @@ Extensive documentation in the header of:
  - and the library #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#
 
 
-----
-
 * Roadmap for the lesson:
  - definition of matrices
  - main theorems
  - help with depend types
  - vector spaces as matrices
 
-
-----
 *)
 Module DefinitionMatrices.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
-----
 * Defining Matrices
 
 (Credits "ITP 2013 tutorial: The Mathematical Components library" by Enrico Tassi and Assia Mahboubi #<a href="http://ssr.msr-inria.inria.fr/doc/tutorial-itp13/">material here</a>#)
@@ -134,9 +133,9 @@ Check \matrix_(i,j) (i - j)%N  :  'M[nat]_(3,4).
 End DefinitionMatrices.
 
 Module MatrixProperties.
-(**
-
-----
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 * Main Theorems
 
@@ -161,7 +160,9 @@ equal.
 
 *)
 Check matrixP.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 ** operations on matrices
 
@@ -224,20 +225,20 @@ Lemma test4 (R : comUnitRingType) n (A : 'M[R]_n.+1) :
 Proof. split; reflexivity. Qed.
 
 End MatrixProperties.
-(**
-
-----
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 * SUB VECTOR SPACES AS MATRICES
 
 ** General understanding
 
-- A specificity of the mathematical components library is to allow to
+ - A specificity of the mathematical components library is to allow to
   reason on matrices as if they represented their own image.
 
-- The doc and the code are in #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#)
+ - The doc and the code are in #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#)
 
-- rows can be seen as vectors, and matrix can be seen as the familiy
+ - rows can be seen as vectors, and matrix can be seen as the familiy
   of its row vectors.
 
  - #<b>WARNING</b># Following the english convention (which is
@@ -305,7 +306,9 @@ Print eqmx.
 
 About mxdirectE.
 About mxdirect_addsP.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 ** Usage.
 
@@ -326,8 +329,9 @@ About submxMl.
 *)
 About kermx.
 About sub_kermxP.
-(**
-
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 Let's do an example together
 
 *)
@@ -337,7 +341,7 @@ Variables (F : fieldType) (n' : nat).
 Let n := n'.+1.
 Variable (u : 'M[F]_n) (S : 'M[F]_n).
 Hypothesis eq_keru_imu : (kermx u :=: u)%MS.
-Hypothesis S_u_direct : (mxdirect (S + u)).
+Hypothesis S_u_direct : (S :&: u)%MS = 0.
 Hypothesis S_u_eq1 : (S + u :=: 1)%MS.
 Implicit Types (x y z : 'rV[F]_n).
 
@@ -348,8 +352,7 @@ pose y := x *m proj_mx S u.
 have /submxP [z'] := proj_mx_sub u S x => xpu.
 pose z := z' *m proj_mx S u.
 exists (y, z) => /=; last by rewrite !proj_mx_sub.
-rewrite -{1}(@add_proj_mx _ _ _ S u x) ?(mxdirect_addsP _) //; last first.
-  by rewrite S_u_eq1 submx1.
+rewrite -{1}(@add_proj_mx _ _ _ S u x) ?S_u_direct ?S_u_eq1 ?submx1 //.
 congr (_ + _); apply/eqP; rewrite xpu -subr_eq0 -mulmxBl.
 apply/eqP/sub_kermxP.
 by rewrite eq_keru_imu proj_mx_compl_sub ?S_u_eq1 ?submx1.
@@ -362,11 +365,11 @@ move=> yS zS; apply/idP/idP; last first.
   by move=> /andP[/eqP -> /eqP ->]; rewrite add0r mul0mx.
 rewrite addr_eq0 -mulNmx => /eqP eq_y_Nzu.
 have : (y <= S :&: u)%MS by rewrite sub_capmx yS eq_y_Nzu submxMl.
-rewrite (mxdirect_addsP _) // submx0 => /eqP y_eq0.
+rewrite S_u_direct // submx0 => /eqP y_eq0.
 move/eqP: eq_y_Nzu; rewrite y_eq0 eq_sym mulNmx oppr_eq0 eqxx /= => /eqP.
 move=> /sub_kermxP; rewrite eq_keru_imu => z_keru.
 have : (z <= S :&: u)%MS by rewrite sub_capmx zS.
-by rewrite (mxdirect_addsP _) // submx0.
+by rewrite S_u_direct // submx0.
 Qed.
 
 End ex_6_12.

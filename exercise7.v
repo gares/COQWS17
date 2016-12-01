@@ -9,13 +9,14 @@ Open Scope ring_scope.
 Section CPGE.
 (**
 
-Exercices de mathématiques oraux X-ens Algebre 1
-
 *)
 Section ex_6_12.
-(**
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
-* Endomorphisms u such that Ker u = Im u.
+* Exercices de mathématiques oraux X-ens Algebre 1
+
+Determine the endomorphisms u such that Ker u = Im u.
 
 Let E be a vector space (any dimension, but in Coq we reason in finite
 dimension).
@@ -25,7 +26,9 @@ Variables (F : fieldType) (n' : nat).
 Let n := n'.+1.
 
 Section Q1.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 ** Question 1.
 
@@ -36,7 +39,7 @@ direct sum of S and Im u.
 *)
 Variable (u : 'M[F]_n) (S : 'M[F]_n).
 Hypothesis eq_keru_imu : (kermx u :=: u)%MS.
-Hypothesis S_u_direct : (mxdirect (S + u)).
+Hypothesis S_u_direct : (S :&: u)%MS = 0.
 Hypothesis S_u_eq1 : (S + u :=: 1)%MS.
 
 Implicit Types (x y z : 'rV[F]_n). 
@@ -45,7 +48,7 @@ Implicit Types (x y z : 'rV[F]_n).
 *** Question 1.a.
 
 Show that for all x in E, there is a unique pair (y, z) in S² such
-that x = y + u (z) and pose v and z so that y = v(x) and z = w(x).
+that x = y + u (z), and pose v and z so that y = v(x) and z = w(x).
 
 *)
 Definition w := locked (proj_mx S u).
@@ -55,8 +58,9 @@ Definition v := locked (proj_mx u S * pinvmx u * proj_mx S u).
 Note that we used locking in order to protect w and v from expanding
 unexpectedly during proofs.
 
-
-----
+</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 **** Question 1.a.i.
 Prove the following lemmas.
@@ -77,9 +81,12 @@ unlock v.
 Lemma w_id x : (x <= S)%MS -> x *m w = x.
 Proof.
 unlock w => xS.
-(*D*)by rewrite proj_mx_id ?(mxdirect_addsP _).
+(*D*)by rewrite proj_mx_id ?S_u_direct.
 (*A*)Qed.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+
 
 **** Question 1.a.ii.
 
@@ -101,15 +108,16 @@ and x = y + z *m u
     z' *m u = z *m u
     z' *m u = t
 *)
-(*D*)rewrite -{1}(@add_proj_mx _ _ _ S u x) ?(mxdirect_addsP _) //; last first.
-(*D*)  by rewrite S_u_eq1 submx1.
+(*D*)rewrite -{1}(@add_proj_mx _ _ _ S u x) ?S_u_direct ?S_u_eq1 ?submx1 //.
 (*D*)congr (_ + _); apply/eqP.
 (*D*)rewrite -[x *m proj_mx u S](@mulmxKpV _ _ _ _ _ u) ?proj_mx_sub //.
 (*D*)rewrite 2![x *m _ in X in _ == X]mulmxA -subr_eq0 -mulmxBl.
 (*D*)apply/eqP/sub_kermxP.
 (*D*)by rewrite eq_keru_imu proj_mx_compl_sub ?S_u_eq1 ?submx1.
 (*A*)Qed.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 **** Question 1.a.iii.
 From the proof 
@@ -122,13 +130,15 @@ move=> yS zS; apply/idP/idP; last first.
   by move=> /andP[/eqP -> /eqP ->]; rewrite add0r mul0mx.
 rewrite addr_eq0 -mulNmx => /eqP eq_y_Nzu.
 have : (y <= S :&: u)%MS by rewrite sub_capmx yS eq_y_Nzu submxMl.
-rewrite (mxdirect_addsP _) // submx0 => /eqP y_eq0.
+rewrite S_u_direct // submx0 => /eqP y_eq0.
 move/eqP: eq_y_Nzu; rewrite y_eq0 eq_sym mulNmx oppr_eq0 eqxx /= => /eqP.
 move=> /sub_kermxP; rewrite eq_keru_imu => z_keru.
 have : (z <= S :&: u)%MS by rewrite sub_capmx zS.
-by rewrite (mxdirect_addsP _) // submx0.
+by rewrite S_u_direct // submx0.
 Qed.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 deduce 
 
@@ -167,7 +177,9 @@ Proof.
 (*D*)rewrite -[X in X == _]add0r Su_dec_uniq ?sub0mx ?vS ?wS //.
 (*D*)by move=> /andP [/eqP <-].
 (*A*)Qed.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 *** Question 1.b.
 
@@ -181,7 +193,9 @@ Proof.
 (*D*)rewrite mulmx1 mulmxDr !mulmxA {2}[x]Su_rect mulmxDl u2K addr0.
 (*D*)by rewrite v_id ?wS // addrC -Su_rect.
 (*A*)Qed.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 *** Question 1.c.
 
