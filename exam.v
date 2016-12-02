@@ -70,7 +70,7 @@ Now, some algebra.
 
 *)
 From mathcomp Require Import all_algebra.
-From mathcomp Require Import algC.
+From mathcomp Require Import algC zmodp.
 
 Section AlgebraicHierarchy.
 Section GaussIntegers.
@@ -204,58 +204,173 @@ have /andP [DuReal DvReal] : (Du \is Creal) && (Dv \is Creal).
 End GaussIntegers.
 End AlgebraicHierarchy.
 
-Section Polynomials.
+Section PolynomialsLagrange.
 
 Open Scope ring_scope.
 Import GRing.Theory Num.Theory.
+(**
 
-Variable n : nat.
-Variables na nb: nat.
-Hypothesis nbne0: nb != 0%N.
+Definition and properties of lagrange polynomials.
 
-Definition a:rat := (Posz na)%:~R.
-Definition b:rat :=(Posz nb)%:~R.
+Prove only one of the following lemmas
+*)
+Variables (n : nat) (x : algC ^ n).
 
-Definition pi := a / b.
+Definition lagrange (i : 'I_n) : {poly algC} :=
+  let p := \prod_(j < n | j != i) ('X - (x j)%:P) in (p.[x i]^-1)%:P * p.
 
-Definition f :{poly rat} := (n`!)%:R^-1 *: ('X^n * (a%:P -  b*:'X)^+n).
+Hypothesis n_gt0 : (0 < n)%N.
+Hypothesis x_inj : injective x.
 
-Definition F :{poly rat} := \sum_(i:'I_n.+1) (-1)^i *: f^`(2*i).
-
-
-Axiom derive_f_0_int: forall i, f^`(i).[0] \is a Qint.
-
-
-(** Prove that F at 0 is a Qint.  Hint: relevant lemmas
-are exprnP hornerE horner_sum and the rpred* family *)
-Lemma F0_int : F.[0] \is a Qint.
-Proof.
-(*X*)rewrite horner_sum rpred_sum // => i _.
-(*X*)by rewrite hornerE rpredM ?rpredX // derive_f_0_int.
+Lemma lagrangeE (i j : 'I_n) : (lagrange i).[x j] = (i == j)%:R.
+Proof using x_inj.
+(*X*)rewrite /lagrange hornerM hornerC; set p := (\prod_(_ < _ | _) _).
+(*X*)have [<-|neq_ij] /= := altP eqP.
+(*X*)  rewrite mulVf // horner_prod; apply/prodf_neq0 => k neq_ki.
+(*X*)  by rewrite hornerXsubC subr_eq0 inj_eq // eq_sym.
+(*X*)rewrite [X in _ * X]horner_prod (bigD1 j) 1?eq_sym //=.
+(*X*)by rewrite hornerXsubC subrr mul0r mulr0.
 (*A*)Qed.
 
-Axiom pf_sym:  f \Po (pi%:P -'X) = f.
 
-(** Prove this equation by induction on [i].
-Hint: relevant lemmas are scale* mulr* addr* expr* oppr* in ssralg,
-derivnS derivZ deriv_comp derivE in poly *)
-Lemma  derivn_fpix: forall i , (f^`(i)\Po(pi%:P -'X))= (-1)^+i *: f^`(i).
-Proof.
-(*X*)elim => [|i]; first by rewrite !derivn0 pf_sym scale1r.
-(*X*)move=> /(congr1 (fun p => - p^`())); rewrite deriv_comp derivZ -!derivnS.
-(*X*)by rewrite !derivE add0r mulrN1 opprK -scaleNr exprS mulN1r.
+Lemma size_lagrange i : size (lagrange i) = n.
+Proof using n_gt0 x_inj.
+(*X*)rewrite size_Cmul; last first.
+(*X*)  suff : (lagrange i).[x i] != 0 by rewrite hornerE mulf_eq0 => /norP [].
+(*X*)  by rewrite lagrangeE ?eqxx ?oner_eq0.
+(*X*)rewrite size_prod /=; last first.
+(*X*)  by move=> j neq_ji; rewrite polyXsubC_eq0.
+(*X*)rewrite (eq_bigr (fun=> (2 * 1)%N)); last first.
+(*X*)  by move=> j neq_ji; rewrite size_XsubC.
+(*X*)rewrite -big_distrr /= sum1_card cardC1 card_ord /=.
+(*X*)by case: (n) {i} n_gt0 => ?; rewrite mul2n -addnn -addSn addnK.
 (*A*)Qed.
 
-(** Prove that F at pi is a Qint.
-Hint: relevant lemmas are horner_comp sqrr_sign mulnC scale1r *)
-Lemma FPi_int : F.[pi] \is a Qint.
-Proof.
-(*X*)rewrite horner_sum rpred_sum // => i _; rewrite hornerE rpredM ?rpredX //.
-(*X*)have ppi p : p.[pi] = (p \Po (pi%:P - 'X)).[0] by rewrite horner_comp !hornerE.
-(*X*)by rewrite ppi derivn_fpix hornerE rpredM ?rpredX // derive_f_0_int.
+Lemma lagrange_free (lambda : 'rV_n):
+  \sum_i (lambda 0 i)%:P * lagrange i = 0 -> lambda = 0.
+Proof using x_inj.
+(*X*)move=> eq_l; apply/rowP=> i; rewrite mxE.
+(*X*)have /(congr1 (fun p => p.[x i])) := eq_l.
+(*X*)rewrite horner_sum horner0 (bigD1 i) //= hornerE lagrangeE // eqxx mulr1.
+(*X*)rewrite big1 ?addr0 // => j neq_ji.
+(*X*)by rewrite hornerM lagrangeE // (negPf neq_ji) mulr0.
 (*A*)Qed.
 
-End Polynomials.
+Lemma lagrange_gen (p : {poly algC}) :
+   (size p <= n)%N -> p = \sum_i p.[x i]%:P * lagrange i.
+Proof using n_gt0 x_inj.
+(*X*)(* fancy proof using marix spaces *)
+(*X*)move=> sp_le_n; pose L := \matrix_(i < n) @poly_rV _ n (lagrange i).
+(*X*)suff /(congr1 rVpoly) : poly_rV p = \row_i p.[x i] *m L.
+(*X*)  rewrite poly_rV_K // => {1}->; rewrite mulmx_sum_row raddf_sum /=.
+(*X*)  apply: eq_bigr=> i _; rewrite linearZ /= mxE mul_polyC.
+(*X*)  by rewrite rowK poly_rV_K ?size_lagrange.
+(*X*)have /submxP [u puL]: (poly_rV p <= L)%MS.
+(*X*)  rewrite (submx_trans (submx1 _)) // sub1mx row_full_unit -row_free_unit.
+(*X*)  rewrite -kermx_eq0; apply/rowV0P => v /sub_kermxP.
+(*X*)  move=> /(congr1 rVpoly); rewrite !raddf0 mulmx_sum_row raddf_sum /= => vL0.
+(*X*)  rewrite [v]lagrange_free // -[RHS]vL0; apply: eq_bigr => i _.
+(*X*)  by rewrite linearZ rowK mul_polyC /= poly_rV_K ?size_lagrange.
+(*X*)rewrite puL; congr (_ *m _); apply/rowP=> i; rewrite mxE.
+(*X*)have /(congr1 (fun v => (rVpoly v).[x i])) := puL.
+(*X*)rewrite poly_rV_K // mulmx_sum_row raddf_sum /=.
+(*X*)rewrite (bigD1 i) //= linearZ /= rowK poly_rV_K ?size_lagrange //.
+(*X*)rewrite 2!hornerE lagrangeE eqxx mulr1 horner_sum big1 ?addr0 //.
+(*X*)move=> j neq_ji; rewrite linearZ rowK /= ?poly_rV_K ?size_lagrange //.
+(*X*)by rewrite hornerZ lagrangeE (negPf neq_ji) mulr0.
+
+(*X*)Restart. (* shorter proof, direct *)
+
+(*X*)move=> sp_le_n; apply/eqP; rewrite -subr_eq0; apply: contraTT isT.
+(*X*)move=> /max_poly_roots - /(_ [seq x i | i <- enum 'I_n]).
+(*X*)rewrite size_map size_enum_ord map_inj_uniq ?enum_uniq //.
+(*X*)rewrite [(n < _)%N]negbTE; [apply=>//|rewrite -leqNgt].
+(*X*)  apply/allP=> /= _ /imageP [/= i _ ->].
+(*X*)  rewrite rootE !hornerE horner_sum (bigD1 i) //=.
+(*X*)  rewrite hornerM hornerC lagrangeE // eqxx mulr1 opprD addNKr.
+(*X*)  rewrite big1 ?oppr0 // => j neq_ji.
+(*X*)  by rewrite hornerM lagrangeE // (negPf neq_ji) mulr0.
+(*X*)rewrite (leq_trans (size_add _ _)) // size_opp geq_max sp_le_n /=.
+(*X*)rewrite (leq_trans (size_sum _ _ _)) //; apply/bigmax_leqP=> j _.
+(*X*)rewrite (leq_trans (size_mul_leq _ _)) // size_polyC size_lagrange //.
+(*X*)by move: (n) n_gt0 (_ == _) => [] // ? _ [].
+(*A*)Qed.
+
+End PolynomialsLagrange.
+
+Section PolynomialsTaylor.
+(**
+Taylor formula for polynomials
+
+*)
+Import GRing.Theory.
+Open Scope ring_scope.
+Variable R: idomainType.
+
+(*X*)(* This is the strongest statement I could prove *)
+(*X*)(* uses max_poly_roots and nderiv_taylor *)
+(*X*)Lemma Taylor_formula_strong (p : {poly R}) (x : R) (rs : seq R) :
+(*X*)  (size p <= size rs)%N -> uniq rs ->
+(*X*)  p = \sum_ (i < size p) p^`N(i).[x] *: ('X - x%:P) ^+ i.
+(*X*)Proof.
+(*X*)move=> sprs /max_poly_roots prs; apply/eqP; rewrite -subr_eq0.
+(*X*)apply: contraTT isT => /prs; rewrite [(_ < _)%N]negbTE; [apply|rewrite -leqNgt].
+(*X*)  apply/allP=> y y_rs; rewrite rootE hornerD hornerN subr_eq0; apply/eqP.
+(*X*)  rewrite -[y in X in p.[X]](addrNK x) [_ + x]addrC.
+(*X*)  rewrite nderiv_taylor; last exact: mulrC.
+(*X*)  by rewrite horner_sum; apply: eq_bigr=> i _; rewrite !(hornerE, horner_exp).
+(*X*)rewrite (leq_trans (size_add _ _)) // geq_max sprs /= size_opp.
+(*X*)rewrite (leq_trans (size_sum _ _ _)) //; apply/bigmax_leqP=> i _.
+(*X*)rewrite (leq_trans (size_scale_leq _ _)) //.
+(*X*)by rewrite size_exp_XsubC (leq_trans _ sprs).
+(*X*)Qed.
+
+(*X*)Lemma natr_injP (D : idomainType) :
+(*X*)  (forall n, (n%:R == 0 :> D) = (n == 0)%N) <-> injective (@GRing.natmul D 1).
+(*X*)Proof.
+(*X*)split=> [natr_eq0 i j|natr_inj n]; last by rewrite -(inj_eq natr_inj).
+(*X*)wlog: i j / (j <= i)%N => [hwlog|].
+(*X*)  by have [/hwlog//|/ltnW/hwlog/(_ (esym _))/esym] := leqP j i.
+(*X*)by move=> /subnK<- /eqP; rewrite -subr_eq0 natrD addrK natr_eq0 => /eqP->.
+(*X*)Qed.
+
+(*X*) (* This is the statement with ask the students to prove *)
+Hypothesis charR_eq0 : [char R] =i pred0.
+Lemma Taylor_formula (p : {poly R}) (x : R) :
+  p = \sum_ (i < size p) p^`N(i).[x] *: ('X - x%:P) ^+ i.
+(*X*)Proof. (* Proof using the stronger version *)
+(*X*)apply: (@Taylor_formula_strong _ _ [seq i%:R | i <- iota 0 (size p)]).
+(*X*)  by rewrite size_map size_iota.
+(*X*)by rewrite map_inj_uniq ?iota_uniq //; apply/natr_injP/charf0P.
+(*X*)
+(*X*)Restart. (* Proof for the students *)
+(*X*)
+Proof.
+wlog: p x / x = 0 => [hwlog|->]; rewrite ?subr0; last first.
+(*X*)  transitivity (\poly_(i < size p) p^`N(i).[0]);
+(*X*)    last by rewrite poly_def.
+(*X*)  apply/polyP=> /= i; rewrite coef_poly.
+(*X*)  have [i_small|i_big]:= ltnP; last by rewrite nth_default.
+  (*a*)by rewrite horner_coef0 coef_nderivn addn0 binn mulr1n.
+rewrite -[LHS](comp_polyXaddC_K _ x) -[RHS](comp_polyXaddC_K _ x).
+congr (_ \Po _); rewrite [LHS](hwlog _ 0 erefl) ?subr0 [RHS]raddf_sum /=.
+rewrite size_comp_poly2; last first.
+  by rewrite -[x%:P as X in 'X + X]opprK -[- x%:P]raddfN /= size_XsubC.
+(*X*)apply: eq_bigr => i _.
+(*X*)have nderivn_compXD q (a : R) j :
+(*X*)  (q \Po ('X + a%:P))^`N(j) = q^`N(j) \Po ('X + a%:P).
+       have /charf0P/natr_injP natr_inj := charR_eq0.
+(*X*)  apply: (@mulfI _ j`!%:R%:P).
+(*X*)     rewrite polyC_eq0; have/charf0P -> := charR_eq0.
+     (*a*)by rewrite -lt0n fact_gt0.
+(*X*)  rewrite !mul_polyC !scaler_nat -rmorphMn /= -!nderivn_def.
+  (*a*)by elim: j => //= j ->; rewrite deriv_comp !derivE addr0 mulr1.
+(*X*)rewrite nderivn_compXD horner_comp !hornerE // linearZ rmorphX /=.
+(*X*)rewrite -['X - x%:P]comp_polyX -[x%:P as X in 'X + X]opprK.
+(*X*)by rewrite -[- x%:P]raddfN /= comp_polyXaddC_K.
+(*A*)Qed.
+
+End PolynomialsTaylor.
 
 Section LinearAlgebra.
 Import GRing.Theory Num.Theory.
@@ -303,7 +418,7 @@ apply: (iffP idP) => [|[v vMu vDu]]; last first.
 (*X*)  have /mxrankS leq_rk := addmx_sub_adds (submx_refl v) (submx_refl u).
   (* finish using hypothesis *)
   (*a*)by rewrite !(leq_trans _ leq_rk) //= ?rkvDu ?rkvDrku.
-move=> /andP [/eqmxP kuDu_eq1 kvDu_direct].
+move=> /andP [/eqmxP kuDu_eq1 /mxdirect_addsP kvDu_direct].
 pose v := proj_mx (kermx u) u; exists v.
   (*a*)by apply/sub_kermxP; rewrite -[X in (X <= _)%MS]mul1r proj_mx_sub.
 rewrite -row_free_unit -kermx_eq0.
@@ -313,10 +428,9 @@ apply/negP; rewrite negbK; apply/eqP.
 have : (x *m v <= kermx u :&: u)%MS.
 (* Hint: use sub_*, proj_mx*, eqmx_*, mxdirect_addsP, *)
   (*a*)by rewrite sub_capmx proj_mx_sub eq_xv_Nxu eqmx_opp submxMl.
-(*X*)rewrite (mxdirect_addsP _) ?submx0 // => /eqP xv_eq0.
+(*X*)rewrite kvDu_direct ?submx0 // => /eqP xv_eq0.
 (*X*)move/eqP : eq_xv_Nxu; rewrite xv_eq0 eq_sym oppr_eq0 => /eqP.
-(*X*)move=> /sub_kermxP x_in_keru; move: xv_eq0; rewrite proj_mx_id //.
-(*X*)by rewrite (mxdirect_addsP _).
+(*X*)by move=> /sub_kermxP x_in_keru; move: xv_eq0; rewrite proj_mx_id.
 (*A*)Qed.
 
 End LinearAlgebra.
