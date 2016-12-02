@@ -208,13 +208,45 @@ Section Polynomials.
 
 (* Taylor formula for polynomials *)
 
+Import GRing.Theory.
 Open Scope ring_scope.
-Variable R: unitRingType.
-Variable P : {poly R}.
+Variable R: idomainType.
+Hypothesis charR_eq0 : [char R] =i pred0.
 
-Lemma Taylor_formula :forall (P : {poly R} ) (x : R) n , size P = n.+1 ->
-P = \sum_ (i < n.+1)  (i`!)%:R^-1 *: (P^`(i).[x] *: ('X - x%:P)^+i). 
-
+Lemma Taylor_formula (p : {poly R}) (x : R) :
+p = \sum_ (i < size p) p^`N(i).[x] *: ('X - x%:P) ^+ i.
+Proof.
+wlog: p x / x = 0 => [hwlog|->]; rewrite ?subr0; last first.
+(*X*)  transitivity (\poly_(i < size p) p^`N(i).[0]);
+(*X*)    last by rewrite poly_def.
+(*X*)  apply/polyP=> /= i; rewrite coef_poly.
+(*X*)  have [i_small|i_big]:= ltnP; last by rewrite nth_default.
+  (*a*)by rewrite horner_coef0 coef_nderivn addn0 binn mulr1n.
+rewrite -[LHS](comp_polyXaddC_K _ x) -[RHS](comp_polyXaddC_K _ x).
+congr (_ \Po _); rewrite [LHS](hwlog _ 0 erefl) ?subr0 [RHS]raddf_sum /=.
+rewrite (_ : size (p \Po _) = size p); last first.
+  rewrite -[x%:P as X in 'X + X]opprK -[- x%:P]raddfN /=.
+  have := lead_coef_eq0 p; rewrite -size_poly_eq0 lead_coefE.
+  rewrite comp_polyE; move: (size p) => [|n /= pn_eq0F].
+    by rewrite big_ord0 size_poly0.
+  rewrite big_ord_recr /= -mul_polyC addrC size_addl;
+    rewrite size_Mmonic ?polyC_eq0 ?pn_eq0F ?monic_exp ?monicXsubC //;
+    rewrite size_polyC pn_eq0F add1n size_exp_XsubC ?ltnS //=.
+  rewrite (leq_trans (size_sum _ _ _)) //.
+  apply/bigmax_leqP => /= i _; rewrite (leq_trans (size_scale_leq _ _)) //.
+  by rewrite size_exp_XsubC.
+(*X*)apply: eq_bigr => i _.
+(*X*)have nderivn_compXD q (a : R) j :
+(*X*)  (q \Po ('X + a%:P))^`N(j) = q^`N(j) \Po ('X + a%:P).
+(*X*)  apply: (@mulfI _ j`!%:R%:P).
+(*X*)     rewrite polyC_eq0; have/charf0P -> := charR_eq0.
+     (*a*)by rewrite -lt0n fact_gt0.
+(*X*)  rewrite !mul_polyC !scaler_nat -rmorphMn /= -!nderivn_def.
+  (*a*)by elim: j => //= j ->; rewrite deriv_comp !derivE addr0 mulr1.
+(*X*)rewrite nderivn_compXD horner_comp !hornerE // linearZ rmorphX /=.
+(*X*)rewrite -['X - x%:P]comp_polyX -[x%:P as X in 'X + X]opprK.
+(*X*)by rewrite -[- x%:P]raddfN /= comp_polyXaddC_K.
+Qed.
 
 End Polynomials.
 
