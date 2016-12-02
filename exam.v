@@ -251,48 +251,52 @@ Definition and properties of lagrange polynomials.
 
 Prove only one of the following lemmas
 *)
-Definition lagrange n (x : algC ^ n) (i : 'I_n) : {poly algC} :=
+Variables (n : nat) (x : algC ^ n).
+
+Definition lagrange (i : 'I_n) : {poly algC} :=
   let p := \prod_(j < n | j != i) ('X - (x j)%:P) in (p.[x i]^-1)%:P * p.
 
-Lemma lagrangeE n (x : algC ^ n) (i j : 'I_n) : injective x ->
-  (lagrange x i).[x j] = (i == j)%:R.
-Proof.
+Hypothesis n_gt0 : (0 < n)%N.
+Hypothesis x_inj : injective x.
+
+Lemma lagrangeE (i j : 'I_n) : (lagrange i).[x j] = (i == j)%:R.
+Proof using x_inj.
 (*X*)rewrite /lagrange hornerM hornerC; set p := (\prod_(_ < _ | _) _).
-(*X*)move=> x_inj; have [<-|neq_ij] /= := altP eqP.
+(*X*)have [<-|neq_ij] /= := altP eqP.
 (*X*)  rewrite mulVf // horner_prod; apply/prodf_neq0 => k neq_ki.
 (*X*)  by rewrite hornerXsubC subr_eq0 inj_eq // eq_sym.
 (*X*)rewrite [X in _ * X]horner_prod (bigD1 j) 1?eq_sym //=.
 (*X*)by rewrite hornerXsubC subrr mul0r mulr0.
 (*A*)Qed.
 
-Lemma size_lagrange n (x : _ ^ n) i : (0 < n)%N -> injective x ->
-  size (lagrange x i) = n.
-Proof.
-(*X*)move=> n_gt0 x_inj; rewrite size_Cmul; last first.
-(*X*)  suff : (lagrange x i).[x i] != 0 by rewrite hornerE mulf_eq0 => /norP [].
+
+Lemma size_lagrange i : size (lagrange i) = n.
+Proof using n_gt0 x_inj.
+(*X*)rewrite size_Cmul; last first.
+(*X*)  suff : (lagrange i).[x i] != 0 by rewrite hornerE mulf_eq0 => /norP [].
 (*X*)  by rewrite lagrangeE ?eqxx ?oner_eq0.
 (*X*)rewrite size_prod /=; last first.
 (*X*)  by move=> j neq_ji; rewrite polyXsubC_eq0.
 (*X*)rewrite (eq_bigr (fun=> (2 * 1)%N)); last first.
 (*X*)  by move=> j neq_ji; rewrite size_XsubC.
 (*X*)rewrite -big_distrr /= sum1_card cardC1 card_ord /=.
-(*X*)by case: n {i x x_inj} n_gt0 => //= n _; rewrite mul2n -addnn -addSn addnK.
+(*X*)by case: (n) {i} n_gt0 => ?; rewrite mul2n -addnn -addSn addnK.
 (*A*)Qed.
 
-Lemma lagrange_free n (x : algC ^ n) (lambda : algC ^ n): injective x ->
-  \sum_i (lambda i)%:P * lagrange x i = 0 -> lambda = [ffun=> 0].
-Proof.
-(*X*)move=> x_inj eq_l; apply/ffunP=> i; rewrite ffunE.
+Lemma lagrange_free (lambda : algC ^ n): 
+  \sum_i (lambda i)%:P * lagrange i = 0 -> lambda = [ffun=> 0].
+Proof using x_inj.
+(*X*)move=> eq_l; apply/ffunP=> i; rewrite ffunE.
 (*X*)have /(congr1 (fun p => p.[x i])) := eq_l.
 (*X*)rewrite horner_sum horner0 (bigD1 i) //= hornerE lagrangeE // eqxx mulr1.
 (*X*)rewrite big1 ?addr0 // => j neq_ji.
 (*X*)by rewrite hornerM lagrangeE // (negPf neq_ji) mulr0.
 (*A*)Qed.
 
-Lemma lagrange_gen n (x : algC ^ n) (p : {poly algC}) : (0 < n)%N ->
-   injective x -> (size p <= n)%N -> p = \sum_i p.[x i]%:P * lagrange x i.
-Proof.
-(*X*)move=> n_gt0 x_inj sp_le_n; apply/eqP; rewrite -subr_eq0; apply: contraTT isT.
+Lemma lagrange_gen (p : {poly algC}) :
+   (size p <= n)%N -> p = \sum_i p.[x i]%:P * lagrange i.
+Proof using n_gt0 x_inj.
+(*X*)move=> sp_le_n; apply/eqP; rewrite -subr_eq0; apply: contraTT isT.
 (*X*)move=> /max_poly_roots - /(_ [seq x i | i <- enum 'I_n]).
 (*X*)rewrite size_map size_enum_ord map_inj_uniq ?enum_uniq //.
 (*X*)rewrite [(n < _)%N]negbTE; [apply=>//|rewrite -leqNgt].
@@ -304,7 +308,7 @@ Proof.
 (*X*)rewrite (leq_trans (size_add _ _)) // size_opp geq_max sp_le_n /=.
 (*X*)rewrite (leq_trans (size_sum _ _ _)) //; apply/bigmax_leqP=> j _.
 (*X*)rewrite (leq_trans (size_mul_leq _ _)) // size_polyC size_lagrange //.
-(*X*)by move: n {x x_inj sp_le_n j} n_gt0 (_ == _) => [] // ? _ [].
+(*X*)by move: (n) n_gt0 (_ == _) => [] // ? _ [].
 (*A*)Qed.
 
 End Polynomials_alt.
