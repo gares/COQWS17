@@ -70,7 +70,7 @@ Now, some algebra.
 
 *)
 From mathcomp Require Import all_algebra.
-From mathcomp Require Import algC.
+From mathcomp Require Import algC zmodp.
 
 Section AlgebraicHierarchy.
 Section GaussIntegers.
@@ -204,44 +204,7 @@ have /andP [DuReal DvReal] : (Du \is Creal) && (Dv \is Creal).
 End GaussIntegers.
 End AlgebraicHierarchy.
 
-Section Polynomials.
-
-(* Taylor formula for polynomials *)
-
-Import GRing.Theory.
-Open Scope ring_scope.
-Variable R: idomainType.
-Hypothesis charR_eq0 : [char R] =i pred0.
-
-Lemma Taylor_formula (p : {poly R}) (x : R) :
-p = \sum_ (i < size p) p^`N(i).[x] *: ('X - x%:P) ^+ i.
-Proof.
-wlog: p x / x = 0 => [hwlog|->]; rewrite ?subr0; last first.
-(*X*)  transitivity (\poly_(i < size p) p^`N(i).[0]);
-(*X*)    last by rewrite poly_def.
-(*X*)  apply/polyP=> /= i; rewrite coef_poly.
-(*X*)  have [i_small|i_big]:= ltnP; last by rewrite nth_default.
-  (*a*)by rewrite horner_coef0 coef_nderivn addn0 binn mulr1n.
-rewrite -[LHS](comp_polyXaddC_K _ x) -[RHS](comp_polyXaddC_K _ x).
-congr (_ \Po _); rewrite [LHS](hwlog _ 0 erefl) ?subr0 [RHS]raddf_sum /=.
-rewrite size_comp_poly2; last first.
-  by rewrite -[x%:P as X in 'X + X]opprK -[- x%:P]raddfN /= size_XsubC.
-(*X*)apply: eq_bigr => i _.
-(*X*)have nderivn_compXD q (a : R) j :
-(*X*)  (q \Po ('X + a%:P))^`N(j) = q^`N(j) \Po ('X + a%:P).
-(*X*)  apply: (@mulfI _ j`!%:R%:P).
-(*X*)     rewrite polyC_eq0; have/charf0P -> := charR_eq0.
-     (*a*)by rewrite -lt0n fact_gt0.
-(*X*)  rewrite !mul_polyC !scaler_nat -rmorphMn /= -!nderivn_def.
-  (*a*)by elim: j => //= j ->; rewrite deriv_comp !derivE addr0 mulr1.
-(*X*)rewrite nderivn_compXD horner_comp !hornerE // linearZ rmorphX /=.
-(*X*)rewrite -['X - x%:P]comp_polyX -[x%:P as X in 'X + X]opprK.
-(*X*)by rewrite -[- x%:P]raddfN /= comp_polyXaddC_K.
-(*A*)Qed.
-
-End Polynomials.
-
-Section Polynomials_alt.
+Section PolynomialsLagrange.
 
 Open Scope ring_scope.
 Import GRing.Theory Num.Theory.
@@ -283,8 +246,6 @@ Proof using n_gt0 x_inj.
 (*X*)by case: (n) {i} n_gt0 => ?; rewrite mul2n -addnn -addSn addnK.
 (*A*)Qed.
 
-Import zmodp matrix mxalgebra.
-
 Lemma lagrange_free (lambda : 'rV_n):
   \sum_i (lambda 0 i)%:P * lagrange i = 0 -> lambda = 0.
 Proof using x_inj.
@@ -298,6 +259,7 @@ Proof using x_inj.
 Lemma lagrange_gen (p : {poly algC}) :
    (size p <= n)%N -> p = \sum_i p.[x i]%:P * lagrange i.
 Proof using n_gt0 x_inj.
+(*X*)(* fancy proof using marix spaces *)
 (*X*)move=> sp_le_n; pose L := \matrix_(i < n) @poly_rV _ n (lagrange i).
 (*X*)suff /(congr1 rVpoly) : poly_rV p = \row_i p.[x i] *m L.
 (*X*)  rewrite poly_rV_K // => {1}->; rewrite mulmx_sum_row raddf_sum /=.
@@ -316,7 +278,9 @@ Proof using n_gt0 x_inj.
 (*X*)rewrite 2!hornerE lagrangeE eqxx mulr1 horner_sum big1 ?addr0 //.
 (*X*)move=> j neq_ji; rewrite linearZ rowK /= ?poly_rV_K ?size_lagrange //.
 (*X*)by rewrite hornerZ lagrangeE (negPf neq_ji) mulr0.
-(*X*)Restart.
+
+(*X*)Restart. (* shorter proof, direct *)
+
 (*X*)move=> sp_le_n; apply/eqP; rewrite -subr_eq0; apply: contraTT isT.
 (*X*)move=> /max_poly_roots - /(_ [seq x i | i <- enum 'I_n]).
 (*X*)rewrite size_map size_enum_ord map_inj_uniq ?enum_uniq //.
@@ -332,7 +296,81 @@ Proof using n_gt0 x_inj.
 (*X*)by move: (n) n_gt0 (_ == _) => [] // ? _ [].
 (*A*)Qed.
 
-End Polynomials_alt.
+End PolynomialsLagrange.
+
+Section PolynomialsTaylor.
+(**
+Taylor formula for polynomials
+
+*)
+Import GRing.Theory.
+Open Scope ring_scope.
+Variable R: idomainType.
+
+(*X*)(* This is the strongest statement I could prove *)
+(*X*)(* uses max_poly_roots and nderiv_taylor *)
+(*X*)Lemma Taylor_formula_strong (p : {poly R}) (x : R) (rs : seq R) :
+(*X*)  (size p <= size rs)%N -> uniq rs ->
+(*X*)  p = \sum_ (i < size p) p^`N(i).[x] *: ('X - x%:P) ^+ i.
+(*X*)Proof.
+(*X*)move=> sprs /max_poly_roots prs; apply/eqP; rewrite -subr_eq0.
+(*X*)apply: contraTT isT => /prs; rewrite [(_ < _)%N]negbTE; [apply|rewrite -leqNgt].
+(*X*)  apply/allP=> y y_rs; rewrite rootE hornerD hornerN subr_eq0; apply/eqP.
+(*X*)  rewrite -[y in X in p.[X]](addrNK x) [_ + x]addrC.
+(*X*)  rewrite nderiv_taylor; last exact: mulrC.
+(*X*)  by rewrite horner_sum; apply: eq_bigr=> i _; rewrite !(hornerE, horner_exp).
+(*X*)rewrite (leq_trans (size_add _ _)) // geq_max sprs /= size_opp.
+(*X*)rewrite (leq_trans (size_sum _ _ _)) //; apply/bigmax_leqP=> i _.
+(*X*)rewrite (leq_trans (size_scale_leq _ _)) //.
+(*X*)by rewrite size_exp_XsubC (leq_trans _ sprs).
+(*X*)Qed.
+
+(*X*)Lemma natr_injP (D : idomainType) :
+(*X*)  (forall n, (n%:R == 0 :> D) = (n == 0)%N) <-> injective (@GRing.natmul D 1).
+(*X*)Proof.
+(*X*)split=> [natr_eq0 i j|natr_inj n]; last by rewrite -(inj_eq natr_inj).
+(*X*)wlog: i j / (j <= i)%N => [hwlog|].
+(*X*)  by have [/hwlog//|/ltnW/hwlog/(_ (esym _))/esym] := leqP j i.
+(*X*)by move=> /subnK<- /eqP; rewrite -subr_eq0 natrD addrK natr_eq0 => /eqP->.
+(*X*)Qed.
+
+(*X*) (* This is the statement with ask the students to prove *)
+Hypothesis charR_eq0 : [char R] =i pred0.
+Lemma Taylor_formula (p : {poly R}) (x : R) :
+  p = \sum_ (i < size p) p^`N(i).[x] *: ('X - x%:P) ^+ i.
+(*X*)Proof. (* Proof using the stronger version *)
+(*X*)apply: (@Taylor_formula_strong _ _ [seq i%:R | i <- iota 0 (size p)]).
+(*X*)  by rewrite size_map size_iota.
+(*X*)by rewrite map_inj_uniq ?iota_uniq //; apply/natr_injP/charf0P.
+(*X*)
+(*X*)Restart. (* Proof for the students *)
+(*X*)
+Proof.
+wlog: p x / x = 0 => [hwlog|->]; rewrite ?subr0; last first.
+(*X*)  transitivity (\poly_(i < size p) p^`N(i).[0]);
+(*X*)    last by rewrite poly_def.
+(*X*)  apply/polyP=> /= i; rewrite coef_poly.
+(*X*)  have [i_small|i_big]:= ltnP; last by rewrite nth_default.
+  (*a*)by rewrite horner_coef0 coef_nderivn addn0 binn mulr1n.
+rewrite -[LHS](comp_polyXaddC_K _ x) -[RHS](comp_polyXaddC_K _ x).
+congr (_ \Po _); rewrite [LHS](hwlog _ 0 erefl) ?subr0 [RHS]raddf_sum /=.
+rewrite size_comp_poly2; last first.
+  by rewrite -[x%:P as X in 'X + X]opprK -[- x%:P]raddfN /= size_XsubC.
+(*X*)apply: eq_bigr => i _.
+(*X*)have nderivn_compXD q (a : R) j :
+(*X*)  (q \Po ('X + a%:P))^`N(j) = q^`N(j) \Po ('X + a%:P).
+       have /charf0P/natr_injP natr_inj := charR_eq0.
+(*X*)  apply: (@mulfI _ j`!%:R%:P).
+(*X*)     rewrite polyC_eq0; have/charf0P -> := charR_eq0.
+     (*a*)by rewrite -lt0n fact_gt0.
+(*X*)  rewrite !mul_polyC !scaler_nat -rmorphMn /= -!nderivn_def.
+  (*a*)by elim: j => //= j ->; rewrite deriv_comp !derivE addr0 mulr1.
+(*X*)rewrite nderivn_compXD horner_comp !hornerE // linearZ rmorphX /=.
+(*X*)rewrite -['X - x%:P]comp_polyX -[x%:P as X in 'X + X]opprK.
+(*X*)by rewrite -[- x%:P]raddfN /= comp_polyXaddC_K.
+(*A*)Qed.
+
+End PolynomialsTaylor.
 
 Section LinearAlgebra.
 Import GRing.Theory Num.Theory.
