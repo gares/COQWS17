@@ -283,10 +283,12 @@ Proof using n_gt0 x_inj.
 (*X*)by case: (n) {i} n_gt0 => ?; rewrite mul2n -addnn -addSn addnK.
 (*A*)Qed.
 
-Lemma lagrange_free (lambda : algC ^ n): 
-  \sum_i (lambda i)%:P * lagrange i = 0 -> lambda = [ffun=> 0].
+Import zmodp matrix mxalgebra.
+
+Lemma lagrange_free (lambda : 'rV_n):
+  \sum_i (lambda 0 i)%:P * lagrange i = 0 -> lambda = 0.
 Proof using x_inj.
-(*X*)move=> eq_l; apply/ffunP=> i; rewrite ffunE.
+(*X*)move=> eq_l; apply/rowP=> i; rewrite mxE.
 (*X*)have /(congr1 (fun p => p.[x i])) := eq_l.
 (*X*)rewrite horner_sum horner0 (bigD1 i) //= hornerE lagrangeE // eqxx mulr1.
 (*X*)rewrite big1 ?addr0 // => j neq_ji.
@@ -296,6 +298,25 @@ Proof using x_inj.
 Lemma lagrange_gen (p : {poly algC}) :
    (size p <= n)%N -> p = \sum_i p.[x i]%:P * lagrange i.
 Proof using n_gt0 x_inj.
+(*X*)move=> sp_le_n; pose L := \matrix_(i < n) @poly_rV _ n (lagrange i).
+(*X*)suff /(congr1 rVpoly) : poly_rV p = \row_i p.[x i] *m L.
+(*X*)  rewrite poly_rV_K // => {1}->; rewrite mulmx_sum_row raddf_sum /=.
+(*X*)  apply: eq_bigr=> i _; rewrite linearZ /= mxE mul_polyC.
+(*X*)  by rewrite rowK poly_rV_K ?size_lagrange.
+(*X*)have /submxP [u puL]: (poly_rV p <= L)%MS.
+(*X*)  rewrite (submx_trans (submx1 _)) // sub1mx row_full_unit -row_free_unit.
+(*X*)  rewrite -kermx_eq0; apply/rowV0P => v /sub_kermxP.
+(*X*)  move=> /(congr1 rVpoly); rewrite !raddf0 mulmx_sum_row raddf_sum /= => vL0.
+(*X*)  rewrite [v]lagrange_free // -[RHS]vL0; apply: eq_bigr => i _.
+(*X*)  by rewrite linearZ rowK mul_polyC /= poly_rV_K ?size_lagrange.
+(*X*)rewrite puL; congr (_ *m _); apply/rowP=> i; rewrite mxE.
+(*X*)have /(congr1 (fun v => (rVpoly v).[x i])) := puL.
+(*X*)rewrite poly_rV_K // mulmx_sum_row raddf_sum /=.
+(*X*)rewrite (bigD1 i) //= linearZ /= rowK poly_rV_K ?size_lagrange //.
+(*X*)rewrite 2!hornerE lagrangeE eqxx mulr1 horner_sum big1 ?addr0 //.
+(*X*)move=> j neq_ji; rewrite linearZ rowK /= ?poly_rV_K ?size_lagrange //.
+(*X*)by rewrite hornerZ lagrangeE (negPf neq_ji) mulr0.
+(*X*)Restart.
 (*X*)move=> sp_le_n; apply/eqP; rewrite -subr_eq0; apply: contraTT isT.
 (*X*)move=> /max_poly_roots - /(_ [seq x i | i <- enum 'I_n]).
 (*X*)rewrite size_map size_enum_ord map_inj_uniq ?enum_uniq //.
