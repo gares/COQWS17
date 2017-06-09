@@ -334,7 +334,7 @@ Variable R: idomainType.
 (*X*)by move=> /subnK<- /eqP; rewrite -subr_eq0 natrD addrK natr_eq0 => /eqP->.
 (*X*)Qed.
 
-(*X*) (* This is the statement with ask the students to prove *)
+(*X*) (* This is the statement we ask the students to prove *)
 Hypothesis charR_eq0 : [char R] =i pred0.
 Lemma Taylor_formula (p : {poly R}) (x : R) :
   p = \sum_ (i < size p) p^`N(i).[x] *: ('X - x%:P) ^+ i.
