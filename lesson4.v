@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect zmodp. 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -243,12 +243,13 @@ Definition kosaraju :=
   (foldl  (fun p x => if x \in p.1 then p else 
                       let p1 := f (p.1, [::]) x in  (p1.1, p1.2 :: p.2))
           (set0, [::]) (stack r)).2.
-
+ 
 Lemma kosaraju_correct :
     let l := flatten kosaraju in 
  [/\ uniq l, forall i, i \in l &
      forall c : seq T, c \in kosaraju -> 
-        exists x, forall y, (y \in c) = (connect r x y && connect r y x)]. 
+        exists x, forall y, (y \in c) = (connect r x y && connect r y x)].
+Admitted.
 
 End Kosaraju.
 

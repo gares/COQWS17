@@ -71,7 +71,7 @@ Qed.
 Lemma iseq n (x : 'I_n) : x \in 'I_n.
 Proof.
 have mem_enum := mem_enum.
-have enum_uniq := enum_unique.
+have enum_uniq := enum_uniq.
 have cardT := cardT.
 have cardE := cardE.
 by [].

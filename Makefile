@@ -77,6 +77,8 @@ run: jscoq
 	@echo "Go to: http://localhost:8000/lesson1.html"
 	python3 -m http.server 8000 || python -m SimpleHTTPServer 8000
 
+validate: $(VS) $(EX) test.v
+	for x in $^; do $(COQC) $$x || exit 1; done
 
 test.html: test.html.tmp
 	@mv $< $@
