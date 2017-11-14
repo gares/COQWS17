@@ -9,11 +9,11 @@ FILES=$(VS:%.v=%.html) $(VS) $(EX:%.v=%-todo.v)
 all: jscoq udoc/udoc.byte cheat-sheet/cheatsheet.pdf $(FILES)
 
 jscoq.orig:
-	git clone https://github.com/ejgallego/jscoq-builds.git --depth 1 jscoq
-	cd jscoq && git checkout c219bd7e4b207846a607ce5a19513412d826ce7a
+	git clone https://github.com/ejgallego/jscoq-builds.git --depth 1 -b v8.7 jscoq
+	cd jscoq && git checkout 350105b4bda3a3f1a219a9caba80473b7a6f14d4
 	mv jscoq jscoq.orig
 
-jscoq.tgz:
+jscoq.tgz: jscoq.orig
 	rm -rf jscoq
 	cp -rf jscoq.orig jscoq
 	cd jscoq/coq-pkgs/; for X in `ls`; do\
@@ -28,8 +28,8 @@ jscoq.tgz:
 		     $$X != bcache.list      ]; then \
 		     rm -rf $$X; \
 		fi; done
-	patch -p1 < jscoq.patch
 	rm -rf jscoq/.git
+	cd jscoq/coq-js; ln -s ../coq-pkgs .
 	tar -czf jscoq.tgz jscoq/
 	rm -rf jscoq
 
@@ -37,12 +37,11 @@ jscoq: jscoq.tgz
 	tar -xzf jscoq.tgz
 	touch jscoq
 
-udoc/udoc.byte: udoc.patch
+udoc/udoc.byte: 
 	$(MAKE) check-ocaml-ver-4.02.0
 	rm -rf udoc
 	git clone https://github.com/ejgallego/udoc.git
-	cd udoc && git checkout 11fa04a621e8f8bc156430da4f0d3c10d8585ab3
-	cd udoc && patch -p1 < ../udoc.patch
+	cd udoc && git checkout ff209e2ba83e7472cd4da8f2adf5f9a09a55de2f
 	cd udoc && make
 
 cheat-sheet/cheatsheet.pdf: cheat-sheet/cheatsheet.tex
