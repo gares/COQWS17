@@ -37,11 +37,12 @@ jscoq: jscoq.tgz
 	tar -xzf jscoq.tgz
 	touch jscoq
 
-udoc/udoc.byte: 
+udoc/udoc.byte: udoc.patch
 	$(MAKE) check-ocaml-ver-4.02.0
 	rm -rf udoc
 	git clone https://github.com/ejgallego/udoc.git
 	cd udoc && git checkout ff209e2ba83e7472cd4da8f2adf5f9a09a55de2f
+	cd udoc && patch -p1 < ../udoc.patch
 	cd udoc && make
 
 cheat-sheet/cheatsheet.pdf: cheat-sheet/cheatsheet.tex

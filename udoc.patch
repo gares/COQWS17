@@ -1,0 +1,41 @@
+diff --git a/html/jscoq_footer.html b/html/jscoq_footer.html
+index a11b32a..d381425 100644
+--- a/html/jscoq_footer.html
++++ b/html/jscoq_footer.html
+@@ -2,21 +2,24 @@
+   </div> <!-- /#code-wrapper -->
+   </div> <!-- /#ide-wrapper  -->
+ 
+-  <script src="./jscoq/js/jscoq-loader.js" type="text/javascript"></script>
++  <script src="./jscoq/ui-js/jscoq-loader.js" type="text/javascript"></script>
+   <script type="text/javascript">
+     var coq;
+ 
+-    loadJsCoq('./jscoq/')
+-              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/runmode"))
+-              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/colorize"))
+-              .then( function () {
+-                  var coqInline = document.getElementsByClassName("inline-coq");
+-                  CodeMirror.colorize(coqInline); })
+-              .then( function () {
+-                  coq = new CoqManager (coqdoc_ids,
+-                                       { base_path: './jscoq/', init_pkgs: ['init'] }
+-                  );
+-              });
++    var jscoq_ids  = coqdoc_ids;
++    var jscoq_opts = {
++        prelude:   true,
++        base_path: './jscoq/',
++        init_pkgs: ['init'],
++        all_pkgs:  ['init', 'math-comp', 'coq-base', 'coq-arith', 'coq-reals' ]
++    };
++    loadJsCoq(jscoq_opts.base_path)
++        //.then(loadJs("./jscoq/external/CodeMirror/addon/runmode/runmode"))
++        //.then(loadJs("./jscoq/external/CodeMirror/addon/runmode/colorize"))
++        //.then( function () {
++        //   var coqInline = document.getElementsByClassName("inline-coq");
++        //   CodeMirror.colorize(coqInline); })
++        .then( () => coq = new CoqManager(jscoq_ids, jscoq_opts) );
+   </script>
+ </body>
+ </html>
