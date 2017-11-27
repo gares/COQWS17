@@ -1,6 +1,6 @@
 COQC=coqc
 MC=
-WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16-17/
+WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-17/
 
 VS=$(filter-out %tmp.v,$(filter-out %-todo.v,$(wildcard *.v)))
 EX=$(filter-out %tmp.v,$(filter-out %-todo.v,$(wildcard exercise*.v)))
