@@ -6,7 +6,7 @@ p {
 }
 
 .vfill {
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .file::before {
