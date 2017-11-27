@@ -1,32 +1,31 @@
 (**
 #
 <hr/>
-<div style="text-align: center">
-  <div class="save-button" onClick="save_coq_snippets()">save script</div>
-  <input class="inputhidden" type="file" id="script-input" onchange="load_coq_snippet()"/>
-  <label for="script-input" class="save-button" style="margin-left: 2em">load script</label>
-</div>
 
 <script type="text/javascript">
 function load_coq_snippet() {
-  while (coq.sentences.length > 0) { coq.goPrev(); }
-  var data = document.getElementById('script-input').files[0];
-  var reader = new FileReader();
-  reader.readAsText(data);
-  reader.onload = function(event) {
-    var ed = document.getElementById(coqdoc_ids[0]).nextSibling.CodeMirror;
-    ed.setValue(reader.result + ed.getValue());
+  for (i = 0; i < coqdoc_ids.length; ++i) {
+    document.getElementById(coqdoc_ids[i]).nextSibling.CodeMirror.setValue(
+      localStorage.getItem('coq-snippet-'+coqdoc_ids[i]));
   }
 }
 
 function save_coq_snippets() {
-  var chunks = []
   for (i = 0; i < coqdoc_ids.length; ++i) {
-    chunks.push(document.getElementById(coqdoc_ids[i]).nextSibling.CodeMirror.getValue())
+    localStorage.setItem('coq-snippet-'+coqdoc_ids[i], document.getElementById(coqdoc_ids[i]).nextSibling.CodeMirror.getValue());
   }
+}
+
+ function download_coq_snippets() {
+   var chunks = []
+   for (i = 0; i < coqdoc_ids.length; ++i) {
+     chunks.push(document.getElementById(coqdoc_ids[i]).nextSibling.CodeMirror.getValue())
+   }
   var data = new Blob(chunks, {type: "text/plain;charset=utf-8"});
   saveAs(data, 'source.v');
-}
+ }
+ 
+
 
 alignWithTop = true;
 current = 0;
@@ -147,6 +146,12 @@ function hide (element_id) {
     }
 }
 window.onload = init_slides;
+window.onbeforeunload = save_coq_snippets;
 window.onscroll = update_scrolled;
 </script>
+<div style="text-align: center">
+  <div class="save-button" onClick="save_coq_snippets()">save script</div>
+  <div class="save-button" onClick="load_coq_snippet()"/>restore script</div>
+  <div class="save-button" onClick="download_coq_snippets()">download script</div>
+</div>
 # *)
