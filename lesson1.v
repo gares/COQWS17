@@ -49,7 +49,7 @@ To play this document inside your browser use ALT-N and ALT-P.
 
 ----------------------------------------------------------
 ----------------------------------------------------------
-#<div class="slide">#
+#<div class="slide vfill">#
 ** The SSR approach
 
   - when a concept is "computable", lets represent it as a
@@ -59,13 +59,14 @@ To play this document inside your browser use ALT-N and ALT-P.
   - functions to bool are a "simple" concept in type theory
     - EM holds
     - UIP holds
-
+#<div>#
 *)
 
 From mathcomp Require Import all_ssreflect.
 
 Module BooleanReflection.
 (**
+#</div>#
 #</div>#
 ----------------------------------------------------------
 #<div class="slide">#
