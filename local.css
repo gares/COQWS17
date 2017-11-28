@@ -11,20 +11,49 @@ p {
 
 .slide {
   min-height: 100vh;
+  position: relative;
 }
 
 .file::before {
   content: "≣"; 
 }
+  
+.note {
+  position:absolute;
+  bottom: 0;
+  color: #2f2f2f;
+}
+
+.note:hover .note-text {
+  visibility: visible;
+  opacity: 1; 
+}
+.note .note-text {
+  visibility: hidden;
+  position: absolute;
+  bottom: 0;
+  width: 35em;
+  background-color: #E7E7E7;
+  color: #2f2f2f;
+  padding: 5px;
+  border-radius: 6px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
 
 #tools {
   position: absolute;
-  left: -30px;
-  top: 45px;
+  left: -25px;
+  top: 40px;
   width: 1.5em;
 }
-#tools div { visibility: hidden; }
-#tools:hover div { visibility: visible; transition: opacity 0.5s; }
+#tools > #prev { visibility: visible; opacity: 1; }
+#tools > #next { visibility: visible; opacity: 1; }
+
+#tools div { visibility: hidden; opacity: 0; transition: opacity 0.5s; }
+#tools:hover div { visibility: visible; opacity: 1; }
+
 
 #prev {
   width: 0;
