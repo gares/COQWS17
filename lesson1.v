@@ -3,7 +3,7 @@
 To play this document inside your browser use ALT-N and ALT-P.
 
 ----
-#<div class="slide vfill">#
+#<div class="slide">#
 ** Objective of this course
 
   Give you access to the #<a href="http://math-comp.github.io/math-comp/">Mathematical Components library</a>#
@@ -16,7 +16,7 @@ To play this document inside your browser use ALT-N and ALT-P.
 #</div>#
 
 ----------------------------------------------------------
-#<div class="slide vfill">#
+#<div class="slide">#
 ** Why another library? Why another language?
 
   - large, consistent, library organized as a programming language
@@ -27,7 +27,7 @@ To play this document inside your browser use ALT-N and ALT-P.
 #</div>#
 
 ----------------------------------------------------------
-#<div class="slide vfill">#
+#<div class="slide">#
 ** Roadmap of the first 2 lessons
 
   - the small scale reflection approach (ssr)
@@ -37,7 +37,7 @@ To play this document inside your browser use ALT-N and ALT-P.
 #</div>#
 
 ----------------------------------------------------------
-#<div class="slide vfill">#
+#<div class="slide">#
 ** Disclaimer: this is not standard Coq
 
   - things are done differently, very differently, than usual
@@ -49,7 +49,7 @@ To play this document inside your browser use ALT-N and ALT-P.
 
 ----------------------------------------------------------
 ----------------------------------------------------------
-#<div class="slide vfill">#
+#<div class="slide">#
 ** The SSR approach
 
   - when a concept is "computable", lets represent it as a
@@ -194,7 +194,7 @@ End BooleanReflection.
 (**
 #</div>#
 ------------------------------------------------------
-#<div class="slide vfill">#
+#<div class="slide">#
 ** Recap (ssr approach and basic tactics)
    - boolean predicates and connectives
    - think "up to" computation

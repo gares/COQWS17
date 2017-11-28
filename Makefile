@@ -29,7 +29,8 @@ jscoq.tgz: jscoq.orig
 		     rm -rf $$X; \
 		fi; done
 	rm -rf jscoq/.git
-	cd jscoq/coq-js; ln -s ../coq-pkgs .
+	cd jscoq/coq-js; ln -sf ../coq-pkgs .
+	echo '#document { max-width: 50em; width: 100% }' >> jscoq/ui-css/jscoq.css
 	tar -czf jscoq.tgz jscoq/
 	rm -rf jscoq
 
@@ -69,7 +70,7 @@ upload: $(FILES) cheat-sheet/cheatsheet.pdf jscoq.tgz
 	@sed -i -e 's?^ *<h1>$*tmp</h1>??' $@
 	@sed -i -e 's?^ *<title.*?<title>$*</title>?' $@
 	@sed -i -e 's?^ *<h1>$*</h1>??' $@
-	@sed -i -e 's?</title>?</title><link rel="stylesheet" href="local.css" />?' $@
+	@sed -i -e 's?</head>?><link rel="stylesheet" href="local.css" />?' $@
 	@sed -i -e 's?</title>?</title><script src="Blob.js" type="text/javascript"></script>?' $@
 	@sed -i -e 's?</title>?</title><script src="FileSaver.js" type="text/javascript"></script>?' $@
 	@rm -f $<.tmp
