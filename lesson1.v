@@ -1,12 +1,15 @@
 (** 
 
 To play this document inside your browser use ALT-N and ALT-P.
+If you get "stack overflow" errors, try to use Google Chrome or Chromium
+with the command line option [--js-flags="--harmony-tailcalls"].
 
 ----
 #<div class="slide">#
 ** Objective of this course
 
-  Give you access to the #<a href="http://math-comp.github.io/math-comp/">Mathematical Components library</a>#
+  Give you access to the 
+  #<a href="http://math-comp.github.io/math-comp/">Mathematical Components library</a>#
 
   - formalization principles
   - proof language
@@ -24,15 +27,24 @@ To play this document inside your browser use ALT-N and ALT-P.
   - maintainable in the long term (compact, stable, ...)
   - validated on large formalization projects
 
+#<div class="note">(notes)<div class="note-text">#
+The mathematical components library was used to formalize the
+#<a href="https://en.wikipedia.org/wiki/Feit%E2%80%93Thompson_theorem">
+Odd Order Theorem (Feit Thompson)
+</a>#, literally a 250 pages book. Such proof amounts to 40k lines
+of Coq scripts, on top of 120k lines of mathematical components.
+The library has been maintained for more than 10 years now.
+#</div></div>#
+
 #</div>#
 
 ----------------------------------------------------------
 #<div class="slide">#
 ** Roadmap of the first 2 lessons
 
-  - the small scale reflection approach (ssr)
-  - the ssreflect tactic language (ssr)
-  - basic libraries (ssrbool, ssrnat, seq)
+  - boolean reflection (small scale reflection)
+  - the ssreflect proof language (SSReflect)
+  - basic libraries ([ssrbool], [ssrnat], [seq])
 
 #</div>#
 
@@ -50,15 +62,16 @@ To play this document inside your browser use ALT-N and ALT-P.
 ----------------------------------------------------------
 ----------------------------------------------------------
 #<div class="slide">#
-** The SSR approach
+** Boolean reflection
 
   - when a concept is "computable", lets represent it as a
-    computable function, not as an inductive relation
+    computable function (a program), not as an inductive relation
   - Coq knows how to compute, even symbolically, and computation is
     a very stable form of automation
-  - functions to bool are a "simple" concept in type theory
-    - EM holds
-    - UIP holds
+  - functions (to bool) are a "simple" concept in type theory
+    - Excluded Middle (EM) just holds
+    - Uniqueness of Identity Proofs holds uniformly
+
 #<div>#
 *)
 
@@ -67,20 +80,36 @@ From mathcomp Require Import all_ssreflect.
 Module BooleanReflection.
 (**
 #</div>#
+
+#<div class="note">(notes)<div class="note-text">#
+Decideable predicates are quite common in both computer
+science and mathematics. On such class or predicates the
+excluded middle principle needs not to be an axiom; in particular
+its computational content can be expressed inside Coq as a program.
+Writing such program in Coq may be non trivial (e.g. being a prime
+number requires some effort) but once the program is written it
+provides notable benefits.  First, one can use the program as a
+decision procedure for closed terms. Second, the proofs of such
+predicate are small. E.g. a proof of [prime 17 = true] is just
+[erefl true].
+Last, the proofs of such predicates are irrelevant (i.e. unique).
+This means that we can form subtypes without problems. E.g. the
+in habitants of the subtype of prime numbers [{ x | prime x = true }]
+are pairs, the number (relevant) and the proof (always [erefl true]).
+Hence when we compare such pairs we can ignore the proof part, that is,
+prime numbers behave exactly as numbers.
+#</div></div>#
+
 #</div>#
 ----------------------------------------------------------
 #<div class="slide">#
-** A taste of boolean reflection by examples
-  - these examples are artificial
-  - in the library things are done in a slightly different way
-#</div>#
-------------------------------------------------------
-#<div class="slide">#
-*** The first predicate
-   - order ralation on nat is a program
-   - if-is-then syntax (simply a 2-way match-with-end)
+
+** The first predicate: leq
+   - order ralation on [nat] is a program
+   - [if-is-then] syntax (simply a 2-way match-with-end)
    - [.+1] syntax (postfix notations [.something] are recurrent)
 
+#<div>#
 *)
 Fixpoint leq (n m : nat) : bool :=
   if n is p.+1 then
@@ -93,37 +122,55 @@ Infix "<=" := leq.
 
 (** 
 #</div>#
+
+#<div class="note">(notes)<div class="note-text">#
+We give a taste of boolean reflection by examples
+  - these examples, to stay simple, are a bit artificial
+  - in the library the same concepts are defeined in a slightly
+    different way, but following the same ideas
+#</div></div>#
+
+#</div>#
 ------------------------------------------------------
 #<div class="slide">#
- *** The first proof about leq
+ ** The first proof about leq
    - [... = true] to "state" something
    - proof by computation
    - [by []] to say, provable by trivial means (no mean is inside []).
    - [by tac] to say: tac must solve the goal (up to trivial leftovers)
+
+#<div>#
 *)
 Lemma leq0n n : (0 <= n) = true.
 Proof. (* compute. *) by []. Qed.
 
-(**  
+(**
+#</div>#
+
 #</div>#
 ------------------------------------------------------
 #<div class="slide">#
-*** Another lemma about leq
+** Another lemma about leq
    - equality as a double implication
    - naming convention
+
+#<div>#
 *)
 Lemma leqSS n m : (n.+1 <= m.+1) = (n <= m).
 Proof. (* simpl. *) by []. Qed.
 
-(** 
+(**
+#</div>#
+
 #</div>#
 ------------------------------------------------------
 #<div class="slide">#
-*** Lets (not) use these lemmas
+** Lets (not) use these lemmas
    - elim with naming and automatic clear of n
    - indentation for subgoals
    - no need to mention lemmas proved by computation
    - apply, exact, rewrite
+#<div>#
 *)
 Lemma leqnn n : (n <= n) = true.
 Proof.
@@ -136,9 +183,14 @@ by elim: n. Qed.
 
 (** 
 #</div>#
+
+#</div>#
 ------------------------------------------------------
 #<div class="slide">#
-*** Connectives can be booleans too *)
+*** Connectives can be booleans too 
+
+#<div>#
+*)
 Definition andb (b1 b2 : bool) : bool :=
   if b1 then b2 else false.
 Infix "&&" := andb.
@@ -153,14 +205,17 @@ Notation "~~ b" := (negb b).
 
 (** 
 #</div>#
+
+#</div>#
 ------------------------------------------------------
 #<div class="slide">#
 *** Proofs by truth tables
    - we can use EM to reason about boolean predicates
      and connectives
-   - case
+   - [case:]
    - bookkeeping [/=]
-   - naming convention: C suffix
+   - naming convention: [C] suffix
+#<div>#
 *)
 Lemma andbC b1 b2 : (b1 && b2) = (b2 && b1).
 Proof.
@@ -173,6 +228,16 @@ by case: b1; case: b2. Qed.
 
 (** 
 #</div>#
+
+#<div class="note">(notes)<div class="note-text">#
+Naming convention is key to find lemmas in a large library.
+It is worth mentioning here
+- [C] for commutativity
+- [A] for associativity
+- [K] for cancellation
+#</div></div>#
+
+#</div>#
 ------------------------------------------------------
 #<div class="slide">#
 *** Bookkeeping 101
@@ -180,8 +245,10 @@ by case: b1; case: b2. Qed.
    - tactic=>
    - tactic:        (caveat: tactic != apply or exact)
    - "rename", "reorder"
+#<div>#
 *)
-Lemma negb_and : forall b c, ~~ (b && c) = ~~ b || ~~ c.
+Lemma negb_and :
+  forall b c, ~~ (b && c) = ~~ b || ~~ c.
 Proof.
 (*
 move=> b. move=> c. move: b. move: c.
@@ -193,13 +260,22 @@ by case; case. Qed.
 End BooleanReflection.
 (**
 #</div>#
+
+#<div class="note">(notes)<div class="note-text">#
+We say that the goal (under the horizontal bar) is a stack, since
+items can only be accessed accorrding to a stack discipline.
+If the goal is [forall x y, x = 1 + 2 * y -> odd x] one has to
+deal with [x] and [y] before accessing [x = 1 + 2 * y].
+#</div></div>#
+
+#</div>#
 ------------------------------------------------------
 #<div class="slide">#
-** Recap (ssr approach and basic tactics)
+** Recap: formalization approach and basic tactics
    - boolean predicates and connectives
    - think "up to" computation
-   - case, elim, move, :, =>, basic rewrite
-   - if-is-then-else, .+1
+   - [case], [elim], [move], [:], [=>], basic [rewrite]
+   - [if-is-then-else], [.+1]
    - naming convetion
 
 #</div>#
@@ -214,6 +290,8 @@ End BooleanReflection.
    - [==] stands for computable equality (overloaded)
    - [!=] is [~~ (_ == _)]
    - [is_true] coercion
+
+#<div>#
 *)
 Search _ (_ <= _) in ssrnat.
 Locate "_ < _".
@@ -230,6 +308,8 @@ Proof. unfold is_true. by []. Qed.
 
 (**
 #</div>#
+
+#</div>#
 -------------------------------------------------------------
 #<div class="slide">#
 ** Equality
@@ -239,8 +319,10 @@ Proof. unfold is_true. by []. Qed.
    - [=> ->] (on the fly rewrite, "subst")
    - notation [.*2]
 
+#<div>#
 *)
-Lemma test_eqP n m : n == m -> n.+1 + m.+1 = m.+1.*2.
+Lemma test_eqP n m :
+  n == m -> n.+1 + m.+1 = m.+1.*2.
 Proof.
 (*#
 Check eqP.
@@ -252,12 +334,16 @@ by move=> /eqP ->; rewrite -addnn. Qed.
 
 (**
 #</div>#
+
+#</div>#
 -------------------------------------------------------------
 #<div class="slide">#
  ** Infix [==] is overloaded
    - and [eqP] is too
+#<div>#
 *)
-Lemma test2_eqP b1 b2 : b1 == ~~ b2 -> b1 || b2.
+Lemma test2_eqP b1 b2 :
+  b1 == ~~ b2 -> b1 || b2.
 Proof.
 (*
 Search _ orb in ssrbool.
@@ -267,6 +353,8 @@ Qed.
 
 (**
 #</div>#
+
+#</div>#
 ------------------------------------------------------------
 #<div class="slide">#
 ** Views are just lemmas 
@@ -275,9 +363,11 @@ Qed.
    - boolean connectives have associated views
    - [=> [ ... ]]
 
+#<div>#
 *)
 
-Lemma test_leqW i j k : (i <= k) && (k.+1 <= j) -> i <= j.+1.
+Lemma test_leqW i j k :
+  (i <= k) && (k.+1 <= j) -> i <= j.+1.
 Proof.
 (*# move=> /andP. case. move=> /leqW. move=> leq_ik1. #*)
 move=> /andP[/leqW leq_ik1 /leqW leq_k1j1].
@@ -286,6 +376,8 @@ Qed.
 
 (**
 #</div>#
+
+#</div>#
 ------------------------------------------------------------
 #<div class="slide">#
 ** The reflect predicate
@@ -293,6 +385,7 @@ Qed.
      the predicate [P] (in [Prop]) is logically equivalent
      to [b=true]
 
+#<div>#
 *)
 Module reflect_for_eqP.
 
@@ -308,14 +401,16 @@ Arguments eqn !m !n.
 
 (**
 #</div>#
+
+#</div>#
 ----------------------------------------------------------
 #<div class="slide">#
-*** Proving the reflection lemma for eqn
+** Proving the reflection lemma for eqn
     - the convenience lemma [iffP]
     - the [congr] tactic
     - trivial branches //
     - loaded induction [elim: n m]
-
+#<div>#
 *)
 Lemma myeqP m n : reflect (m = n) (eqn m n).
 Proof.
@@ -337,6 +432,8 @@ Proof. by move=> /myeqP ->. Qed.
 End reflect_for_eqP.
 
 (** 
+#</div>#
+
 #</div># 
 --------------------------------------
 #<div class="slide">#
@@ -344,7 +441,7 @@ End reflect_for_eqP.
   - rewrite
   - side condition and // ? 
   - rewrite a boolean predicate (is_true hides an eqaution)
-
+#<div>#
 *)
 
 Lemma test_leq_cond p : prime p -> p.-1.+1 + p = p.*2.
@@ -361,6 +458,8 @@ by move=> pr_p; rewrite prednK ?addnn // prime_gt0.
 Qed.
 
 (**
+#</div>#
+
 #</div># 
 ----
 #<div class="slide">#
