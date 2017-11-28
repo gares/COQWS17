@@ -18,7 +18,7 @@ Unset Printing Implicit Defensive.
 ----
 ** Lesson 3 
 
-- The SSR gives some support for finite types.
+- The math-comp library gives some support for finite types.
 - 'I_n is the the set of natural numbers smaller than n.
 - a : 'I_n is composed of a value m and a proof that m <= n.
 
@@ -60,6 +60,15 @@ Proof.
 exact: eqxx.
 Qed.
 
+Lemma ieq' (h : 3 < 4) : Ordinal h == i3.
+Proof.
+apply/eqP.
+apply:val_inj.
+rewrite /=.
+apply/eqP.
+exact: eqxx.
+Qed.
+
 (** 
   ** Sequence 
  - a finite type can be seen as a sequence
@@ -70,6 +79,9 @@ Qed.
 
 Lemma iseq n (x : 'I_n) : x \in 'I_n.
 Proof.
+set l := enum 'I_n.
+move: l; rewrite /= => l.
+have ordinal_finType := ordinal_finType.
 have mem_enum := mem_enum.
 have enum_uniq := enum_uniq.
 have cardT := cardT.
@@ -78,7 +90,7 @@ by [].
 Qed.
 
 (** 
-  ** Booleans 
+  ** Boolean theory of finite types. 
  - for finite type, boolean reflection can be extended to quantifiers
 *)
 
@@ -95,11 +107,12 @@ Proof.
 case: n.
 by [].
 move=> n.
+rewrite /=. (* optional, try removing this line. *)
 apply/existsP.
 pose H : 0 < n.+1 := isT.
 pose x := Ordinal H.
 exists x.
-by [].
+by [].  (* mention function ord0. *)
 Qed.
 
 (** 
@@ -116,8 +129,8 @@ Lemma izero_def n (x : 'I_n.+1) : izero x == 0 :> nat.
 Proof.
 rewrite /izero.
 case: pickP.
-rewrite /=.
-by [].
+  rewrite /=.
+  by [].
 rewrite /=.
 move=> H.
 have := H (Ordinal (isT : 0 < n.+1)).
@@ -131,6 +144,9 @@ Qed.
   - For functions there is an explicit construction [ffun x => body] 
 *)
 
+Check [finType of 'I_3 * 'I_4].
+Fail Check [finType of 'I_3 * nat].
+
 Lemma ipair : [forall x : 'I_3 * 'I_4, x.1 * x.2 < 12].
 Proof.
 apply/forallP.
@@ -140,7 +156,9 @@ rewrite /=.
 move=> a b.
 have H := ltn_mul.
 rewrite -[12]/(3 * 4).
-by apply: H.
+apply: H.
+  by [].
+by [].
 Qed.
 
 Lemma ifun : [exists f : {ffun 'I_3 -> 'I_4}, forall x, f x == x :> nat].
@@ -148,14 +166,14 @@ Proof.
 apply/existsP.
 rewrite /=.
 have H : forall n x, x < n -> x < n.+1.
-move=> n x H.
-rewrite ltnS.
-by rewrite ltnW.
+  move=> n x H.
+  rewrite ltnS.
+  by rewrite ltnW.
 exists [ffun x : 'I_3 => Ordinal (H 3 x (ltn_ord x))].
 apply/forallP.
 move=> x.
-have H1 := ffunE.
-rewrite H1.
+have ffunE' := ffunE.
+rewrite ffunE'.
 rewrite /=.
 by [].
 Qed.
