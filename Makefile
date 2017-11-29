@@ -99,6 +99,7 @@ lesson5.html: lesson5.html.tmp
 	@mv $< $@
 lesson6.html: lesson6.html.tmp
 	@mv $< $@
+	sed -i "s/init_pkgs:.*/init_pkgs: ['init','math-comp'],/" $@
 lesson7.html: lesson7.html.tmp
 	@mv $< $@
 	
