@@ -51,7 +51,7 @@ p {
 #tools > #prev { visibility: visible; opacity: 1; }
 #tools > #next { visibility: visible; opacity: 1; }
 
-#tools div { visibility: hidden; opacity: 0; transition: opacity 0.5s; }
+#tools div { visibility: hidden; opacity: 0; transition: all 1s; }
 #tools:hover div { visibility: visible; opacity: 1; }
 
 
