@@ -1,8 +1,11 @@
-
 (** 
 
+To play this document inside your browser use ALT-N and ALT-P.
+If you get "stack overflow" errors, try to use Google Chrome or Chromium
+with the command line option [--js-flags="--harmony-tailcalls"].
+
 ----
-#<div class="slide vfill">#
+#<div class="slide">#
  ** The Polynomials Library : 
 #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.poly.html">poly.v</a>#
   - A  library for univariate polynomials over
@@ -12,7 +15,7 @@
     - integral domains
 #</div>#
 ----
-#<div class="slide vfill">#
+#<div class="slide">#
  ** The Polynomials
 
 Roadmap of the lesson:
@@ -23,20 +26,13 @@ Roadmap of the lesson:
  - Roots
 #</div>#
 ----
-*)
-
-
-
-(** 
 #<div class="slide">#
 ** Definition 
  - P = a_n X^n + ... + a_2 X^2 + a_1 X + a_0 
    - list of coefficients (decreasing/increasing  degrees)
    - list of pairs (degree, coef)
 
-----
-
-Math Components library choice:
+** Math Components library choice:
 
  - P = a_0 + a_1 X + a_2 X^2 + ... + a_n X^n
    - A  normalized (i.e. no trailing 0) sequence of coefficients
@@ -44,7 +40,7 @@ Math Components library choice:
 Record polynomial (R : ringType) := 
 Polynomial {polyseq :> seq R; _ : last 1 polyseq != 0}.
 
-#</div>#
+#<div>#
 *)
 
 
@@ -70,8 +66,10 @@ Definition P := Polynomial hs.
 
 
 (**
+#</div>#
+#</div>#
 ----
-#<div class="slide vfill">#
+#<div class="slide ">#
 
  ** First properties 
  
@@ -81,7 +79,7 @@ Polynomials are coercible to sequences:
 
  - size of a polynomial 
  - the degree of a polynomial is its size minus 1
-#</div>#
+#<div>#
 *)
 Check (size P).
 
@@ -95,8 +93,10 @@ Definition deg (Q : polynomial R):= ((size Q) - 1)%N.
 
 
 (**
+#</div>#
+#</div>#
 ----
-#<div class="slide vfill">#
+#<div class="slide ">#
 ** Notations
  - {poly R}: polynomials over R (a Ring)
  - Poly s : the polynomial built from sequence s
@@ -104,7 +104,7 @@ Definition deg (Q : polynomial R):= ((size Q) - 1)%N.
  - 'X^n : monomial to the power of n
  - [a%:P] : constant polynomial
  - standard notations of ssralg (+, -, *, *:, ^+)
-#</div>#
+#<div>#
 *)
 
 
@@ -114,11 +114,12 @@ Check 'X.
 Check (x*:'X + 1%:P).
 
 (**
+#</div>#
+#</div>#
 ----
 
-#<div class="slide vfill">#
-** 
- A polynomial can be defined by extension:
+#<div class="slide ">#
+** Definition by extension
  - \poly_(i < n) E i 
     is the polynomial:
     - (E 0) + (E 1)  *: 'X + ...  + E (n - 1) *: 'X^(n-1)
@@ -129,7 +130,7 @@ Check (x*:'X + 1%:P).
 ** Ring Structure
  - addition 
  - multiplication
-#</div>#
+#<div>#
 *)
 
 Let  P2: {poly R}:= \poly_(i < 10 ) i%:R.
@@ -144,10 +145,12 @@ Definition mul_poly (p q : {poly R}) :=
     (\sum_(j < i.+1) p`_j * q`_(i - j)).
 
 (** 
+#</div>#
+#</div>#
 ----
 #<div class="slide  ">#
 
-** 
+** The ring of polynomials
  - The type of polynomials has been equipped
      with a (commutative / integral) ring structure.
 
@@ -157,7 +160,7 @@ Definition mul_poly (p q : {poly R}) :=
 #<div class="slide vfill">#
 ** Evaluation of polynomials
  - Warning: type of x 
-#</div>#
+#<div>#
 *)
 
 Fixpoint horner s (x:R) :=
@@ -169,12 +172,14 @@ Notation "p .[ x ]" := (horner p x).
 
 
 (** 
+#</div>#
+#</div>#
 ----
 #<div class="slide">#
 
 ** Properties of coefficients
  - Lifting a ring predicate to polynomials.
-#</div>#
+#<div>#
  *)
 
 Definition polyOver (S : pred_class) :=
@@ -185,27 +190,31 @@ Lemma polyOver_poly (S : pred_class) n E :
 Admitted.
 
 (** 
+#</div>#
+#</div>#
 ----
 #<div class="slide ">#
-** polyOver's lemmas:
+** polyOver's lemmas
  - predicate associate to S: at least an addrPred
    -  polyOver0
    - polyOverC 
    -  polyOverX
    - rpred* (from ssralg)
-#</div>#
+#<div>#
 *)
 Check polyOver0.
 
 
 (** 
+#</div>#
+#</div>#
 ----
-#<div class="slide vfill ">#
+#<div class="slide  ">#
 ** Derivative
  - definition 
  - notation
  - properties
-#</div>#
+#<div>#
 *)
 
 
@@ -229,11 +238,13 @@ Notation "p ^` ( n )" := (derivn n p) : ring_scope.
 Check polyOver_deriv.
 
 (** 
+#</div>#
+#</div>#
 ----
 #<div class="slide vfill ">#
 ** Roots
  -  root p x == x is a root of p 
-#</div>#
+#<div>#
 *)
 Definition root p : pred R := fun x => p.[x] == 0.
 
@@ -250,10 +261,12 @@ Admitted.
 
 
 (** 
+#</div>#
+#</div>#
 ----
-#<div class="slide vfill ">#
-** Division: 
-#<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.polydiv.html">polydiv.v</a>#
+#<div class="slide  ">#
+** Division
+- division and its theory are in the #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.polydiv.html">polydiv.v</a># file
 
 #</div>#
 *)

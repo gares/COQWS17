@@ -1,3 +1,10 @@
+(** 
+
+To play this document inside your browser use ALT-N and ALT-P.
+If you get "stack overflow" errors, try to use Google Chrome or Chromium
+with the command line option [--js-flags="--harmony-tailcalls"].
+*)
+
 From mathcomp Require Import all_ssreflect.
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -6,16 +13,18 @@ Unset Printing Implicit Defensive.
 (** 
 
 ----
+#<div class="slide">#
 ** Roadmap for lessons 3 and 4
 
     - finite types
     - big operators
-    - playing with graph
 
 *)
 
 (**
+#</div>#
 ----
+#<div class="slide">#
 ** Lesson 3 
 
     - The math-comp library gives some support for finite types.
@@ -28,6 +37,7 @@ Unset Printing Implicit Defensive.
 *)
 
 Definition oid n (x : 'I_n) : 'I_n.
+Proof.
 pose v := nat_of_ord x.
 pose H := ltn_ord x.
 pose H1 := leq_trans H (leqnn n).
@@ -51,7 +61,9 @@ Qed.
 
 (** 
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Equality
 
     - Every finite type is also an equality type.
@@ -78,6 +90,9 @@ Qed.
 
 (**
 #</div>#
+#</div>#
+----
+#<div class="slide">#
    ** An optimic map from [nat] to [ordinal] : [inord]
 
     - If the expected type has shape 'I_n.+1
@@ -100,7 +115,9 @@ Qed.
 
 (** 
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Sequence
 
     - a finite type can be seen as a sequence
@@ -125,7 +142,9 @@ Qed.
 
 (** 
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Boolean theory of finite types. 
 
     - for finite type, boolean reflection can be extended to quantifiers
@@ -157,6 +176,9 @@ Qed.
 
 (** 
 #</div>#
+#</div>#
+----
+#<div class="slide">#
   ** Selecting an element
     - pick selects an element that has a given property
     - pickP triggers the reflection
@@ -181,7 +203,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Building finite types
     - SSR automatically discovers the pair of two finite types is finite
     - For functions there is an explicit construction [ffun x => body]
@@ -223,7 +247,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Installing the finite type structure for an arbitrary type
     - When you have a type that you know is finite, you
       need some work to make it recognized.
@@ -274,13 +300,10 @@ Check [finType of forest_monster].
 
 (**
 #</div>#
-
+#</div>#
    ----
    ----
- **)
-
-
-(**
+#<div class="slide">#
   ** Big operators
     - Big operators provide a library to manipulate iterations in math-comp
     - this is an encapsulation of the fold function
@@ -304,7 +327,9 @@ End F.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
    ** Notation
 
     - iteration is provided by the \big notation
@@ -332,7 +357,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
    ** Range 
     - different ranges are provided
 #<div>#
@@ -371,7 +398,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
    ** Filtering 
     - it is possible to filter elements from the range 
 #<div>#
@@ -400,7 +429,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
    ** Switching range
     - it is possible to change representation (big_nth, big_mkord).
 #<div>#
@@ -417,7 +448,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Big operators and equality
     - one can exchange function and/or predicate
  #<div>#
@@ -453,7 +486,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Monoid structure
     - one can use associativity to reorganize the bigop
  #<div>#
@@ -502,7 +537,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Abelian Monoid structure
     - one can use communitativity to massage the bigop
  #<div>#
@@ -544,7 +581,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Distributivity
     - one can exchange sum and product
  #<div>#
@@ -574,7 +613,9 @@ Qed.
 
 (**
 #</div>#
-
+#</div>#
+----
+#<div class="slide">#
   ** Property, Relation and Morphism
  #<div>#
 *)
@@ -594,6 +635,7 @@ move=> i _.
 by rewrite odd_double.
 Qed.
 (**
+#</div>#
 #</div>#
 *)
 
