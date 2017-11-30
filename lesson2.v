@@ -1,7 +1,7 @@
 Require Import mathcomp.ssreflect.ssreflect.
 From mathcomp Require Import all_ssreflect.
 (**
-#<div class="slide vfill">#
+#<div class="slide">#
 ** Recap
 
  Proof language
@@ -21,7 +21,7 @@ From mathcomp Require Import all_ssreflect.
 
 #</div>#
 --------------------------------------------------------
-#<div class="slide vfill">#
+#<div class="slide">#
 ** Today
    - The [seq] library
    - forward reasoning with [have]
@@ -36,6 +36,7 @@ From mathcomp Require Import all_ssreflect.
   - an alias for lists (used to be differnt)
   - many notations
 
+#<div>#
 *)
 Check [::].
 Check [:: 3 ; 4].
@@ -49,11 +50,23 @@ Module polylist.
 
 (**
 #</div>#
+
+#<div class="note">(notes)<div class="note-text">#
+Notations for sequentes are documented the header of the 
+#<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.seq.html">seq.v</a># file.
+[rcons] is like [cons] but the new element is placed in the last position.
+Indeed it is not a real constructor, but rather a function that appends the singleton list.
+This special case of append has its own name and collection of theorems.
+#</div></div>#
+
+#</div>#
 --------------------------------------------------------
 #<div class="slide">#
 ** Polymorphic lists
    - This statement makes no assumptions on T
    - recap: [// /= ->]
+
+#<div>#
 *)
 Lemma size_cat T (s1 s2 : seq T) : size (s1 ++ s2) = size s1 + size s2.
 Proof.  by elim: s1 => //= x s1 ->. Qed.
@@ -66,17 +79,30 @@ Fail Check forall T : Type, forall x : T, x \in [:: x ].
 
 (** 
 #</div>#
+
+#</div>#
 --------------------------------------------------------
 #<div class="slide">#
 ** Had-hoc polymorphism
   - T : Type |- l : list T 
   - T : eqType |- l : list T
   - eqType means: a type with a decidable equality (_ == _)
+#<div>#
 *)
 
 Check forall T : eqType, forall x : T, x \in [:: x ].
 
 (**
+#</div>#
+
+#<div class="note">(notes)<div class="note-text">#
+Had-hoc polymorphism is a well established concept in object
+oriented programming languages and as well in functional
+languages equipped with type classes like Haskell.
+Whenever [T] is an [eqType], we have a comparison
+function for all terms of type [T] ([x] in the example above).
+#</div></div>#
+
 #</div>#
 --------------------------------------------------------
 #<div class="slide">#
@@ -85,13 +111,17 @@ Check forall T : eqType, forall x : T, x \in [:: x ].
    - pushing \in with inE
    - computable.
    - rewrite !inE
+#<div>#
 *)
 Lemma test_in l : 3 \in [:: 4; 5] ++ l -> l != [::].
 Proof.
 by rewrite !inE => /=; apply: contraL => /eqP->.
 Qed.
 
+
 (**
+#</div>#
+
 #</div>#
 --------------------------------------------------------
 #<div class="slide">#
@@ -112,7 +142,9 @@ Definition of count
 Fixpoint count a s := if s is x :: s' then a x + count s' else 0.
 >> *)
 (** 
-A lemma linking the two concepts *)
+A lemma linking the two concepts 
+#<div>#
+*)
 Lemma all_count (T : eqType) (a : pred T) s :
   all a s = (count a s == size s).
 Proof.
@@ -128,12 +160,13 @@ Qed.
 
 (**
 #</div>#
+#</div>#
 --------------------------------------------------------
 --------------------------------------------------------
 #<div class="slide">#
 ** Spec lemmas
    - Inductive predicates to drive the proof
-*)
+#<div>#*)
 
 Module myreflect1.
 
@@ -198,13 +231,15 @@ Axiom leqP : forall m n : nat, leq_xor_gtn m n (m <= n) (n < m).
 
 (**
 #</div>#
+
+#</div>#
 --------------------------------------------------------
 #<div class="slide">#
 ** Let's try out leqP on an ugly goal
    - matching of indexes
    - generalization of unresolved implicits
    - instantiation by matching
-*)
+#<div>#*)
 Lemma test_leqP m n1 n2 :
   (m <= (if n1 < n2 then n1 else n2)) =
   (m <= n1) && (m <= n2) && ((n1 < n2) || (n2 <= n1)).
@@ -216,13 +251,14 @@ Qed.
 
 (**
 #</div>#
+#</div>#
 --------------------------------------------------------
 #<div class="slide">#
 ** Another commodity: [ifP]
    - a spec lemma for if-then-else
    - handy with case, since matching spares you to write
      the expressions involved
-*)
+#<div>#*)
 Lemma test_ifP n m : if n <= m then 0 <= m - n else m - n == 0.
 Proof.
 case: ifP => //.
@@ -231,6 +267,7 @@ Qed.
 
 (**
 #</div>#
+#</div>#
 
 --------------------------------------------------------
 #<div class="slide">#
@@ -238,7 +275,7 @@ Qed.
    - keyed matching
    - instantiation
    - localization
-*)
+#<div>#*)
 Lemma ugly_goal n m :
   n + (m * 2).+1 = n + (m + m.+1).
 Proof.
@@ -264,8 +301,9 @@ Abort.
 
 (**
 #</div>#
+#</div>#
 --------------------------------------------------------
-#<div class="slide vfill">#
+#<div class="slide">#
 ** References for this lesson:
   - SSReflect #<a href="https://hal.inria.fr/inria-00258384">manual</a>#
   - documentation of the
@@ -278,7 +316,7 @@ Abort.
 ** Demo:
    - you should be now able to read this proof
 
-*)
+#<div>#*)
 
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Proof.
@@ -295,6 +333,9 @@ Check dvdn_addr.
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 Qed.
     
-(** #</div># *)
+(** 
+#</div># 
+#</div># 
+*)
 
 
