@@ -1,6 +1,6 @@
 COQC=coqc
 MC=
-WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-16-17/
+WEB=/media/sophia/www-sop/teams/marelle/advanced-coq-17/
 
 VS=$(filter-out %tmp.v,$(filter-out %-todo.v,$(wildcard *.v)))
 EX=$(filter-out %tmp.v,$(filter-out %-todo.v,$(wildcard exercise*.v)))
@@ -29,7 +29,9 @@ jscoq.tgz: jscoq.orig
 		     rm -rf $$X; \
 		fi; done
 	rm -rf jscoq/.git
-	cd jscoq/coq-js; ln -s ../coq-pkgs .
+	cd jscoq/coq-js; ln -sf ../coq-pkgs .
+	echo '#document { max-width: 50em; width: 100% }' >> jscoq/ui-css/jscoq.css
+	sed -i 's/width: 51em;/max-width: 51em;/' jscoq/ui-css/coq-base.css
 	tar -czf jscoq.tgz jscoq/
 	rm -rf jscoq
 
@@ -37,11 +39,12 @@ jscoq: jscoq.tgz
 	tar -xzf jscoq.tgz
 	touch jscoq
 
-udoc/udoc.byte: 
+udoc/udoc.byte: udoc.patch
 	$(MAKE) check-ocaml-ver-4.02.0
 	rm -rf udoc
 	git clone https://github.com/ejgallego/udoc.git
 	cd udoc && git checkout ff209e2ba83e7472cd4da8f2adf5f9a09a55de2f
+	cd udoc && patch -p1 < ../udoc.patch
 	cd udoc && make
 
 cheat-sheet/cheatsheet.pdf: cheat-sheet/cheatsheet.tex
@@ -68,7 +71,7 @@ upload: $(FILES) cheat-sheet/cheatsheet.pdf jscoq.tgz
 	@sed -i -e 's?^ *<h1>$*tmp</h1>??' $@
 	@sed -i -e 's?^ *<title.*?<title>$*</title>?' $@
 	@sed -i -e 's?^ *<h1>$*</h1>??' $@
-	@sed -i -e 's?</title>?</title><link rel="stylesheet" href="local.css" />?' $@
+	@sed -i -e 's?</head>?<link rel="stylesheet" href="local.css" /></head>?' $@
 	@sed -i -e 's?</title>?</title><script src="Blob.js" type="text/javascript"></script>?' $@
 	@sed -i -e 's?</title>?</title><script src="FileSaver.js" type="text/javascript"></script>?' $@
 	@rm -f $<.tmp
@@ -96,6 +99,7 @@ lesson5.html: lesson5.html.tmp
 	@mv $< $@
 lesson6.html: lesson6.html.tmp
 	@mv $< $@
+	sed -i "s/init_pkgs:.*/init_pkgs: ['init','math-comp'],/" $@
 lesson7.html: lesson7.html.tmp
 	@mv $< $@
 	

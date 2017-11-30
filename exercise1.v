@@ -47,7 +47,7 @@ Lemma bool_gimmics2 p q r : ~~ p && (r == q) -> q ==> (p || r).
 
 (** *** Exercise 7:
     - look up the definition of [iter]
-    - prove this tatement by induction
+    - prove this satement by induction
 *)
 Lemma iterSr A n (f : A -> A) x : iter n.+1 f x = iter n f (f x).
 (*D*)Proof. by elim: n => //= n <-. Qed.
