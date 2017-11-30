@@ -83,20 +83,20 @@ Module BooleanReflection.
 
 #<div class="note">(notes)<div class="note-text">#
 Decideable predicates are quite common in both computer
-science and mathematics. On such class or predicates the
+science and mathematics. On this class or predicates the
 excluded middle principle needs not to be an axiom; in particular
 its computational content can be expressed inside Coq as a program.
-Writing such program in Coq may be non trivial (e.g. being a prime
+Writing this program in Coq may be non trivial (e.g. being a prime
 number requires some effort) but once the program is written it
 provides notable benefits.  First, one can use the program as a
 decision procedure for closed terms. Second, the proofs of such
 predicate are small. E.g. a proof of [prime 17 = true] is just
 [erefl true].
-Last, the proofs of such predicates are irrelevant (i.e. unique).
+Last, the proofs of these predicates are irrelevant (i.e. unique).
 This means that we can form subtypes without problems. E.g. the
 in habitants of the subtype of prime numbers [{ x | prime x = true }]
 are pairs, the number (relevant) and the proof (always [erefl true]).
-Hence when we compare such pairs we can ignore the proof part, that is,
+Hence when we compare these pairs we can ignore the proof part, that is,
 prime numbers behave exactly as numbers.
 #</div></div>#
 
