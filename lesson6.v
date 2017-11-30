@@ -224,6 +224,8 @@ Admitted.
 
 Definition derivn n p := iter n deriv p.
 
+Notation "p ^` ( n )" := (derivn n p) : ring_scope.
+
 Check polyOver_deriv.
 
 (** 
