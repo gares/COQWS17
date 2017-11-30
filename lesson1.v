@@ -105,7 +105,7 @@ prime numbers behave exactly as numbers.
 #<div class="slide">#
 
 ** The first predicate: leq
-   - order ralation on [nat] is a program
+   - order relation on [nat] is a program
    - [if-is-then] syntax (simply a 2-way match-with-end)
    - [.+1] syntax (postfix notations [.something] are recurrent)
 
