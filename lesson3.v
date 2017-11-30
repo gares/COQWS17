@@ -8,9 +8,9 @@ Unset Printing Implicit Defensive.
 ----
 ** Roadmap for lessons 3 and 4
 
-  - finite types
-  - big operators
-  - playing with graph
+    - finite types
+    - big operators
+    - playing with graph
 
 *)
 
@@ -18,11 +18,13 @@ Unset Printing Implicit Defensive.
 ----
 ** Lesson 3 
 
-- The math-comp library gives some support for finite types.
-- 'I_n is the the set of natural numbers smaller than n.
-- a : 'I_n is composed of a value m and a proof that m <= n.
+    - The math-comp library gives some support for finite types.
+    - ['I_n] is the the set of natural numbers smaller than n.
+    - [a : 'I_n] is composed of a value m and a proof that [m <= n].
 
-- Example : oid modifies the proof part with an equivalent one.
+    - Example : [oid] modifies the proof part with an equivalent one.
+
+#<div>#
 *)
 
 Definition oid n (x : 'I_n) : 'I_n.
@@ -33,10 +35,12 @@ exact: Ordinal H1.
 Defined.
 
 (** 
+#</div>#
+** Note
 
- ** Note 
-   - nat_of_ord is a coercion (see H)
-   - 'I_0 is an empty type
+    - [nat_of_ord] is a coercion (see H)
+    - ['I_0] is an empty type
+#<div>#
 *)
 
 Lemma empty_i0 (x : 'I_0) : false.
@@ -46,11 +50,14 @@ by [].
 Qed.
 
 (** 
+#</div>#
+
   ** Equality
 
-  - Every finite type is also an equality type.
-  - For 'I_n, only the value matters
+    - Every finite type is also an equality type.
+    - For ['I_n], only the value matters
 
+#<div>#
 *)
 
 Definition i3 := Ordinal (isT : 3 < 4).
@@ -63,18 +70,45 @@ Qed.
 Lemma ieq' (h : 3 < 4) : Ordinal h == i3.
 Proof.
 apply/eqP.
+pose H := val_inj.
 apply:val_inj.
 rewrite /=.
-apply/eqP.
-exact: eqxx.
+by [].
+Qed.
+
+(**
+#</div>#
+   ** An optimic map from [nat] to [ordinal] : [inord]
+
+    - If the expected type has shape 'I_n.+1
+    - Takes a natural number as input and return an element of 'I_n.+1
+    - The _same number_ if it is small enough, otherwise 0.
+
+#<div>#
+*)
+
+Check inord.
+
+Check inordK.
+
+Check inord_val.
+
+Example inord_val_3_4 : inord 3 = (Ordinal (isT : 3 < 4)) :> 'I_4.
+Proof.
+apply:val_inj. rewrite /=. rewrite inordK. by []. by [].
 Qed.
 
 (** 
-  ** Sequence 
- - a finite type can be seen as a sequence
- - enum T gives this sequence.
- - it is duplicate free.
- - it relates to the cardinal of a finite type
+#</div>#
+
+  ** Sequence
+
+    - a finite type can be seen as a sequence
+    - [enum T] gives this sequence.
+    - it is duplicate free.
+    - it relates to the cardinal of a finite type
+
+#<div>#
 *)
 
 Lemma iseq n (x : 'I_n) : x \in 'I_n.
@@ -90,8 +124,14 @@ by [].
 Qed.
 
 (** 
+#</div>#
+
   ** Boolean theory of finite types. 
- - for finite type, boolean reflection can be extended to quantifiers
+
+    - for finite type, boolean reflection can be extended to quantifiers
+    - getting closer to classical logic!
+
+#<div>#
 *)
 
 Lemma iforall (n : nat) : [forall x: 'I_n, x < n].
@@ -116,11 +156,12 @@ by [].  (* mention function ord0. *)
 Qed.
 
 (** 
+#</div>#
   ** Selecting an element
- - pick selects an element that has a given property 
- - pickP triggers the reflection
+    - pick selects an element that has a given property
+    - pickP triggers the reflection
+#<div>#
 *)
-
 Check pick.
 
 Definition izero n (x : 'I_n) := odflt x [pick i : 'I_n | i == 0 :> nat].
@@ -139,11 +180,13 @@ by [].
 Qed.
 
 (**
-  ** Building finite types
-  - SSR automatically discovers the pair of two finite types is finite
-  - For functions there is an explicit construction [ffun x => body] 
-*)
+#</div>#
 
+  ** Building finite types
+    - SSR automatically discovers the pair of two finite types is finite
+    - For functions there is an explicit construction [ffun x => body]
+#<div>#
+*)
 Check [finType of 'I_3 * 'I_4].
 Fail Check [finType of 'I_3 * nat].
 
@@ -179,6 +222,59 @@ by [].
 Qed.
 
 (**
+#</div>#
+
+  ** Installing the finite type structure for an arbitrary type
+    - When you have a type that you know is finite, you
+      need some work to make it recognized.
+
+#<div>#
+*)Inductive forest_monster :=
+  Lion | Tiger | Bear.
+
+Fail Check [finType of forest_monster].
+
+(**
+#</div>#
+    - Solution: exhibit an injection into a finite type.
+#<div>#
+*)
+Definition monster_ord m : 'I_3 :=
+  match m with
+    Lion => inord 0 | Tiger => inord 1 | _ => inord 2
+  end.
+
+Definition ord_monster (n : 'I_3) : option forest_monster :=
+  match val n with 0 => Some Lion | 1 => Some Tiger | _ => Some Bear end.
+
+Lemma monster_ord_can : pcancel monster_ord ord_monster.
+Proof.
+case.
+rewrite /=. rewrite /ord_monster. rewrite /= inordK. by []. by [].
+by rewrite /ord_monster /= inordK.
+by rewrite /ord_monster /= inordK.
+Qed.
+
+(**
+#</div>#
+    - The lemma monster_ord_can means that there is an injection from
+      [forest_monster] into a known finite type. This gives a host of structure
+      bridges to [eqType], [choiceType], [countType], [finiteType].
+#<div>#
+*)
+Canonical fm_eqType := EqType forest_monster (PcanEqMixin monster_ord_can).
+Canonical fm_choiceType :=
+  ChoiceType forest_monster (PcanChoiceMixin monster_ord_can).
+Canonical fm_countType :=
+  CountType forest_monster (PcanCountMixin monster_ord_can).
+Canonical fm_finType := FinType forest_monster
+                                   (PcanFinMixin monster_ord_can).
+
+Check [finType of forest_monster].
+
+(**
+#</div>#
+
    ----
    ----
  **)
@@ -186,10 +282,10 @@ Qed.
 
 (**
   ** Big operators
-   --  provide a library to manipulate iterations in SSR
-   -- this is an encapsulation of the fold function
- **)
-
+    - Big operators provide a library to manipulate iterations in math-comp
+    - this is an encapsulation of the fold function
+ #<div>#
+*)
 Section F.
 
 Definition f (x : nat) := 2 * x.
@@ -206,14 +302,16 @@ Qed.
 
 End F.
 
-(** 
+(**
+#</div>#
+
    ** Notation
 
-   - iteration is provided by the \big notation
-   - the basic operation is on list
-   - special notations are introduced for usual case (\sum, \prod, \bigcap ..) 
+    - iteration is provided by the \big notation
+    - the basic operation is on list
+    - special notations are introduced for usual case (\sum, \prod, \bigcap ..) 
+#<div>#
 *)
-
 Lemma bfoldl : \big[addn/0]_(i <- [::1; 2; 3]) i.*2 = 12.
 Proof.
 rewrite big_cons.
@@ -232,11 +330,13 @@ rewrite big_nil.
 by [].
 Qed.
 
-(** 
-   ** Range 
-   - different ranges are provided
-*)
+(**
+#</div>#
 
+   ** Range 
+    - different ranges are provided
+#<div>#
+*)
 Lemma bfoldl1 : \sum_(1 <= i < 4) i.*2 = 12.
 Proof.
 have H := big_ltn.
@@ -269,11 +369,13 @@ Proof.
 exact: bfoldl2.
 Qed.
 
-(** 
-   ** Filtering 
-   - it is possible to filter elements from the range 
-*)
+(**
+#</div>#
 
+   ** Filtering 
+    - it is possible to filter elements from the range 
+#<div>#
+*)
 Lemma bfoldl4 : \sum_(i <- [::1; 2; 3; 4; 5; 6] | ~~ odd i) i = 12.
 Proof.
 have big_pred0 := big_pred0.
@@ -296,11 +398,13 @@ rewrite big_nil.
 by [].
 Qed.
 
-(** 
-   ** Switching range
-   - it is possible to change representation (big_nth, big_mkord).
-*)
+(**
+#</div>#
 
+   ** Switching range
+    - it is possible to change representation (big_nth, big_mkord).
+#<div>#
+*)
 Lemma bswitch :  \sum_(i <- [::1; 2; 3]) i.*2 = \sum_(i < 3) (nth 0 [::1; 2; 3] i).*2.
 Proof.
 have H := big_nth.
@@ -312,10 +416,12 @@ by [].
 Qed.
 
 (**
-  ** Big operators and equality
-  - one can exchange function and/or predicate 
- *)
+#</div>#
 
+  ** Big operators and equality
+    - one can exchange function and/or predicate
+ #<div>#
+*)
 Lemma beql : 
   \sum_(i < 4 | odd i || ~~ odd i) i.*2 =  \sum_(i < 4) i.*2.
 Proof.
@@ -342,13 +448,16 @@ Proof.
 have H := eq_big.
 apply: eq_big => [u|i Hi]; first by case: odd.
 by rewrite addnn.
+
 Qed.
 
 (**
-  ** Monoid structure
-  - one can use associativity to reorder the bigop
- *)
+#</div>#
 
+  ** Monoid structure
+    - one can use associativity to reorganize the bigop
+ #<div>#
+*)
 Lemma bmon1 : \sum_(i <- [::1; 2; 3]) i.*2 = 12.
 Proof.
 have H := big_cat.
@@ -392,10 +501,12 @@ by [].
 Qed.
 
 (**
-  ** Abelian Monoid structure
-  - one can use communitativity to massage the bigop
- *)
+#</div>#
 
+  ** Abelian Monoid structure
+    - one can use communitativity to massage the bigop
+ #<div>#
+*)
 
 Lemma bab : \sum_(i < 4) i.*2 = 12.
 Proof.
@@ -417,7 +528,8 @@ rewrite !big_ord_recr ?big_ord0 /=.
 by [].
 Qed.
 
-Lemma bab2 : \sum_(i < 3) \sum_(j < 4) (i + j) = \sum_(i < 4) \sum_(j < 3) (i + j).
+Lemma bab2 : \sum_(i < 3) \sum_(j < 4) (i + j) =
+                 \sum_(i < 4) \sum_(j < 3) (i + j).
 Proof.
 have H := exchange_big.
 have H1 := reindex_inj.
@@ -431,10 +543,12 @@ by rewrite addnC.
 Qed.
 
 (**
-  ** Distributivity
-  - one can use exchange sum and product 
- *)
+#</div>#
 
+  ** Distributivity
+    - one can exchange sum and product
+ #<div>#
+*)
 Lemma bab3 : \sum_(i < 4) (2 * i) = 2 * \sum_(i < 4) i.
 Proof.
 have H := big_distrr.
@@ -459,9 +573,11 @@ Qed.
 
 
 (**
-  ** Property, Relation and Morphism 
- *)
+#</div>#
 
+  ** Property, Relation and Morphism
+ #<div>#
+*)
 Lemma bap n : ~~ odd (\sum_(i < n) i.*2). 
 Proof.
 have H := big_ind.
@@ -477,6 +593,8 @@ elim/big_ind: _.
 move=> i _.
 by rewrite odd_double.
 Qed.
-
+(**
+#</div>#
+*)
 
 

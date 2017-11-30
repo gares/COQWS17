@@ -15,7 +15,7 @@ successor function over the natural plus the special case that
 Program Definition onext n (x : 'I_n) : 'I_n :=
   Sub
 (* The value *)  (*D*)(x.+1 %% n)
-(* The proof *)  _.                         
+(* The proof *)  _.
 Next Obligation.
 (*D*) by case: x => [m /= ltmn]; rewrite ltn_mod (leq_trans _ ltmn).
 (*A*)Qed.
@@ -25,13 +25,13 @@ Eval compute in val (onext (Ordinal (isT : 3 < 4))).
 
 (**
   ----
-  ** Exercise 2 
+  ** Exercise 2
 *)
 
 (**
    Show that injectivity is decidable for a function f : aT -> rT
-   with  aT a finite 
-*) 
+   with  aT a finite
+*)
 
 Module MyInj.
 
@@ -40,7 +40,7 @@ Check injective.
 Definition injectiveb (aT : finType) (rT : eqType) (f : aT -> rT) : bool :=
 (*D*) [forall x : aT, forall y : aT, (f x == f y) ==> (x == y)].
 
-Lemma injectiveP (aT : finType) (rT : eqType) (f : aT -> rT) : 
+Lemma injectiveP (aT : finType) (rT : eqType) (f : aT -> rT) :
   reflect (injective f) (injectiveb f).
 Proof.
 (*D*)apply: (iffP forallP) => [Ibf x y Efxy|If x].
@@ -50,36 +50,54 @@ Proof.
 
 End MyInj.
 
-(** 
+(**
   ----
-  ** Exercise 3 
+  ** Exercise 3
+
+  Build a function that maps an element of an ordinal to another element
+  of the same ordinal with a p subtracted from it.
 *)
 
-(** 
-   Try to formalize the following problem 
+Lemma neg_offset_ord_proof n (i : 'I_n) (p : nat) : i - p < n.
+Proof.
+(*D*)apply: leq_ltn_trans (ltn_ord i).
+(*D*)apply: leq_subr.
+(*A*)Qed.
+
+Definition neg_offset_ord n i p := Ordinal (neg_offset_ord_proof n i p).
+
+Eval compute in (val (neg_offset_ord (Ordinal (isT : 7 < 9)) 4)).
+
+(**
+  ----
+  ** Exercise 4
 *)
 
-(** 
-  Given a parking  where the boolean indicates if the slot is occupied or not 
+(**
+   Try to formalize the following problem
+*)
+
+(**
+  Given a parking  where the boolean indicates if the slot is occupied or not
 *)
 
 Definition parking n := 'I_n -> 'I_n -> bool.
 
 (**
-   Number of cars at line i 
-*)               
+   Number of cars at line i
+*)
 
 Definition sumL n (p : parking n) i := \sum_(j < n) p i j.
 
 (**
-   Number of cars at column j 
+   Number of cars at column j
 *)
 
 Definition sumC n (p : parking n) j := \sum_(i < n) p i j.
 
 (**
    Show that if 0 < n there is always two lines, or two columns, or a column and a line
-   that have the same numbers of cars 
+   that have the same numbers of cars
 *)
 
 (* Two intermediate lemmas to use injectivity  *)
@@ -119,12 +137,12 @@ Proof.
 (*D*)by exists i, j; do ?[exact: Or31|exact: Or32|exact: Or33].
 (*A*)Qed.
 
-(** 
+(**
   ----
-  ** Exercise 4 
+  ** Exercise 5
 *)
 
-(** 
+(**
    Prove the following state by induction and by following Gauss proof.
  *)
 
@@ -161,9 +179,9 @@ Proof.
 (*D*)by apply: eq_bigr => i _; rewrite subSS subnK // -ltnS.
 (*A*)Qed.
 
-(** 
+(**
   ----
-   ** Exercise 5 
+   ** Exercise 6
 *)
 
 Lemma sum_odd1 : forall n, \sum_(i < n) (2 * i + 1) = n ^ 2.
@@ -173,9 +191,9 @@ Proof.
 (*D*)by rewrite card_ord -mulnDr addn1 mulnn.
 (*A*)Qed.
 
-(** 
+(**
   ----
-  ** Exercise 6 
+  ** Exercise 7
 *)
 
 Lemma sum_exp : forall x n, x ^ n.+1 - 1 = (x - 1) * \sum_(i < n.+1) x ^ i.
@@ -191,7 +209,7 @@ Proof.
 
 (**
   ----
- ** Exercise 7 
+ ** Exercise 8
 *)
 
 (** Prove the following state by induction and by using a similar trick
@@ -207,11 +225,30 @@ Proof.
 
 (**
   ----
-  ** Exercise 8 
+  ** Exercise 9
+
+  Prove the following statement using only big operator theorems.
+  [big_cat_nat], [big_nat_cond], [big_mkcondl], [big1]
+*)
+Lemma sum_prefix_0 (f : nat -> nat) n m : n <= m ->
+  (forall k, k < n -> f k = 0) ->
+  \sum_(0 <= i < m) f i = \sum_(n <= i < m) f i.
+Proof.
+(*D*)pose H := big_cat_nat.
+(*D*)move => nm f0; rewrite (big_cat_nat addn_monoid _ f (leq0n n)) /=; last by [].
+(*D*)rewrite big_nat_cond big_mkcondl big1 ?add0n //.
+(*D*)move => i _; case cnd : (0 <= i < n) => //.
+(*D*)apply: f0.
+(*D*)by move/andP: cnd => [_ it].
+(*A*)Qed.
+
+(**
+  ----
+  ** Exercise 10
 *)
 
 (**
-  building a monoid law 
+  building a monoid law
 *)
 
 Section cex.
@@ -230,8 +267,8 @@ Canonical Structure op2Mon : Monoid.law 0 :=
   Monoid.Law op2A op20n op2n0.
 
 Lemma ex_op2 : \big[op2/0]_(i < 3) i = 3.
-Proof. 
-(*D*)by rewrite !big_ord_recr big_ord0 /= !op2add. 
+Proof.
+(*D*)by rewrite !big_ord_recr big_ord0 /= !op2add.
 (*A*)Qed.
 
 End cex.
