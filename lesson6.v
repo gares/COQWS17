@@ -10,7 +10,6 @@
   - with extensions for  polynomials whose coefficients range over
     - commutative rings 
     - integral domains
-
 #</div>#
 ----
 #<div class="slide vfill">#
@@ -29,9 +28,6 @@ Roadmap of the lesson:
 
 
 (** 
-
-
-----
 #<div class="slide">#
 ** Definition 
  - P = a_n X^n + ... + a_2 X^2 + a_1 X + a_0 
@@ -44,6 +40,10 @@ Math Components library choice:
 
  - P = a_0 + a_1 X + a_2 X^2 + ... + a_n X^n
    - A  normalized (i.e. no trailing 0) sequence of coefficients
+
+Record polynomial (R : ringType) := 
+Polynomial {polyseq :> seq R; _ : last 1 polyseq != 0}.
+
 #</div>#
 *)
 
@@ -52,8 +52,21 @@ From mathcomp Require Import all_ssreflect  all_algebra.
 Open Scope ring_scope.
 
 
- Record polynomial (R : ringType) := Polynomial
-   {polyseq :> seq R; _ : last 1 polyseq != 0}.
+
+
+Check Polynomial.
+
+Variable R: ringType.
+Variable x :R.
+
+Fact hs: last 1 [::1;x;0;1 ] != 0.
+rewrite /=.
+exact: GRing.oner_neq0.
+Qed.
+
+Definition P := Polynomial hs.
+
+
 
 
 (**
@@ -69,23 +82,44 @@ Polynomials are coercible to sequences:
  - size of a polynomial 
  - the degree of a polynomial is its size minus 1
 #</div>#
+*)
+Check (size P).
 
+Eval compute in (size P).
+
+Eval compute in  P`_1.
+
+
+Definition deg (Q : polynomial R):= ((size Q) - 1)%N.
+
+
+
+(**
 ----
 #<div class="slide vfill">#
 ** Notations
  - {poly R}: polynomials over R (a Ring)
  - Poly s : the polynomial built from sequence s
- - 'X : monomial
+ - 'X: monomial
  - 'X^n : monomial to the power of n
- - [a:%P] : constant polynomial
+ - [a%:P] : constant polynomial
  - standard notations of ssralg (+, -, *, *:, ^+)
 #</div>#
+*)
+
+
+Definition P1 := Poly [::1;x;0;x].
+
+Check 'X. 
+Check (x*:'X + 1%:P).
+
+(**
 ----
 
 #<div class="slide vfill">#
 ** 
  A polynomial can be defined by extension:
- - poly_(i < n) E i 
+ - \poly_(i < n) E i 
     is the polynomial:
     - (E 0) + (E 1)  *: 'X + ...  + E (n - 1) *: 'X^(n-1)
 #</div>#
@@ -94,9 +128,11 @@ Polynomials are coercible to sequences:
 
 ** Ring Structure
  - addition 
+ - multiplication
 #</div>#
 *)
-Variable R: ringType.
+
+Let  P2: {poly R}:= \poly_(i < 10 ) i%:R.
 
 Definition add_poly (p q : {poly R}) := 
 \poly_(i < maxn (size p) (size q)) (p`_i + q`_i).
@@ -119,8 +155,7 @@ Definition mul_poly (p q : {poly R}) :=
 #</div>#
 ----
 #<div class="slide vfill">#
-** Evaluation
- - (Right-)evaluation of polynomials
+** Evaluation of polynomials
  - Warning: type of x 
 #</div>#
 *)
