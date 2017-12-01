@@ -138,19 +138,20 @@ Qed.
    - have :=
    - have + views
    - do I need eqType here?
-*)
-(**
+
+
 Definition of all
 <<
 Fixpoint all a s := if s is x :: s' then a x && all a s' else true.
->> *)
-(** 
+>>
+
 Definition of count
 <<
 Fixpoint count a s := if s is x :: s' then a x + count s' else 0.
->> *)
-(** 
+>>
+
 A lemma linking the two concepts 
+
 #<div>#
 *)
 Lemma all_count (T : eqType) (a : pred T) s :
@@ -161,7 +162,7 @@ have EM_a : a x || ~~ a x.
   by exact: orbN.
 move: EM_a => /orP EM_a. case: EM_a => [-> | /negbTE-> ] //= _.
 (*# have /orP[ ax | n_ax ] : a x || ~~ a x by case: (a x). #*)
-Search _ count size in seq.
+(*# Search _ count size in seq. #*)
 by rewrite add0n eqn_leq andbC ltnNge count_size.
 (*# have := boolP (a x). #*)
 Qed.
@@ -266,6 +267,7 @@ Qed.
    - a spec lemma for if-then-else
    - handy with case, since matching spares you to write
      the expressions involved
+   - remark how the goal is used as a work space
 #<div>#*)
 Lemma test_ifP n m : if n <= m then 0 <= m - n else m - n == 0.
 Proof.
@@ -284,25 +286,25 @@ Qed.
    - instantiation
    - localization
 #<div>#*)
-Lemma ugly_goal n m :
-  n + (m * 2).+1 = n + (m + m.+1).
+Lemma subterm_selection n m :
+  n + (m * 2).+1 = n * (m + m.+1).
 Proof.
 rewrite addnC.
 rewrite (addnC m).
 rewrite [_ + m]addnC.
-rewrite [in n + _]addnC.
-rewrite [X in _ = X + n]addnC.
+rewrite [in n * _]addnC.
+rewrite [X in _ = _ * X]addnC.
 rewrite [in RHS]addnC.
 Abort.
 
-Lemma ugly_goal n m :
+Lemma occurrence_selection n m :
   n + m = n + m.
 Proof.
 rewrite addnC.
 rewrite [in RHS]addnC.
 Abort.
 
-Lemma no_pattern n : n + 0 = n.
+Lemma no_pattern_from_the_rewrite_rule n : n + 0 = n.
 Proof.
 rewrite -[n in RHS]addn0.
 Abort.
@@ -334,10 +336,10 @@ Qed.
 
 Lemma prime_above m : {p | m < p & prime p}.
 Proof.
-Check pdivP.
+(*# Check pdivP. #*)
 have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
 exists p => //; rewrite ltnNge; apply: contraL p_dv_m1 => p_le_m.
-Check dvdn_addr.
+(*# Check dvdn_addr. #*)
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 Qed.
     
