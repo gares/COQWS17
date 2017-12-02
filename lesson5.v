@@ -1,3 +1,9 @@
+(** 
+
+To play this document inside your browser use ALT-N and ALT-P.
+If you get "stack overflow" errors, try to use Google Chrome or Chromium
+with the command line option [--js-flags="--harmony-tailcalls"].
+*)
 From mathcomp Require Import all_ssreflect.
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -49,9 +55,13 @@ Unset Printing Implicit Defensive.
  - exploration of the theory provided by this structure and naming
    conventions
  - creation of a subalgebraic structure predicate and use
+#<div>#
 *)
 Module AlgebraicStructures.
-(** #</div># *)
+(** 
+#</div>#
+#</div>#
+*)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 * Defining a mathematical structure in Coq.
@@ -59,6 +69,7 @@ Module AlgebraicStructures.
 This is how mathematical structures are defined in the library.
 Unless you need to add a new mathematical structure to the library,
 you will only need to read this.
+#<div>#
 *)
 
 Structure my_struct := My_struct {
@@ -90,6 +101,7 @@ End my_struct_theory.
 
 End AlgebraicStructures.
 (**
+#</div>#
 
 This packaging is very elementary, and the mathematical components
 library uses a refinement of this.
@@ -108,6 +120,7 @@ Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a> and
 in the draft book #<a
 href="http://math-comp.github.io/mcb/">Book</a>#.
 
+#<div>#
 *)
 Section AlgebraicStructuresInheritance.
 
@@ -178,7 +191,9 @@ Proof. by rewrite -(opcx c) pr_xc. Qed.
 End my_struct2_theory.
 
 End AlgebraicStructuresInheritance.
-(** #</div># *)
+(** 
+#</div>#
+#</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 * Inhabiting the mathematical structures hierarchy.
@@ -202,6 +217,7 @@ End AlgebraicStructuresInheritance.
   - building a more informative mixin and using it for a weaker structure,
   - (in the example) by subtyping.
 
+#<div>#
 *)
 Module InstantiationInteger.
 
@@ -209,11 +225,14 @@ From mathcomp Require Import ssralg.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 
-(** #</div># *)
+(** 
+#</div>#
+#</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 ** First we define int
 
+#<div>#
 *)
 CoInductive int : Set := Posz of nat | Negz of nat.
 Local Coercion Posz : nat >-> int.
@@ -221,6 +240,7 @@ Local Coercion Posz : nat >-> int.
 Notation "n %:Z" := (Posz n)
   (at level 2, left associativity, format "n %:Z", only parsing).
 (**
+#</div>#
 
 ** Equality, countable and choice types, by injection
 
@@ -228,6 +248,7 @@ We provide an injection with explicit partial inverse, grom int to nat
 + nat, this will be enough to provide the mixins for equality,
 countable and choice types.
 
+#<div>#
 *)
 Definition natsum_of_int (m : int) : nat + nat :=
   match m with Posz p => inl _ p | Negz n => inr _ n end.
@@ -238,11 +259,13 @@ Definition int_of_natsum (m : nat + nat) :=
 Lemma natsum_of_intK : cancel natsum_of_int int_of_natsum.
 Proof. by case. Qed.
 (**
+#</div>#
 
 We create the mixins for equality, countable and choice types from
 this injection, and gradually inhabit the hierarchy. Try to swap any
 of the three blocks to see what happen.
 
+#<div>#
 *)
 Definition int_eqMixin := CanEqMixin natsum_of_intK.
 Canonical int_eqType := EqType int int_eqMixin.
@@ -252,7 +275,10 @@ Canonical int_choiceType := ChoiceType int int_choiceMixin.
 
 Definition int_countMixin := CanCountMixin natsum_of_intK.
 Canonical int_countType := CountType int int_countMixin.
-(** #</div># *)
+(** 
+#</div>#
+
+#</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 ** Abelian group structure, from scratch
@@ -261,6 +287,7 @@ We now create the abelian group structure of integers (here called
 Z-module), from scratch, introducing the operators and proving exactly
 the required properties.
 
+#<div>#
 *)
 Module intZmod.
 Section intZmod.
@@ -292,10 +319,12 @@ End intZmod.
 
 Canonical int_ZmodType := ZmodType int intZmod.Mixin.
 (**
+#</div>#
 
 Remark: we may develop here a piece of abelian group theory which is
 specific to the theory of integers.
 
+#<div>#
 *)
 Section intZmoduleTheory.
 
@@ -304,6 +333,7 @@ Proof. by []. Qed.
 
 End intZmoduleTheory.
 (**
+#</div>#
 
 *** Ring and Commutative ring structure, the stronger the better
 
@@ -313,6 +343,7 @@ ring struture at the same time. This is not only a structural economy
 of space, but a mathematical economy of proofs, since the
 commutativity property reduces the number of ring axioms to prove.
 
+#<div>#
 *)
 
 Module intRing.
@@ -341,22 +372,27 @@ Canonical int_Ring := RingType int intRing.comMixin.
 Canonical int_comRing := ComRingType int intRing.mulzC.
 
 End InstantiationInteger.
-(** #</div># *)
+(** 
+#</div>#
+#</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 * Other structures
+#<div>#
 *)
 Module OtherStructures.
 From mathcomp Require Import ssralg ssrnum.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 (**
+#</div>#
 ** Extensions of rings
 
 - read the documentation of ssralg and ssrnum (algebraic structures
   with order)
 
 ** Structures for morphisms
+#<div>#
 *)
 
 Search "linear" in ssralg.
@@ -365,7 +401,9 @@ Search "raddf" in ssralg.
 
 Search "rmorph" in ssralg.
 (**
+#</div>#
 ** Substructures
+#<div>#
 *)
 
 Print ssralg.GRing.subring_closed.
@@ -375,7 +413,9 @@ Print ssralg.GRing.mulr_2closed.
 Search "rpred" in ssralg.
 
 End OtherStructures.
-(** #</div># *)
+(** 
+#</div>#
+#</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 * Naming conventions.
@@ -459,6 +499,7 @@ Abbreviations are in the header of the file which introduce them. We list here t
 #<pre>Search _ "prefix" "suffix"* (symbol|pattern)* in library.</pre>#
 
 ** Examples
+#<div>#
 *)
 Module Conventions.
 From mathcomp Require Import ssralg ssrnum.
@@ -478,7 +519,9 @@ Search _ "rpred" "D" in ssralg.
 End Conventions.
 
 
-(** #</div># *)
+(**
+#</div>#
+#</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
  * A short parenthesis on subtyping.
@@ -492,7 +535,8 @@ End Conventions.
   #<code>Record sT := ST {x : T; px : P x}</code>#.
 
  - In mathcomp, to deal with subtypes independently from how they are
-   form, we have a ganonical structure.
+   form, we have a canonical structure.
+#<div>#
 *)
 
 Module SubType.
@@ -509,15 +553,20 @@ Structure subType : Type := SubType {
 End SubType.
 End SubType.
 (**
+#</div>#
  - The most important operators to know on subtypes are
   #<code>val : sT -> T</code>#, #<code>insub : T -> option sT</code># and
   #<code>insubd : sT -> T -> sT</code>#.
 
 - And the most important theorems to know are
   #<code>val_inj, val_eqE, val_insubd, insubdK</code># and #<code>insub</code>#
+
+#<div>#
 *)
 About val_inj.
 About val_eqE.
 About insubK.
 About val_insubd.
 About insubdK.
+(** #</div># *)
+(** #</div># *)
