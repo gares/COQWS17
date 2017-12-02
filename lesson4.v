@@ -5,21 +5,26 @@ Unset Printing Implicit Defensive.
 
 (** 
 
+To play this document inside your browser use ALT-N and ALT-P.
+If you get "stack overflow" errors, try to use Google Chrome or Chromium
+with the command line option [--js-flags="--harmony-tailcalls"].
+
 ----
+#<div class="slide">#
 ** Lesson 4
 
   - Introduction to finite sets
   - Finite graph in SSR
   - Proving Kosaraju's algorithm
-
-*)
-
-(**
+#</div>#
+----
+#<div class="slide">#
   ** Finite sets 
 
    * In SSR, they are sets over a finite type T
    * a set encapsulates an indicator function {ffun T -> bool}
    * sets share the collective predicate _ \in _ with lists
+#<div>#
 *)
 
 Definition x0 : 'I_10 := inZp 0.
@@ -89,10 +94,15 @@ by case i; do 10 (case => //).
 Qed.
 
 (** 
+#</div>#
+#</div>#
+----
+#<div class="slide">#
   ** Path 
     - path r x p : r relation, x is an element, p is a list
                    (x :: p) is a path starting at x and ending
                    at (last x p) of r related element
+#<div>#
  *)
 
 Fixpoint _path {T : finType} r x (p : seq T) :=
@@ -109,10 +119,15 @@ by [].
 Qed.
 
 (**
+#</div>#
+#</div>#
+----
+#<div class="slide">#
   ** Graph
    - a graph is manipulated either by its adjacency relation
      or its adjacency function 
    - the functions grel and rgraph let you change representation
+#<div>#
 *)
 
 Definition nexts :=
@@ -158,9 +173,14 @@ by rewrite H.
 Qed.
 
 (** 
+#</div>#
+#</div>#
+----
+#<div class="slide">#
   ** Depth-First Search
      - defs f n x v : 
            returns the nodes visited by a dfs at depth n avoiding the nodes in v
+#<div>#
 *)
 
 Section Dfs.
@@ -185,8 +205,13 @@ Compute [seq nat_of_ord i | i <- dfs nexts 10 [::] x1].
 Compute [seq nat_of_ord i | i <- dfs nexts 10 [::] x2].
 
 (** 
+#</div>#
+#</div>#
+----
+#<div class="slide">#
   ** Connection
      - boolean relation that indicates if two nodes are connected 
+#<div>#
  *)
 
 
@@ -201,10 +226,15 @@ Search connect in fingraph.
 End Connect.
 
 (**
+#</div>#
+#</div>#
+----
+#<div class="slide">#
   ** Kosaraju's algorithm
     - 2 dfs traversals 
     - one to build a post-fixed stack
     - one on the reverse graph to collect the components
+#<div>#
 *)
 
 Section Pdfs.
@@ -253,4 +283,9 @@ Admitted.
 
 End Kosaraju.
 
+(** 
+#</div>#
+#</div>#
+
+*)
 
