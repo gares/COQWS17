@@ -1,9 +1,3 @@
-(** 
-
-To play this document inside your browser use ALT-N and ALT-P.
-If you get "stack overflow" errors, try to use Google Chrome or Chromium
-with the command line option [--js-flags="--harmony-tailcalls"].
-	*)
 From mathcomp Require Import all_ssreflect all_algebra.
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -11,7 +5,6 @@ Unset Printing Implicit Defensive.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 
-(** -------------------------------------------- *)
 (** #<div class='slide'>#
 
 * Linear algebra in mathematical components

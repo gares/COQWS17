@@ -9,8 +9,9 @@ FILES=$(VS:%.v=%.html) $(VS) $(EX:%.v=%-todo.v)
 all: jscoq udoc/udoc.byte cheat-sheet/cheatsheet.pdf $(FILES)
 
 jscoq.orig:
-	git clone https://github.com/ejgallego/jscoq-builds.git --depth 1 -b v8.7 jscoq
-	cd jscoq && git checkout 350105b4bda3a3f1a219a9caba80473b7a6f14d4
+	git clone https://github.com/ejgallego/jscoq-builds.git --depth 1 -b v8.6 jscoq
+	#cd jscoq && git checkout 350105b4bda3a3f1a219a9caba80473b7a6f14d4
+	cd jscoq && git checkout 8a44193335dc935274393fd6abd6bf45f2062b9a
 	mv jscoq jscoq.orig
 
 jscoq.tgz: jscoq.orig
@@ -62,8 +63,8 @@ upload: $(FILES) cheat-sheet/cheatsheet.pdf jscoq.tgz
 	cp $(FILES) FileSaver.js Blob.js local.css cheat-sheet/cheatsheet.pdf \
 		$(WEB)
 
-%.html.tmp: %.v footer Makefile udoc/udoc.byte
-	@cat $< footer > $*tmp.v
+%.html.tmp: %.v header footer Makefile udoc/udoc.byte
+	@cat header $< footer > $*tmp.v
 	@# if does not work, then html ok but no links
 	-$(COQC) $*tmp.v > /dev/null
 	@# -$(COQC) -R $(MC) mathcomp -I $(MC) $<

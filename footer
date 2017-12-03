@@ -15,6 +15,7 @@ function save_coq_snippets() {
   for (i = 0; i < coqdoc_ids.length; ++i) {
     localStorage.setItem('coq-snippet-'+coqdoc_ids[i], document.getElementById(coqdoc_ids[i]).nextSibling.CodeMirror.getValue());
   }
+  alert("Coq snippets saved.");
 }
 
 function download_coq_snippets() {
@@ -143,10 +144,4 @@ window.onload = init_slides;
 window.onbeforeunload = save_coq_snippets;
 window.onscroll = update_scrolled;
 </script>
-
-<div style="text-align: center">
-  <div class="save-button" onClick="save_coq_snippets()">save script</div>
-  <div class="save-button" onClick="load_coq_snippet()"/>restore script</div>
-  <div class="save-button" onClick="download_coq_snippets()">download script</div>
-</div>
 # *)
