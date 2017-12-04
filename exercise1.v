@@ -13,7 +13,7 @@ Lemma orbC p q : p || q = q || p.
    - look up what [==>] is check if there are relevant views
    - prove that as you like
 *)
-Lemma Pirce p q : ((p ==> q) ==> p) ==> p.
+Lemma Peirce p q : ((p ==> q) ==> p) ==> p.
 (*D*)Proof. by case: p; case: q. Qed. 
 
 (** *** Exercise 3:
