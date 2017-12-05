@@ -1,10 +1,3 @@
-(** 
-
-To play this document inside your browser use ALT-N and ALT-P.
-If you get "stack overflow" errors, try to use Google Chrome or Chromium
-with the command line option [--js-flags="--harmony-tailcalls"].
-*)
-
 From mathcomp Require Import all_ssreflect.
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -29,7 +22,7 @@ Unset Printing Implicit Defensive.
 
     - The math-comp library gives some support for finite types.
     - ['I_n] is the the set of natural numbers smaller than n.
-    - [a : 'I_n] is composed of a value m and a proof that [m <= n].
+    - [a : 'I_n] is composed of a value m and a proof that [m < n].
 
     - Example : [oid] modifies the proof part with an equivalent one.
 

@@ -1,10 +1,4 @@
 (** 
-
-To play this document inside your browser use ALT-N and ALT-P.
-If you get "stack overflow" errors, try to use Google Chrome or Chromium
-with the command line option [--js-flags="--harmony-tailcalls"].
-
-----
 #<div class="slide">#
 ** Objective of this course
 

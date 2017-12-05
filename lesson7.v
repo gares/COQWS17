@@ -5,7 +5,6 @@ Unset Printing Implicit Defensive.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 
-(** -------------------------------------------- *)
 (** #<div class='slide'>#
 
 * Linear algebra in mathematical components
@@ -22,7 +21,9 @@ Extensive documentation in the header of:
  - vector spaces as matrices
 
 *)
+(** #<div># *)
 Module DefinitionMatrices.
+(** #</div># *)
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
@@ -32,8 +33,11 @@ Module DefinitionMatrices.
 (Credits "ITP 2013 tutorial: The Mathematical Components library" by Enrico Tassi and Assia Mahboubi #<a href="http://ssr.msr-inria.inria.fr/doc/tutorial-itp13/">material here</a>#)
 
 *)
-Reserved Notation "''M[' R ]_ n"    (at level 8, n at level 2, format "''M[' R ]_ n").
-Reserved Notation "''M[' R ]_ ( m , n )" (at level 8, format "''M[' R ]_ ( m ,  n )").
+(** #<div># *)
+Reserved Notation "''M[' R ]_ n"
+  (at level 8, n at level 2, format "''M[' R ]_ n").
+Reserved Notation "''M[' R ]_ ( m , n )"
+  (at level 8, format "''M[' R ]_ ( m ,  n )").
 
 Reserved Notation "\matrix_ ( i , j ) E"
   (at level 36, E at level 36, i, j at level 50,
@@ -43,13 +47,16 @@ Reserved Notation "x %:M"   (at level 8, format "x %:M").
 Reserved Notation "A *m B" (at level 40, left associativity, format "A  *m  B").
 Reserved Notation "A ^T"    (at level 8, format "A ^T").
 Reserved Notation "\tr A"   (at level 10, A at level 8, format "\tr  A").
+(** #</div># *)
 (**
 
 ** A matrix is a 2-dimension array
 
 *)
+(** #<div># *)
 Inductive matrix (R : Type) (m n : nat) : Type :=
   Matrix of {ffun 'I_m * 'I_n -> R}.
+(** #</div># *)
 (**
 
 Some notations : size inside parentheses, type of coefficients inside
@@ -57,19 +64,22 @@ square brackets. NB: In the library, the type of coefficients can also
 be ommitted.
 
 *)
+(** #<div># *)
 Notation "''M[' R ]_ ( m , n )" := (matrix R m n) : type_scope.
 Notation "''M[' R ]_ n" := 'M[R]_(n, n) : type_scope.
 
 (* Test *)
 Check 'M[nat]_(2,3).
 Check 'M[nat]_2.
+(** #</div># *)
 (**
 
-"matrix" is just a tag over ffun: it inherits from its structure We
-can "transfer" automatically all structures from the type of finite
+The type "matrix" is just a tag over ffun: it inherits from its structure.
+We can "transfer" automatically all structures from the type of finite
 functions by "trivial subTyping".
 
 *)
+(** #<div># *)
 Definition mx_val R m n (A : 'M[R]_(m,n)) : {ffun 'I_m * 'I_n -> R} :=
   let: Matrix g := A in g.
 
@@ -95,33 +105,41 @@ Definition matrix_finMixin (R : finType) m n :=
 Canonical matrix_finType (R : finType) m n :=
   Eval hnf in FinType 'M[R]_(m, n) (matrix_finMixin R m n).
 
+(** #</div># *)
 (**
 Test overloaded "_ == _" notation
 *)
+(** #<div># *)
 Check [eqType of 'M[nat]_2].
 Check forall A : 'M[nat]_2, A == A.
+(** #</div># *)
 (**
 
 Since matrices over nat are comparable with _ == _, matrices over
 matrices over nat are also comparable
 
 *)
+(** #<div># *)
 Check forall AA : 'M[ 'M[nat]_3 ]_2, AA == AA.
+(** #</div># *)
 (**
 
 We define a coercion in order to access elements as if matrices were
 functions.
 
 *)
+(** #<div># *)
 Definition fun_of_mx R m n (A : 'M[R]_(m,n)) : 'I_m -> 'I_n -> R :=
 fun i j => mx_val A (i, j).  Coercion fun_of_mx : matrix >-> Funclass.
 
 Check forall (A : 'M[nat]_3) i j, A i j == 37.
+(** #</div># *)
 (**
 
 We provide a notation to build matrices from a general term.
 
 *)
+(** #<div># *)
 Definition mx_of_fun R m n (F : 'I_m -> 'I_n -> R) : 'M[R]_(m,n) :=
   Matrix [ffun ij => F ij.1 ij.2].
 Notation "\matrix_ ( i , j ) E" := (mx_of_fun (fun i j => E))
@@ -133,6 +151,7 @@ Check \matrix_(i,j) (i - j)%N  :  'M[nat]_(3,4).
 End DefinitionMatrices.
 
 Module MatrixProperties.
+(** #</div># *)
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
@@ -146,10 +165,14 @@ We now show the most used theorems for matrix manipulation.
 mxE is an equation to compute a term in the matrix at given
 coordinates: it extracts the general term of the matrix and compute
 the substitution of indexes. It is generally the right move when you
-have <pre>(A complicated matrix) i j</pre> in your goal.
+have <pre>(A complicated matrix) i j</pre>
+
+in your goal.
 
 *)
+(** #<div># *)
 Check mxE.
+(** #</div># *)
 (**
 
 ** matrixP
@@ -159,37 +182,44 @@ matrices are equal if and only if all their coefficients are pairwise
 equal.
 
 *)
+(** #<div># *)
 Check matrixP.
+(** #</div># *)
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-** operations on matrices
+** Operations on matrices
 
-*** specific operation: trace and transpose
+*** Specific operation: trace and transpose
 
 (do not confuse the names)
 
 *)
+(** #<div># *)
 Print mxtrace.
 Locate "\tr".
 
 Print trmx.
 Locate "^T".
+(** #</div># *)
 (**
 
-*** specific operation scalar matrix
+*** Specific operation scalar matrix
 
 *)
+(** #<div># *)
 Print scalar_mx.
 Locate "%:M".
+(** #</div># *)
 (**
 
-*** matrices on rings are provided with a R-module canonical structure.
+*** Matrices on rings are provided with a R-module canonical structure.
 
 But not a ring as the multiplication is heterogeneous.
 
 *)
+(** #<div># *)
 Lemma test1 (R : ringType) m n (A B : 'M[R]_(m,n)) : A + B = B + A.
 Proof. exact: addrC. Qed.
 
@@ -197,34 +227,41 @@ Print mulmx.
 
 Lemma test2 (R : ringType) m n (a : R) (A : 'M[R]_(m,n)) : a *: A = a%:M *m A.
 Proof. by rewrite mul_scalar_mx. Qed.
+(** #</div># *)
 (**
 
-*** square matrices with explicit non zero size have a ring canonical structure.
+*** Square matrices with explicit non zero size have a ring canonical structure.
 
 This ring product coincides with the matrix product.
 
 *)
+(** #<div># *)
 Lemma test3 (R : ringType) n (A B : 'M[R]_n.+1) : A * B = A *m B.
 Proof. reflexivity. Qed.
+(** #</div># *)
 (**
 
-*** specific operation: the determinant.
+*** Specific operation: the determinant.
 
 *)
+(** #<div># *)
 Print determinant.
 Locate "\det".
+(** #</div># *)
 (**
 
-*** square matrices on a commutative unit ring with explicit non zero size have a unit ring canonical structure.
+*** Square matrices on a commutative unit ring with explicit non zero size have a unit ring canonical structure.
 
 and these notions of inversibility are definitionally equivalent.
 *)
+(** #<div># *)
 Lemma test4 (R : comUnitRingType) n (A : 'M[R]_n.+1) :
   (unitmx A) = (A \is a GRing.unit)
   /\ (A \is a GRing.unit) = (\det A \is a GRing.unit).
 Proof. split; reflexivity. Qed.
 
 End MatrixProperties.
+(** #</div># *)
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
@@ -236,7 +273,7 @@ End MatrixProperties.
  - A specificity of the mathematical components library is to allow to
   reason on matrices as if they represented their own image.
 
- - The doc and the code are in #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#)
+ - The doc and the code are in #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#
 
  - rows can be seen as vectors, and matrix can be seen as the familiy
   of its row vectors.
@@ -244,7 +281,7 @@ End MatrixProperties.
  - #<b>WARNING</b># Following the english convention (which is
     opposite to the french convention), composition/application of
     linear maps represented by matrices should be done left to right:
-    applying A to u is <pre>u *m A</pre>.
+    applying A to u is <pre>u *m A</pre>
 
  - the scope MS (matrix space) contains all notions about this vision
    of matrices (comparison, addition, intersection of spaces).
@@ -252,43 +289,53 @@ End MatrixProperties.
  - as a consequence, membership to a space is the same operation as
    comparison of spaces.
 
-*** the rank of a matrix is also the dimension of the space it represents
+*** The rank of a matrix is also the dimension of the space it represents
 
 *)
+(** #<div># *)
 Locate "\rank".
 About mxrank.
+(** #</div># *)
 (**
 
 *** Inclusion can be used both for elements (row vectors) and subspaces (matrices).
 
 *)
+(** #<div># *)
 Locate "_ <= _".
 About submx.
+(** #</div># *)
 (**
 
 *** The total space is represented by 1, and the trivial space by 0.
 
 *)
+(** #<div># *)
 About submx1.
 About sub1mx.
 About sub0mx.
 About submx0.
+(** #</div># *)
 (**
 
 *** Addition of subspaces is not the same thing as addition of matrices.
 (In Coq: same notation, different scope)
 
 *)
+(** #<div># *)
 Locate "_ + _".
 About addsmx.
+(** #</div># *)
 (**
 
 *** Intersection of subspaces
 
 *)
+(** #<div># *)
 Locate "_ :&: _".
 About capmx.
 About sub_capmx.
+(** #</div># *)
 (**
 
 *** Equality of subspaces is double inclusion.
@@ -297,6 +344,7 @@ Alternatively, the library provides an equivalent definition (via
 eqmxP) that can be used for rewriting in inclusion statements or rank.
 
 *)
+(** #<div># *)
 Locate "_ == _".
 Check (_ == _)%MS.
 
@@ -306,6 +354,7 @@ Print eqmx.
 
 About mxdirectE.
 About mxdirect_addsP.
+(** #</div># *)
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
@@ -320,21 +369,26 @@ About mxdirect_addsP.
    generated by A) on the left.
 
 *)
+(** #<div># *)
 About submxP.
 About row_subP.
 About submxMl.
+(** #</div># *)
 (**
 
  - Ker A is represented by the square matrix kermx A.
 *)
+(** #<div># *)
 About kermx.
 About sub_kermxP.
 (** #</div># *)
+(** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
-Let's do an example together
+** Let's do an example together
 
 *)
+(** #<div># *)
 Section ex_6_12.
 
 Variables (F : fieldType) (n' : nat).
@@ -373,3 +427,5 @@ by rewrite S_u_direct // submx0.
 Qed.
 
 End ex_6_12.
+(** #</div># *)
+(** #</div># *)

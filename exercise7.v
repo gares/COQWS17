@@ -20,13 +20,15 @@ Section ex_6_12.
 
 Let E be a vector space (any dimension, but in Coq we reason in finite
 dimension).
-
+#<div>#
 *)
 Variables (F : fieldType) (n' : nat).
 Let n := n'.+1.
 
 Section Q1.
-(** #</div># *)
+(**
+#</div>#
+#</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
@@ -36,14 +38,14 @@ Let u be an endomorphism of E, such that Ker u = Im u and S be a
 complement of Im u ("supplémentaire" in french), so that E is the
 direct sum of S and Im u.
 
-*)
+#<div># *)
 Variable (u : 'M[F]_n) (S : 'M[F]_n).
 Hypothesis eq_keru_imu : (kermx u :=: u)%MS.
 Hypothesis S_u_direct : (S :&: u)%MS = 0.
 Hypothesis S_u_eq1 : (S + u :=: 1)%MS.
 
 Implicit Types (x y z : 'rV[F]_n).
-(**
+(** #</div>#
 
 *** Question 1.a.
 
@@ -63,15 +65,16 @@ matrix that computes y and z from x.
    that was used to produce #<code>pinvmx</code># is arbitrary, we
    must project the result of #<code>pinvmx</code># on S in order to
    get the specific inverse with image S.
-*)
+#<div># *)
 Definition w := locked (proj_mx S u).
 Definition v := locked (proj_mx u S * pinvmx u * proj_mx S u).
-(**
+(** #</div>#
 
 Note that we used locking in order to protect w and v from expanding
 unexpectedly during proofs.
 
-</div># *)
+#</div>#
+*)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
@@ -79,7 +82,7 @@ unexpectedly during proofs.
 
 Prove the following lemmas.
 
-*)
+#<div># *)
 Lemma wS x : (x *m w <= S)%MS.
 Proof.
 unlock w.
@@ -97,7 +100,7 @@ Proof.
 unlock w => xS.
 (*D*)by rewrite proj_mx_id ?S_u_direct.
 (*A*)Qed.
-(** #</div># *)
+(** #</div># #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
@@ -108,7 +111,7 @@ Reuse and adapt and the proof in the course.
 
 - (hint: use mulmxKpV)
 
-*)
+#<div># *)
 Lemma Su_rect x : x = x *m w + (x *m v) *m u.
 Proof.
 unlock v w.
@@ -129,7 +132,7 @@ and x = y + z *m u
 (*D*)apply/eqP/sub_kermxP.
 (*D*)by rewrite eq_keru_imu proj_mx_compl_sub ?S_u_eq1 ?submx1.
 (*A*)Qed.
-(** #</div># *)
+(** #</div># #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
@@ -137,7 +140,7 @@ and x = y + z *m u
 
 From the proof
 
-*)
+#<div># *)
 Lemma Su_dec_eq0 y z : (y <= S)%MS -> (z <= S)%MS ->
   (y + z *m u == 0) = (y == 0) && (z == 0).
 Proof.
@@ -151,13 +154,10 @@ move=> /sub_kermxP; rewrite eq_keru_imu => z_keru.
 have : (z <= S :&: u)%MS by rewrite sub_capmx zS.
 by rewrite S_u_direct // submx0.
 Qed.
-(** #</div># *)
-(** -------------------------------------------- *)
-(** #<div class='slide'>#
-
+(** #</div>#
 deduce
 
-*)
+#<div># *)
 Lemma Su_dec_uniq y y' z z' : (y <= S)%MS -> (z <= S)%MS ->
                               (y' <= S)%MS -> (z' <= S)%MS ->
   (y + z *m u == y' + z' *m u) = (y == y') && (z == z').
@@ -165,14 +165,16 @@ Proof.
 (*D*)move=> yS zS y'S z'S; rewrite -subr_eq0 opprD addrACA -mulmxBl.
 (*D*)by rewrite Su_dec_eq0 ?addmx_sub ?eqmx_opp // !subr_eq0.
 (*A*)Qed.
-(**
+(** #</div># #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 **** Question 1.a.iii.
 
 Show some simplification lemmas
 - the two first are direct
 - the two last use Su_dec_uniq.
 
-*)
+#<div># *)
 Lemma u2_eq0 : u *m u = 0.
 (*A*)Proof. by apply/sub_kermxP; rewrite eq_keru_imu. Qed.
 
@@ -192,7 +194,7 @@ Proof.
 (*D*)rewrite -[X in X == _]add0r Su_dec_uniq ?sub0mx ?vS ?wS //.
 (*D*)by move=> /andP [/eqP <-].
 (*A*)Qed.
-(** #</div># *)
+(** #</div># #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
@@ -201,23 +203,21 @@ Proof.
 - Show that v is linear.
 - Show that u o v + v o u = 1.
 
-*)
+#<div># *)
 Lemma add_uv_vu : v *m u + u *m v = 1.
 Proof.
 (*D*)apply/row_matrixP => i; rewrite !rowE; move: (delta_mx _ _) => x.
 (*D*)rewrite mulmx1 mulmxDr !mulmxA {2}[x]Su_rect mulmxDl u2K addr0.
 (*D*)by rewrite v_id ?wS // addrC -Su_rect.
 (*A*)Qed.
-(** #</div># *)
-(** -------------------------------------------- *)
-(** #<div class='slide'>#
+(** #</div>#
 
 *** Question 1.c.
 
 - Show that w is linear.
 - Show that u o w + w o u = u.
 
-*)
+#<div># *)
 Lemma add_wu_uw : w *m u + u *m w = u.
 Proof.
 (*D*)apply/row_matrixP => i; rewrite !rowE; move: (delta_mx _ _) => x.
@@ -226,12 +226,12 @@ Proof.
 (*A*)Qed.
 
 End Q1.
-(** #</div># *)
+(** #</div># #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-** State and prove question 2, and then 3...
 
+#<div>#
 *)
 
 End ex_6_12.
