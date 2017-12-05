@@ -191,7 +191,7 @@ End AlgebraicStructuresInheritance.
  - We now show on the example of integers how to instantiate the
    mathematical structures that integers satisfy.
 
- - In to minimize the work of the user, the library lets you inhabit
+ - In order to minimize the work of the user, the library lets you inhabit
    sub-structures by providing one mixin at a time.
    The general pattern is to build the mixin of a
    structure, declare the canonical structure associated with it and
