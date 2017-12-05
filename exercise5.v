@@ -42,7 +42,7 @@ Proof.
 (**
 #</div>#
 ** Question 3: The imaginary part of product
-   (it's the same, don't do it if takes more than 5s
+   (it's the same, don't do it if takes more than 5s)
 #<div>#
 *)
 Lemma algImM (x y : algC) :
@@ -58,13 +58,17 @@ End PreliminaryLemmas.
 #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
-* The ring of Gauss integers
+* The ring of Gaussian integers
 
- - Ref: exercices de mathematiques oraux X-ENS algebre 1
- - Exercice 3.10. ENS Lyon
+References:
+ - #<a href="https://en.wikipedia.org/wiki/Gaussian_integer">Gaussian Integer on wikipedia</a>#
+ - exercices de mathematiques oraux X-ENS algebre 1, Exercice 3.10. ENS Lyon
+
+Gaussian integers are complex numbers of the form (n + i m) where n and m are integers. We will prove they form a ring, and determine the units of this ring.
+
 #<div>#
 *)
-Section GaussIntegers.
+Section GaussianIntegers.
 (**
 #</div>#
 - First we define a predicate for the algebraic numbers which are gauss integers.
@@ -113,7 +117,7 @@ Canonical GI_smulrPred := SmulrPred GI_subring.
 Canonical GI_subringPred := SubringPred GI_subring.
 (**
 #</div>#
-- Finally, we define the type of Gauss Integer, as a sigma type of algebraic numbers. We soon prove that this is in fact a sub type.
+- Finally, we define the type of Gaussian Integer, as a sigma type of algebraic numbers. We soon prove that this is in fact a sub type.
 #<div>#
 *)
 Record GI := GIof {
@@ -123,7 +127,7 @@ Hint Resolve algGIP.
 (**
 #</div>#
 
-- We provide the subtype property, this makes it possible to use the generic operator "val" to get an algC from a Gauss Integer.
+- We provide the subtype property, this makes it possible to use the generic operator "val" to get an algC from a Gaussian Integer.
 #<div>#
 *)
 Canonical GI_subType := [subType for algGI].
@@ -346,4 +350,4 @@ rewrite !in_cons in_nil ?orbF orbA orbAC !orbA orbAC -!orbA.
 (*a*)by rewrite algRe_i algIm_i ?(Creal_ReP 1 _) ?(Creal_ImP 1 _) ?oppr0.
 (*A*)Qed.
 
-End GaussIntegers.
+End GaussianIntegers.
