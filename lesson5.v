@@ -32,6 +32,7 @@ Unset Printing Implicit Defensive.
   equality: the operator (_ == _) is available on all of them.
 
 - #<a href="http://www-sop.inria.fr/teams/marelle/advanced-coq-16/mc_hieralg.pdf">  Here is a picture of the begining of the hierarchy</a>#
+
   Extensive documentation in the header of:
  - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a>#
  - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a>#
@@ -107,7 +108,7 @@ library uses a refinement of this.
 
 We briefly explain how to do inheritance with two structures. This is
 another simplified version of what happens in the library.  The
-complete process is described in #<a href="https://hal.inria.fr/inria-00368403v1/document">Packaging Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a> and in the draft book #<a href="http://math-comp.github.io/mcb/">Book</a>#.
+complete process is described in #<a href="https://hal.inria.fr/inria-00368403v1/document">Packaging Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a># and in the #<a href="http://math-comp.github.io/mcb">Mathematical Components Book</a>#.
 
 #<div>#
 *)
@@ -285,8 +286,10 @@ Definition addz (m n : int) :=
   match m, n with
     | Posz m', Posz n' => Posz (m' + n')
     | Negz m', Negz n' => Negz (m' + n').+1
-    | Posz m', Negz n' => if n' < m' then Posz (m' - n'.+1) else Negz (n' - m')
-    | Negz n', Posz m' => if n' < m' then Posz (m' - n'.+1) else Negz (n' - m')
+    | Posz m', Negz n' => if n' < m' then Posz (m' - n'.+1)
+                          else Negz (n' - m')
+    | Negz n', Posz m' => if n' < m' then Posz (m' - n'.+1)
+                          else Negz (n' - m')
   end.
 
 Definition oppz m := nosimpl
@@ -377,8 +380,7 @@ Local Open Scope ring_scope.
 #</div>#
 ** Extensions of rings
 
-- read the documentation of ssralg and ssrnum (algebraic structures
-  with order)
+- read the documentation of  #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a># and #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a># (algebraic structures with order and absolute value)
 
 - Canonical instances in the library are:
  - integers (int) (forms an integral domain)
