@@ -34,8 +34,10 @@ Module DefinitionMatrices.
 
 *)
 (** #<div># *)
-Reserved Notation "''M[' R ]_ n"    (at level 8, n at level 2, format "''M[' R ]_ n").
-Reserved Notation "''M[' R ]_ ( m , n )" (at level 8, format "''M[' R ]_ ( m ,  n )").
+Reserved Notation "''M[' R ]_ n"
+  (at level 8, n at level 2, format "''M[' R ]_ n").
+Reserved Notation "''M[' R ]_ ( m , n )"
+  (at level 8, format "''M[' R ]_ ( m ,  n )").
 
 Reserved Notation "\matrix_ ( i , j ) E"
   (at level 36, E at level 36, i, j at level 50,
@@ -72,8 +74,8 @@ Check 'M[nat]_2.
 (** #</div># *)
 (**
 
-"matrix" is just a tag over ffun: it inherits from its structure We
-can "transfer" automatically all structures from the type of finite
+The type "matrix" is just a tag over ffun: it inherits from its structure.
+We can "transfer" automatically all structures from the type of finite
 functions by "trivial subTyping".
 
 *)
@@ -163,7 +165,9 @@ We now show the most used theorems for matrix manipulation.
 mxE is an equation to compute a term in the matrix at given
 coordinates: it extracts the general term of the matrix and compute
 the substitution of indexes. It is generally the right move when you
-have <pre>(A complicated matrix) i j</pre> in your goal.
+have <pre>(A complicated matrix) i j</pre>
+
+in your goal.
 
 *)
 (** #<div># *)
@@ -185,9 +189,9 @@ Check matrixP.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-** operations on matrices
+** Operations on matrices
 
-*** specific operation: trace and transpose
+*** Specific operation: trace and transpose
 
 (do not confuse the names)
 
@@ -201,7 +205,7 @@ Locate "^T".
 (** #</div># *)
 (**
 
-*** specific operation scalar matrix
+*** Specific operation scalar matrix
 
 *)
 (** #<div># *)
@@ -210,7 +214,7 @@ Locate "%:M".
 (** #</div># *)
 (**
 
-*** matrices on rings are provided with a R-module canonical structure.
+*** Matrices on rings are provided with a R-module canonical structure.
 
 But not a ring as the multiplication is heterogeneous.
 
@@ -226,7 +230,7 @@ Proof. by rewrite mul_scalar_mx. Qed.
 (** #</div># *)
 (**
 
-*** square matrices with explicit non zero size have a ring canonical structure.
+*** Square matrices with explicit non zero size have a ring canonical structure.
 
 This ring product coincides with the matrix product.
 
@@ -237,7 +241,7 @@ Proof. reflexivity. Qed.
 (** #</div># *)
 (**
 
-*** specific operation: the determinant.
+*** Specific operation: the determinant.
 
 *)
 (** #<div># *)
@@ -246,7 +250,7 @@ Locate "\det".
 (** #</div># *)
 (**
 
-*** square matrices on a commutative unit ring with explicit non zero size have a unit ring canonical structure.
+*** Square matrices on a commutative unit ring with explicit non zero size have a unit ring canonical structure.
 
 and these notions of inversibility are definitionally equivalent.
 *)
@@ -269,7 +273,7 @@ End MatrixProperties.
  - A specificity of the mathematical components library is to allow to
   reason on matrices as if they represented their own image.
 
- - The doc and the code are in #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#)
+ - The doc and the code are in #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">mxalgebra</a>#
 
  - rows can be seen as vectors, and matrix can be seen as the familiy
   of its row vectors.
@@ -285,7 +289,7 @@ End MatrixProperties.
  - as a consequence, membership to a space is the same operation as
    comparison of spaces.
 
-*** the rank of a matrix is also the dimension of the space it represents
+*** The rank of a matrix is also the dimension of the space it represents
 
 *)
 (** #<div># *)
