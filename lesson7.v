@@ -281,7 +281,7 @@ End MatrixProperties.
  - #<b>WARNING</b># Following the english convention (which is
     opposite to the french convention), composition/application of
     linear maps represented by matrices should be done left to right:
-    applying A to u is <pre>u *m A</pre>.
+    applying A to u is <pre>u *m A</pre>
 
  - the scope MS (matrix space) contains all notions about this vision
    of matrices (comparison, addition, intersection of spaces).
