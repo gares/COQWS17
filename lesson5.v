@@ -1,4 +1,5 @@
 From mathcomp Require Import all_ssreflect.
+From mathcomp Require all_algebra.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -106,11 +107,7 @@ library uses a refinement of this.
 
 We briefly explain how to do inheritance with two structures. This is
 another simplified version of what happens in the library.  The
-complete process is described in #<a
-href="https://hal.inria.fr/inria-00368403v1/document">Packaging
-Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a> and
-in the draft book #<a
-href="http://math-comp.github.io/mcb/">Book</a>#.
+complete process is described in #<a href="https://hal.inria.fr/inria-00368403v1/document">Packaging Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a> and in the draft book #<a href="http://math-comp.github.io/mcb/">Book</a>#.
 
 #<div>#
 *)
@@ -193,21 +190,22 @@ End AlgebraicStructuresInheritance.
  - We now show on the example of integers how to instantiate the
    mathematical structures that integers satisfy.
 
- - As a step to minimize the work of the user, the library provides a
-   way to provide only the mixin. The general pattern is to build the
-   mixin of a structure, declare the canonical structure associated
-   with it and go one with creating the next mixin and creating the new
+ - In to minimize the work of the user, the library lets you inhabit
+   sub-structures by providing one mixin at a time.
+   The general pattern is to build the mixin of a
+   structure, declare the canonical structure associated with it and
+   go on with creating the next mixin and creating the new
    structure. Each time we build a new structure, we provide only the
    mixin, as the class can be inferred from the previous canonical
-   structures
+   structures.
 
  - We now show three different ways to build mixins here and an
    additional fourth will be shown in the exercices
 
-  - using a reference structure,
-  - building the required mixin from scratch,
-  - building a more informative mixin and using it for a weaker structure,
-  - (in the example) by subtyping.
+  - using a reference structure (by injection or partial isomorphism),
+  - building the required mixin from scratch (just provide the contents of the mixin yourself),
+  - building a more informative mixin and using it for a weaker structure (prove a more elaborate property, and deduce the actual mixin from it),
+  - by subtyping (in the exercise session).
 
 #<div>#
 *)
@@ -368,11 +366,11 @@ End InstantiationInteger.
 #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
-* Other structures
+* Other structures and instances
 #<div>#
 *)
 Module OtherStructures.
-From mathcomp Require Import ssralg ssrnum.
+Import ssralg ssrnum.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 (**
@@ -381,6 +379,18 @@ Local Open Scope ring_scope.
 
 - read the documentation of ssralg and ssrnum (algebraic structures
   with order)
+
+- Canonical instances in the library are:
+ - integers (int) (forms an integral domain)
+ - rationals (rat) (forms an archimedian field )
+ - algebraic numbers (algC) (forms an algebraically closed field)
+ - polynomials (forms an integral domain under sufficient hypothesis on the base ring)
+ - matrices (forms a module / vector space)
+ - square matrices (forms an algebra)
+
+** Group theory (not in this course)
+
+- see fingroup, perm, action, ...
 
 ** Structures for morphisms
 #<div>#
@@ -515,7 +525,7 @@ End Conventions.
 #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
- * A short parenthesis on subtyping.
+ * A reminder on subtyping.
 **)(**
 
  - In Coq, #<code>sT := {x : T | P x}</code># is a way to form a

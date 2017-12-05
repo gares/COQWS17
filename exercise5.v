@@ -11,16 +11,22 @@ Section PreliminaryLemmas.
 (** #<div class='slide'>#
 * Preliminaries
 
-Let's extend the library on rings and algebraic numbers
-with some easy lemmas first.
+In this exercise session, we will use complex algebraic numbers
+instead of complex numbers. This is for a technical reason, please
+think of algebraic numbers as if they were complex numbers, since they
+enjoy the same first order theory.
+
+Let's extend the library of algebraic numbers with some easy lemmas
+first.
 
 ** Question 1: prove that if a sum of natural numbers is 1 then one of its term is 0 and the other is 1
 
 Note that we do not consider nat but the copy of nat which is embeded
-in the algebraic numbers algC. The theorem is easy to prove for nat, so
-we suggest you use a compatibility lemma numbers between nat and Cnat
-#<div>#
-*)
+in the algebraic numbers algC. The theorem is easy to prove for nat,
+so we suggest you use a compatibility lemma numbers between nat and
+Cnat
+
+#<div># *)
 Lemma Cnat_add_eq1 : {in Cnat &, forall x y,
    (x + y == 1) = ((x == 1) && (y == 0))
                || ((x == 0) && (y == 1))}.
@@ -42,7 +48,8 @@ Proof.
 (**
 #</div>#
 ** Question 3: The imaginary part of product
-   (it's the same, don't do it if takes more than 5s)
+
+(it's the same proof except for 2 characters, don't do it if takes more than 5s)
 #<div>#
 *)
 Lemma algImM (x y : algC) :
