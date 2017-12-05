@@ -7,10 +7,47 @@ Import GRing.Theory.
 Open Scope ring_scope.
 
 Section CPGE.
-(**
+(** #<div class='slide'>#
+* Preliminaries
 
+ - Every morphism induces an ismorphism between a complement of its kernel and its image.  The function #<code>pinvmx</code># is the inverse of this isomporhism, but since the complement of the kernel that was used to produce #<code>pinvmx</code># is arbitrary, we must project the result of #<code>pinvmx</code># on S in order to get the specific inverse with image S.
+
+ - We thus define a matrix pinvmx_on S u, which represents the partial inverse of u that maps the image of u (represented by u) to S, and which is correct only when S is indeed a complement of kermx u.
+
+#<div>#
 *)
-Section ex_6_12.
+Lemma pinvmx_on_key : unit. Proof. exact: tt. Qed.
+Definition pinvmx_on (F : fieldType) (m m' n : nat) (S : 'M_(m', m))
+   (A : 'M[F]_(m, n)) : 'M_(n, m) :=
+ locked_with pinvmx_on_key (pinvmx A *m proj_mx <<S>>%MS (kermx A)).
+
+Lemma pinvmx_on_sub (F : fieldType) (m m' n : nat) (S : 'M_(m', m))
+   (A : 'M[F]_(m, n)) : (pinvmx_on S A <= S)%MS.
+Proof.
+rewrite [pinvmx_on _ _]unlock.
+by rewrite (submx_trans (proj_mx_sub _ _ _)) ?genmxE.
+Qed.
+
+Lemma mulmxKpV_on (F : fieldType) (m' m1 m2 n : nat) (S : 'M_(m', m2))
+  (A : 'M[F]_(m1, n)) (B : 'M_(m2, n)) :
+  (S :&: kermx B)%MS = 0 ->
+  (S + kermx B == 1%:M)%MS ->
+  (A <= B)%MS -> A *m pinvmx_on S B *m B = A.
+Proof.
+move=> SIkB0 SDkB1 subAB; rewrite [pinvmx_on _ _]unlock.
+have /eqmx0P gSIkB0 : (<<S>> :&: kermx B == (0 :'M_m2))%MS.
+(*a*)  by rewrite !(cap_eqmx (genmxE _) (eqmx_refl _)) SIkB0 submx_refl.
+have /eqmxP gSDkB1 : (<<S>> + kermx B == 1%:M)%MS.
+(*a*)  by rewrite !(adds_eqmx (genmxE _) (eqmx_refl _)) !SDkB1.
+(*D*)rewrite -[RHS](mulmxKpV subAB) -![A *m _ *m B]mulmxA; congr (_ *m _).
+(*D*)rewrite -[pinvmx B in RHS](add_proj_mx gSIkB0) ?gSDkB1 ?submx1 //.
+(*D*)by rewrite mulmxDl [X in _ + X](sub_kermxP _) ?addr0 // proj_mx_sub.
+(*A*)Qed.
+
+(**
+#</div>#
+#</div>#
+*)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
@@ -22,30 +59,42 @@ Let E be a vector space (any dimension, but in Coq we reason in finite
 dimension).
 #<div>#
 *)
+Section ex_6_12.
+
 Variables (F : fieldType) (n' : nat).
 Let n := n'.+1.
 
 Section Q1.
 (**
 #</div>#
-#</div># *)
-(** -------------------------------------------- *)
-(** #<div class='slide'>#
-
 ** Question 1.
 
 Let u be an endomorphism of E, such that Ker u = Im u and S be a
-complement of Im u ("supplémentaire" in french), so that E is the
-direct sum of S and Im u.
+complement of Im u, so that E is the direct sum of S and Im u.
+
+- First, prove that E is the direct sum of S and Ker u
 
 #<div># *)
 Variable (u : 'M[F]_n) (S : 'M[F]_n).
 Hypothesis eq_keru_imu : (kermx u :=: u)%MS.
 Hypothesis S_u_direct : (S :&: u)%MS = 0.
-Hypothesis S_u_eq1 : (S + u :=: 1)%MS.
+Hypothesis S_u_eq1 : (S + u == 1)%MS.
+
+Fact S_ku_direct : (S :&: kermx u)%MS = 0.
+Proof.
+(*D*)apply/eqmx0P; rewrite !(cap_eqmx (eqmx_refl _) eq_keru_imu).
+(*D*)by rewrite !S_u_direct submx_refl.
+(*A*)Qed.
+Hint Resolve S_ku_direct.
+
+Fact S_ku_eq1 : (S + kermx u == 1)%MS.
+(*A*)Proof. by rewrite !(adds_eqmx (eqmx_refl _) eq_keru_imu) S_u_eq1. Qed.
+Hint Resolve S_ku_eq1.
 
 Implicit Types (x y z : 'rV[F]_n).
-(** #</div>#
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
 
 *** Question 1.a.
 
@@ -59,15 +108,9 @@ matrix that computes y and z from x.
   construction, you can thus skip the part of the paper proof that
   deals with this.
 
- - Every morphism induces an ismorphism between a complement of its
-   kernel and its image.  The function #<code>pinvmx</code># is the
-   inverse of this isomporhism, but since the complement of the kernel
-   that was used to produce #<code>pinvmx</code># is arbitrary, we
-   must project the result of #<code>pinvmx</code># on S in order to
-   get the specific inverse with image S.
 #<div># *)
 Definition w := locked (proj_mx S u).
-Definition v := locked (proj_mx u S * pinvmx u * proj_mx S u).
+Definition v := locked (proj_mx u S * pinvmx_on S u).
 (** #</div>#
 
 Note that we used locking in order to protect w and v from expanding
@@ -92,7 +135,7 @@ unlock w.
 Lemma vS x : (x *m v <= S)%MS.
 Proof.
 unlock v.
-(*D*)by rewrite mulmxA proj_mx_sub.
+(*D*) by rewrite mulmxA mulmx_sub ?pinvmx_on_sub.
 (*A*)Qed.
 
 Lemma w_id x : (x <= S)%MS -> x *m w = x.
@@ -100,45 +143,25 @@ Proof.
 unlock w => xS.
 (*D*)by rewrite proj_mx_id ?S_u_direct.
 (*A*)Qed.
-(** #</div># #</div># *)
-(** -------------------------------------------- *)
-(** #<div class='slide'>#
-
+(** #</div>#
 
 **** Question 1.a.ii.
-
-Reuse and adapt and the proof in the course.
-
-- (hint: use mulmxKpV)
 
 #<div># *)
 Lemma Su_rect x : x = x *m w + (x *m v) *m u.
 Proof.
 unlock v w.
-(*
-remember we had t, z' and z
-y := x *m proj_mx S u
-t := x *m proj_mx u S
-z' := t *m pinvmx u
-z := z' *m proj_mx S u.
-and x = y + z *m u
-    z' *m u = z *m u
-    z' *m u = t
-*)
-(*D*)rewrite -{1}(@add_proj_mx _ _ _ S u x) ?S_u_direct ?S_u_eq1 ?submx1 //.
-(*D*)congr (_ + _); apply/eqP.
-(*D*)rewrite -[x *m proj_mx u S](@mulmxKpV _ _ _ _ _ u) ?proj_mx_sub //.
-(*D*)rewrite 2![x *m _ in X in _ == X]mulmxA -subr_eq0 -mulmxBl.
-(*D*)apply/eqP/sub_kermxP.
-(*D*)by rewrite eq_keru_imu proj_mx_compl_sub ?S_u_eq1 ?submx1.
+(*D*)rewrite [x *m (_ *_)]mulmxA mulmxKpV_on ?proj_mx_sub//.
+(*D*)by rewrite add_proj_mx // (eqmxP S_u_eq1) submx1.
 (*A*)Qed.
+
 (** #</div># #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
 **** Question 1.a.iii.
 
-From the proof
+From the following lemma
 
 #<div># *)
 Lemma Su_dec_eq0 y z : (y <= S)%MS -> (z <= S)%MS ->
@@ -181,14 +204,14 @@ Lemma u2_eq0 : u *m u = 0.
 Lemma u2K m (a : 'M_(m,n)) : a *m u *m u = 0.
 (*D*)Proof. by rewrite -mulmxA u2_eq0 mulmx0. Qed.
 
-Lemma v_id x : (x <= S)%MS -> (x *m u) *m v = x.
+Lemma uv x : (x <= S)%MS -> (x *m u) *m v = x.
 Proof.
 (*D*)move=> xS; have /eqP := Su_rect (x *m u).
 (*D*)rewrite -[X in X == _]add0r Su_dec_uniq ?sub0mx ?vS ?wS //.
 (*D*)by move=> /andP [_ /eqP <-].
 (*A*)Qed.
 
-Lemma w0 x : (x <= S)%MS -> (x *m u) *m w = 0.
+Lemma uw x : (x <= S)%MS -> (x *m u) *m w = 0.
 Proof.
 (*D*)move=> xS; have /eqP := Su_rect (x *m u).
 (*D*)rewrite -[X in X == _]add0r Su_dec_uniq ?sub0mx ?vS ?wS //.
@@ -200,15 +223,22 @@ Proof.
 
 *** Question 1.b.
 
-- Show that v is linear.
+- Show that v is linear. (by definition)
 - Show that u o v + v o u = 1.
 
+#<pre>#
+Indeed u (v x) + v (u x)
+  = u (v x) + v (u (w x)) + v (u (u (v x))) by Su_rect
+  = u (v x) + v (u (w x)) by u2K
+  = u (v x) + w x by uv
+  = x by -Su_rect
+#</pre>#
 #<div># *)
 Lemma add_uv_vu : v *m u + u *m v = 1.
 Proof.
-(*D*)apply/row_matrixP => i; rewrite !rowE; move: (delta_mx _ _) => x.
+(*D*)apply/row_matrixP => i; rewrite !rowE; set x := delta_mx _ _.
 (*D*)rewrite mulmx1 mulmxDr !mulmxA {2}[x]Su_rect mulmxDl u2K addr0.
-(*D*)by rewrite v_id ?wS // addrC -Su_rect.
+(*D*)by rewrite uv ?wS // addrC -Su_rect.
 (*A*)Qed.
 (** #</div>#
 
@@ -217,11 +247,19 @@ Proof.
 - Show that w is linear.
 - Show that u o w + w o u = u.
 
+#<pre>#
+Indeed u (w x) + w (u x)
+  = u (w x) + w (u (w x)) + w (u (u (v x))) by Su_rect
+  = u (w x) + w (u (w x)) by u2K
+  = u (w x) by uw
+  = u (x - u (v x)) by  Su_rect
+  = u x by u2K
+#</pre>#
 #<div># *)
 Lemma add_wu_uw : w *m u + u *m w = u.
 Proof.
-(*D*)apply/row_matrixP => i; rewrite !rowE; move: (delta_mx _ _) => x.
-(*D*)rewrite mulmxDr !mulmxA {2}[x]Su_rect mulmxDl u2K addr0 w0 ?wS // addr0.
+(*D*)apply/row_matrixP => i; rewrite !rowE; set x := delta_mx _ _.
+(*D*)rewrite mulmxDr !mulmxA {2}[x]Su_rect mulmxDl u2K addr0 uw ?wS // addr0.
 (*D*)by have /(canLR (addrK _)) <- := Su_rect x; rewrite mulmxBl u2K subr0.
 (*A*)Qed.
 
