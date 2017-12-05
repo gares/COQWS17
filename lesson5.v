@@ -51,7 +51,7 @@ Unset Printing Implicit Defensive.
 #<div>#
 *)
 Module AlgebraicStructures.
-(** 
+(**
 #</div>#
 #</div>#
 *)
@@ -64,7 +64,6 @@ Unless you need to add a new mathematical structure to the library,
 you will only need to read this.
 #<div>#
 *)
-
 Structure my_struct := My_struct {
 (* domain/carrier/sort of the structure *)
   dom  : Type;
@@ -184,7 +183,7 @@ Proof. by rewrite -(opcx c) pr_xc. Qed.
 End my_struct2_theory.
 
 End AlgebraicStructuresInheritance.
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
@@ -217,8 +216,7 @@ Module InstantiationInteger.
 From mathcomp Require Import ssralg.
 Import GRing.Theory.
 Local Open Scope ring_scope.
-
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
@@ -268,7 +266,7 @@ Canonical int_choiceType := ChoiceType int int_choiceMixin.
 
 Definition int_countMixin := CanCountMixin natsum_of_intK.
 Canonical int_countType := CountType int int_countMixin.
-(** 
+(**
 #</div>#
 
 #</div># *)
@@ -365,7 +363,7 @@ Canonical int_Ring := RingType int intRing.comMixin.
 Canonical int_comRing := ComRingType int intRing.mulzC.
 
 End InstantiationInteger.
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
@@ -406,7 +404,7 @@ Print ssralg.GRing.mulr_2closed.
 Search "rpred" in ssralg.
 
 End OtherStructures.
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
