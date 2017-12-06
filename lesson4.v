@@ -154,6 +154,7 @@ by [].
 Qed.
 
 Goal forall n, n <= n.+1.
+Proof.
 elim=> [|n IH].
   by [].
 exact: IH.
@@ -278,6 +279,14 @@ Compute 0 %/ 0.
 Search (_ %| _ * _) in div.
 
 Search ((_ * _) %/ _) in div.
+
+(** odd **)
+
+Compute odd 4.
+Compute odd 5.
+Print odd.
+
+Search _ odd (_ %% _).
 
 (** gcd & lcm **)
 
