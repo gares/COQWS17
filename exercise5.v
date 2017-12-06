@@ -284,10 +284,6 @@ Lemma gaussNormCnat (x : GI) : gaussNorm (val x) \in Cnat.
 Hint Resolve gaussNormCnat.
 (**
 #</div>#
-#</div>#
-*)
-(** -------------------------------------------- *)
-(** #<div class='slide'>#
 
 ** Question 10: Show that gaussNorm is multiplicative (on all algC).
 
