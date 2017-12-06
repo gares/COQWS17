@@ -30,9 +30,10 @@ Roadmap of the lesson:
 
  - P = a_0 + a_1 X + a_2 X^2 + ... + a_n X^n
    - A  normalized (i.e. no trailing 0) sequence of coefficients
-
+<<
 Record polynomial (R : ringType) := 
 Polynomial {polyseq :> seq R; _ : last 1 polyseq != 0}.
+>>
 
 #<div>#
 *)
