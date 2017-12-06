@@ -100,7 +100,7 @@ Proof.
  *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
-** Question 5: Prove that gauss integers form a subfield
+** Question 5: Prove that gauss integers form a subring
 #<div>#
 *)
 Lemma GI_subring : subring_closed gaussInteger.
