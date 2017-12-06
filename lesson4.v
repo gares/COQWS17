@@ -83,7 +83,7 @@ move=> m n.
 by [].
 Qed.
 
-Search _ (_.+1 + _ = _.+1).
+Search _ (_.+1 + _ = _.+1) in ssrnat.
 
 Goal forall m n, m + n.+1 = (m + n).+1.
 Proof.
@@ -95,9 +95,9 @@ rewrite IH.
 by [].
 Qed.
 
-Search _ (_ + _.+1 = _.+1).
+Search _ (_ + _.+1 = _.+1) in ssrnat.
 
-Search _ (_.+1 + _ = _ + _.+1).
+Search _ (_.+1 + _ = _ + _.+1) in ssrnat.
 
 (** Subtraction *)
 
@@ -115,7 +115,7 @@ move=> n.
 by [].
 Qed.
 
-Search _ left_zero subn.
+Search _ left_zero subn in ssrnat.
 
 Goal forall n, n - 0 = n.
 Proof.
@@ -124,8 +124,8 @@ case => [|n].
 by [].
 Qed.
 
-Search _ (_.+1 - 0 = _).
-Search _ (_.+1 - _.+1 = _).
+Search _ (_.+1 - 0 = _) in ssrnat.
+Search _ (_.+1 - _.+1 = _) in ssrnat.
 
 
 (** 
@@ -164,7 +164,7 @@ Search _ (?_1 <= ?_1.+1) in ssrnat.
 
 (** Reflexivity *)
 
-Search _ (?_1 <= ?_1).
+Search _ (?_1 <= ?_1) in ssrnat.
 
 (** Antisymmetric *)
 
@@ -253,7 +253,7 @@ Qed.
 
 Check subset_leqif_cards.
 
-Search _ (_ <= _ ?= iff _) (_ && _).
+Search _ (_ <= _ ?= iff _) (_ && _) in ssrnat.
 
 (** Division **)
 
@@ -268,11 +268,11 @@ Compute 2 %| 21.
 
 Print dvdn.
 
-Search (_ %| _ + _).
+Search (_ %| _ + _) in div.
 
-Search ((_ + _) %/ _).
+Search ((_ + _) %/ _) in div.
 
-Search (?_1 %/ ?_1).
+Search (?_1 %/ ?_1) in div.
 
 Compute 0 %/ 0.
 
@@ -286,7 +286,7 @@ Compute odd 4.
 Compute odd 5.
 Print odd.
 
-Search _ odd (_ %% _).
+Search _ odd (_ %% _) in div.
 
 (** gcd & lcm **)
 
@@ -294,9 +294,9 @@ Compute gcdn 42 49.
 
 Compute lcmn 42 49.
 
-Search _ gcdn lcmn.
+Search _ gcdn lcmn in div.
 
-Search _ gcdn (_ * _).
+Search _ gcdn (_ * _) in div.
 
 (** Coprime **)
 
@@ -307,7 +307,7 @@ Compute coprime 21 7.
 
 Print coprime.
 
-Search _ coprime (_ %| _).
+Search _ coprime (_ %| _) in div prime.
 
 (** Primality **)
 
@@ -338,7 +338,7 @@ case.
 by case.
 Qed.
 
-Search _ prime (_ %| _).
+Search _ prime (_ %| _) in div prime.
 
 Check logn.
 
