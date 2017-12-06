@@ -12,13 +12,18 @@ Try to define a next function over 'I_n that correspond to the
 successor function over the natural plus the special case that
 "n -1" is mapped to zero *)
 
-Program Definition onext n (x : 'I_n) : 'I_n :=
+Definition onext n (x : 'I_n) : 'I_n.
+Proof.
+refine (
+(* Sub takes two arguments *)
   Sub
-(* The value *)  (*D*)(x.+1 %% n)
-(* The proof *)  _.
-Next Obligation.
+(* Write the valued in the following line *)
+(*D*)(x.+1 %% n)
+(* Leave _ for the proof, you will fill it in by tactics later *)
+_
+).
 (*D*) by case: x => [m /= ltmn]; rewrite ltn_mod (leq_trans _ ltmn).
-(*A*)Qed.
+Defined.
 
 Eval compute in val (onext (Ordinal (isT : 2 < 4))).
 Eval compute in val (onext (Ordinal (isT : 3 < 4))).
@@ -64,7 +69,7 @@ Proof.
 (*D*)apply: leq_subr.
 (*A*)Qed.
 
-Definition neg_offset_ord n i p := Ordinal (neg_offset_ord_proof n i p).
+Definition neg_offset_ord n (i : 'I_n) p := Ordinal (neg_offset_ord_proof i p).
 
 Eval compute in (val (neg_offset_ord (Ordinal (isT : 7 < 9)) 4)).
 

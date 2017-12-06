@@ -210,7 +210,7 @@ Open Scope ring_scope.
 Import GRing.Theory Num.Theory.
 (**
 
-Definition and properties of lagrange polynomials.
+* Definition and properties of Lagrange polynomials.
 
 Prove only one of the following lemmas
 *)

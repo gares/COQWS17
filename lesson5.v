@@ -1,4 +1,5 @@
 From mathcomp Require Import all_ssreflect.
+From mathcomp Require all_algebra.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -31,6 +32,7 @@ Unset Printing Implicit Defensive.
   equality: the operator (_ == _) is available on all of them.
 
 - #<a href="http://www-sop.inria.fr/teams/marelle/advanced-coq-16/mc_hieralg.pdf">  Here is a picture of the begining of the hierarchy</a>#
+
   Extensive documentation in the header of:
  - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a>#
  - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a>#
@@ -51,7 +53,7 @@ Unset Printing Implicit Defensive.
 #<div>#
 *)
 Module AlgebraicStructures.
-(** 
+(**
 #</div>#
 #</div>#
 *)
@@ -64,7 +66,6 @@ Unless you need to add a new mathematical structure to the library,
 you will only need to read this.
 #<div>#
 *)
-
 Structure my_struct := My_struct {
 (* domain/carrier/sort of the structure *)
   dom  : Type;
@@ -107,11 +108,7 @@ library uses a refinement of this.
 
 We briefly explain how to do inheritance with two structures. This is
 another simplified version of what happens in the library.  The
-complete process is described in #<a
-href="https://hal.inria.fr/inria-00368403v1/document">Packaging
-Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a> and
-in the draft book #<a
-href="http://math-comp.github.io/mcb/">Book</a>#.
+complete process is described in #<a href="https://hal.inria.fr/inria-00368403v1/document">Packaging Mathematical Structures (Garillot, Gonthier, Mahboubi, Rideau)</a># and in the #<a href="http://math-comp.github.io/mcb">Mathematical Components Book</a>#.
 
 #<div>#
 *)
@@ -184,7 +181,7 @@ Proof. by rewrite -(opcx c) pr_xc. Qed.
 End my_struct2_theory.
 
 End AlgebraicStructuresInheritance.
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
@@ -194,21 +191,22 @@ End AlgebraicStructuresInheritance.
  - We now show on the example of integers how to instantiate the
    mathematical structures that integers satisfy.
 
- - As a step to minimize the work of the user, the library provides a
-   way to provide only the mixin. The general pattern is to build the
-   mixin of a structure, declare the canonical structure associated
-   with it and go one with creating the next mixin and creating the new
+ - In order to minimize the work of the user, the library lets you inhabit
+   sub-structures by providing one mixin at a time.
+   The general pattern is to build the mixin of a
+   structure, declare the canonical structure associated with it and
+   go on with creating the next mixin and creating the new
    structure. Each time we build a new structure, we provide only the
    mixin, as the class can be inferred from the previous canonical
-   structures
+   structures.
 
  - We now show three different ways to build mixins here and an
    additional fourth will be shown in the exercices
 
-  - using a reference structure,
-  - building the required mixin from scratch,
-  - building a more informative mixin and using it for a weaker structure,
-  - (in the example) by subtyping.
+  - using a reference structure (by injection or partial isomorphism),
+  - building the required mixin from scratch (just provide the contents of the mixin yourself),
+  - building a more informative mixin and using it for a weaker structure (prove a more elaborate property, and deduce the actual mixin from it),
+  - by subtyping (in the exercise session).
 
 #<div>#
 *)
@@ -217,8 +215,7 @@ Module InstantiationInteger.
 From mathcomp Require Import ssralg.
 Import GRing.Theory.
 Local Open Scope ring_scope.
-
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
@@ -268,7 +265,7 @@ Canonical int_choiceType := ChoiceType int int_choiceMixin.
 
 Definition int_countMixin := CanCountMixin natsum_of_intK.
 Canonical int_countType := CountType int int_countMixin.
-(** 
+(**
 #</div>#
 
 #</div># *)
@@ -289,8 +286,10 @@ Definition addz (m n : int) :=
   match m, n with
     | Posz m', Posz n' => Posz (m' + n')
     | Negz m', Negz n' => Negz (m' + n').+1
-    | Posz m', Negz n' => if n' < m' then Posz (m' - n'.+1) else Negz (n' - m')
-    | Negz n', Posz m' => if n' < m' then Posz (m' - n'.+1) else Negz (n' - m')
+    | Posz m', Negz n' => if n' < m' then Posz (m' - n'.+1)
+                          else Negz (n' - m')
+    | Negz n', Posz m' => if n' < m' then Posz (m' - n'.+1)
+                          else Negz (n' - m')
   end.
 
 Definition oppz m := nosimpl
@@ -365,24 +364,35 @@ Canonical int_Ring := RingType int intRing.comMixin.
 Canonical int_comRing := ComRingType int intRing.mulzC.
 
 End InstantiationInteger.
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
-* Other structures
+* Other structures and instances
 #<div>#
 *)
 Module OtherStructures.
-From mathcomp Require Import ssralg ssrnum.
+Import ssralg ssrnum.
 Import GRing.Theory.
 Local Open Scope ring_scope.
 (**
 #</div>#
 ** Extensions of rings
 
-- read the documentation of ssralg and ssrnum (algebraic structures
-  with order)
+- read the documentation of  #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">ssralg</a># and #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssrnum.html">ssrnum</a># (algebraic structures with order and absolute value)
+
+- Canonical instances in the library are:
+ - integers (int) (forms an integral domain)
+ - rationals (rat) (forms an archimedian field)
+ - algebraic numbers (algC) (forms an algebraically closed field)
+ - polynomials {poly R} (forms an integral domain under sufficient hypothesis on the base ring)
+ - matrices 'M[R]_(m, n) (forms a module / a finite dimension vector space)
+ - square matrices 'M[R]_n (forms an algebra)
+
+** Group theory (not in this course)
+
+- see fingroup, perm, action, ...
 
 ** Structures for morphisms
 #<div>#
@@ -406,7 +416,7 @@ Print ssralg.GRing.mulr_2closed.
 Search "rpred" in ssralg.
 
 End OtherStructures.
-(** 
+(**
 #</div>#
 #</div># *)
 (** -------------------------------------------- *)
@@ -517,7 +527,7 @@ End Conventions.
 #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
- * A short parenthesis on subtyping.
+ * A reminder on subtyping.
 **)(**
 
  - In Coq, #<code>sT := {x : T | P x}</code># is a way to form a

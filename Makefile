@@ -114,9 +114,9 @@ exercise2.html: exercise2.html.tmp
 exercise2-todo.v: exercise2.v
 	@sed -e 's/^(\*D\*).*$$//' -e 's/^(\*A\*).*$$/Admitted./' $< > $@
 exercise3.html: exercise3.html.tmp
-	@sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
+	@sed -e 's/^(\*D\*).*$$//' -e 's/^(\*A\*).*$$/Admitted./' $< > $@
 exercise3-todo.v: exercise3.v
-	@sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
+	@sed -e 's/^(\*D\*).*$$//' -e 's/^(\*A\*).*$$/Admitted./' $< > $@
 exercise4.html: exercise4.html.tmp
 	@sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise4-todo.v: exercise4.v
