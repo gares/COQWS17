@@ -268,6 +268,13 @@ End Q1.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
+** Questions 2 and 3 : State and prove by yourself
+
+Let u be a endomorphism of E such that u^2 = 0.
+
+- Q2. Suppose there is a v such that u v + v u = 1, prove the kernel and image of u are equal.
+
+- Q3. Suppose u != 0 and suppose there is a w such that uw + wu = u. Find a counter example of Ker u = Im u. (Hint: take u e1 = 0, u e2 = 0 and u e3 = e2).
 
 #<div>#
 *)
