@@ -384,11 +384,11 @@ Local Open Scope ring_scope.
 
 - Canonical instances in the library are:
  - integers (int) (forms an integral domain)
- - rationals (rat) (forms an archimedian field )
+ - rationals (rat) (forms an archimedian field)
  - algebraic numbers (algC) (forms an algebraically closed field)
- - polynomials (forms an integral domain under sufficient hypothesis on the base ring)
- - matrices (forms a module / vector space)
- - square matrices (forms an algebra)
+ - polynomials {poly R} (forms an integral domain under sufficient hypothesis on the base ring)
+ - matrices 'M[R]_(m, n) (forms a module / a finite dimension vector space)
+ - square matrices 'M[R]_n (forms an algebra)
 
 ** Group theory (not in this course)
 

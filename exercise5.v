@@ -85,6 +85,8 @@ Definition gaussInteger :=
   [qualify a x | ('Re x \in Cint) && ('Im x \in Cint)].
 (**
 #</div>#
+- You need to use qualifE to reduce (x \ in gaussInteger) to its definition.
+
 ** Question 4: Prove that integers are gauss integers
 #<div>#
 *)
