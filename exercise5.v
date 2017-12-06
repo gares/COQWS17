@@ -261,6 +261,11 @@ Lemma gaussNorm_val (x : GI) : gaussNorm (val x) = val (x * conjGI x).
 Proof. by []. Qed.
 (**
 #</div>#
+#</div>#
+*)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+
 ** Question 8: Show that the gaussNorm of x is the square of the complex modulus of x
 
 Hint: only one rewrite with the right theorem.
@@ -270,10 +275,6 @@ Lemma gaussNormE x : gaussNorm x = `|x| ^+ 2.
 (*A*)Proof. by rewrite normCK. Qed.
 (**
 #</div>#
-#</div>#
-*)
-(** -------------------------------------------- *)
-(** #<div class='slide'>#
 
 ** Question 9: Show that the gaussNorm of an Gaussian integer is a natural number.
 
