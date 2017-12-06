@@ -78,7 +78,7 @@ Gaussian integers are complex numbers of the form (n + i m) where n and m are in
 Section GaussianIntegers.
 (**
 #</div>#
-- First we define a predicate for the algebraic numbers which are gauss integers.
+- First we define a predicate for the algebraic numbers which are Gaussian integers.
 #<div>#
 *)
 Definition gaussInteger :=
@@ -87,7 +87,7 @@ Definition gaussInteger :=
 #</div>#
 - You need to use qualifE to reduce (x \ in gaussInteger) to its definition.
 
-** Question 4: Prove that integers are gauss integers
+** Question 4: Prove that integers are Gaussian integers
 #<div>#
 *)
 Lemma Cint_GI (x : algC) : x \in Cint -> x \is a gaussInteger.
@@ -100,7 +100,7 @@ Proof.
  *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
-** Question 5: Prove that gauss integers form a subring
+** Question 5: Prove that Gaussian integers form a subring
 #<div>#
 *)
 Lemma GI_subring : subring_closed gaussInteger.
@@ -178,14 +178,14 @@ Canonical GI_comRingType := ComRingType GI GI_comRingMixin.
  - Now we build the unitRing and comUnitRing structure of gauss
    integers. Contrarily to the previous structures, the operator is
    not the same as on algebraics. Indeed the invertible algebraics are
-   not necessarily invertible gauss integers.
+   not necessarily invertible Gaussian integers.
 
- - Hence, we define the inverse of gauss integers as follow : if the
-   algebraic inverse happens to be a gauss integer we recover the
+ - Hence, we define the inverse of Gaussian integers as follow : if the
+   algebraic inverse happens to be a Gaussian integer we recover the
    proof and package it together with the element and get a gauss
    integer, otherwise, we default to the identity.
 
- - A gauss integer is invertible if the algbraic inverse is a gauss
+ - A Gaussian integer is invertible if the algbraic inverse is a gauss
    integer.
 #<div>#
 *)
@@ -236,7 +236,7 @@ Canonical GI_comUnitRingType := [comUnitRingType of GI].
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-** Question 7: Show that gauss integers are stable by conjugation.
+** Question 7: Show that Gaussian integers are stable by conjugation.
 
 #<div>#
 *)
@@ -244,7 +244,7 @@ Lemma conjGIE x : (x^* \is a gaussInteger) = (x \is a gaussInteger).
 (*A*)Proof. by rewrite ![_ \is a _]qualifE algRe_conj algIm_conj rpredN. Qed.
 (**
 #</div>#
-- We use this fact to build the conjugation of a gauss Integers
+- We use this fact to build the conjugation of a Gaussian Integers
 #<div>#
 *)
 Fact conjGI_subproof (x : GI) : (val x)^* \is a gaussInteger.
@@ -253,7 +253,7 @@ Proof. by rewrite conjGIE. Qed.
 Canonical conjGI x := GIof (conjGI_subproof x).
 (**
 #</div>#
-- We now define the norm (stasm) for gauss integer, we don't need to specialize it to gauss integer so we define it over algebraic numbers instead.
+- We now define the norm (stasm) for Gaussian integer, we don't need to specialize it to Gaussian integer so we define it over algebraic numbers instead.
 #<div>#
 *)
 Definition gaussNorm (x : algC) := x * x^*.
@@ -275,7 +275,7 @@ Lemma gaussNormE x : gaussNorm x = `|x| ^+ 2.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-** Question 9: Show that the gaussNorm of an gauss integer is a natural number.
+** Question 9: Show that the gaussNorm of an Gaussian integer is a natural number.
 
 #<div>#
 *)
