@@ -35,9 +35,9 @@ Lemma mulmxKpV_on (F : fieldType) (m1 m2 n : nat) (S : 'M_(m2))
   (A <= B)%MS -> A *m pinvmx_on S B *m B = A.
 Proof.
 move=> SIkB0 SDkB1 subAB; rewrite [pinvmx_on _ _]unlock.
-(*D*)rewrite -[RHS](mulmxKpV subAB) -![A *m _ *m B]mulmxA; congr (_ *m _).
-(*D*)rewrite -[pinvmx B in RHS](add_proj_mx SIkB0) ?(eqmxP SDkB1) ?submx1 //.
-(*D*)by rewrite mulmxDl [X in _ + X](sub_kermxP _) ?addr0 // proj_mx_sub.
+(*D*)rewrite -[RHS](mulmxKpV subAB).
+(*D*)symmetry; apply: subr0_eq; rewrite -mulmxBl -mulmxBr (sub_kermxP _) //.
+(*D*)rewrite mulmx_sub // proj_mx_compl_sub // (eqmxP SDkB1) submx1.
 (*A*)Qed.
 
 (**
