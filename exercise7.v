@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect all_algebra zmodp.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -268,16 +268,56 @@ End Q1.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-** Questions 2 and 3 : State and prove by yourself
+** Questions 2 and 3
 
 Let u be a endomorphism of E such that u^2 = 0.
 
 - Q2. Suppose there is a v such that u v + v u = 1, prove the kernel and image of u are equal.
 
-- Q3. Suppose u != 0 and suppose there is a w such that uw + wu = u. Find a counter example of Ker u = Im u. (Hint: take u e1 = 0, u e2 = 0 and u e3 = e2).
+- Q3. Suppose u != 0 and suppose there is a w such that uw + wu = u. Find a counter example of Ker u = Im u. (Hint: take u e1 = 0, u e2 = 0 and u e3 = e2 in 'M_3 and use a dimension argument).
 
 #<div>#
 *)
 
+Section Q2.
+
+Variable (u : 'M[F]_n).
+
+Lemma u20_eq_u_kermx v : u ^+ 2 = 0 -> v *m u + u *m v = 1 -> (u == kermx u)%MS.
+Proof.
+(*D*)move=> u20 vuDuv_eq1; apply/andP; split; first by apply/sub_kermxP.
+(*D*)apply/rV_subP => x /sub_kermxP[xu_eq0].
+(*D*)have /(congr1 (fun w => x *m w)) := vuDuv_eq1; rewrite mulmx1 => <-.
+(*D*)by rewrite mulmxDr !mulmxA xu_eq0 mul0mx addr0 mulmx_sub.
+(*A*)Qed.
+
+End Q2.
+
+Section Q3.
+
+Hypothesis charF_neq2 : [char F]^'.-nat 2.
+
+Let u : 'M[F]_3 :=
+(*D*)\matrix_(i, j) ((i == 2 :> nat) && (j == 1%N :> nat))%:R.
+Let w : 'M[F]_3 :=
+(*D*)2%:R^-1 *: 1.
+
+Lemma u_neq0 : u != 0.
+(*D*)by apply/negP => /eqP /matrixP /(_ 2%:R 1) /eqP; rewrite !mxE !eqxx oner_eq0.
+(*A*)Qed.
+
+Lemma wuDuw_eq_u : w *m u + u *m w = u.
+Proof.
+(*D*)rewrite -scalemxAl -scalemxAr mul1mx mulmx1 -scalerDl.
+(*D*)by rewrite -mulr2n -mulr_natl divff ?natf_neq0 // scale1r.
+(*A*)Qed.
+
+Lemma neq_u_kermxu : (u != kermx u)%MS.
+Proof.
+(*D*)suff: \rank u != \rank (kermx u) by apply: contraNneq=> <-.
+(*D*)by rewrite mxrank_ker; have := rank_leq_row u; case: (\rank _) => [|[|[]]].
+(*A*)Qed.
+
+End Q3.
 End ex_6_12.
 End CPGE.
