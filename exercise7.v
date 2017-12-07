@@ -17,30 +17,26 @@ Section CPGE.
 #<div>#
 *)
 Lemma pinvmx_on_key : unit. Proof. exact: tt. Qed.
-Definition pinvmx_on (F : fieldType) (m m' n : nat) (S : 'M_(m', m))
+Definition pinvmx_on (F : fieldType) (m n : nat) (S : 'M_m)
    (A : 'M[F]_(m, n)) : 'M_(n, m) :=
- locked_with pinvmx_on_key (pinvmx A *m proj_mx <<S>>%MS (kermx A)).
+ locked_with pinvmx_on_key (pinvmx A *m proj_mx S (kermx A)).
 
-Lemma pinvmx_on_sub (F : fieldType) (m m' n : nat) (S : 'M_(m', m))
+Lemma pinvmx_on_sub (F : fieldType) (m n : nat) (S : 'M_(m))
    (A : 'M[F]_(m, n)) : (pinvmx_on S A <= S)%MS.
 Proof.
 rewrite [pinvmx_on _ _]unlock.
 by rewrite (submx_trans (proj_mx_sub _ _ _)) ?genmxE.
 Qed.
 
-Lemma mulmxKpV_on (F : fieldType) (m' m1 m2 n : nat) (S : 'M_(m', m2))
+Lemma mulmxKpV_on (F : fieldType) (m1 m2 n : nat) (S : 'M_(m2))
   (A : 'M[F]_(m1, n)) (B : 'M_(m2, n)) :
   (S :&: kermx B)%MS = 0 ->
   (S + kermx B == 1%:M)%MS ->
   (A <= B)%MS -> A *m pinvmx_on S B *m B = A.
 Proof.
 move=> SIkB0 SDkB1 subAB; rewrite [pinvmx_on _ _]unlock.
-have /eqmx0P gSIkB0 : (<<S>> :&: kermx B == (0 :'M_m2))%MS.
-(*a*)  by rewrite !(cap_eqmx (genmxE _) (eqmx_refl _)) SIkB0 submx_refl.
-have /eqmxP gSDkB1 : (<<S>> + kermx B == 1%:M)%MS.
-(*a*)  by rewrite !(adds_eqmx (genmxE _) (eqmx_refl _)) !SDkB1.
 (*D*)rewrite -[RHS](mulmxKpV subAB) -![A *m _ *m B]mulmxA; congr (_ *m _).
-(*D*)rewrite -[pinvmx B in RHS](add_proj_mx gSIkB0) ?gSDkB1 ?submx1 //.
+(*D*)rewrite -[pinvmx B in RHS](add_proj_mx SIkB0) ?(eqmxP SDkB1) ?submx1 //.
 (*D*)by rewrite mulmxDl [X in _ + X](sub_kermxP _) ?addr0 // proj_mx_sub.
 (*A*)Qed.
 
