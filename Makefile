@@ -124,14 +124,17 @@ exercise4.html: exercise4.html.tmp
 exercise4-todo.v: exercise4.v
 	@sed -e 's/^(\*D\*).*$$/Admitted./' $< > $@
 exercise5.html: exercise5.html.tmp
+	sed -i "s/init_pkgs:.*/init_pkgs: ['init','math-comp'],/" $@
 	@sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./'  $< > $@
 exercise5-todo.v : exercise5.v
 	@sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./'  exercise5.v > exercise5-todo.v
 exercise6.html: exercise6.html.tmp
 	@sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./'  $< > $@
+	sed -i "s/init_pkgs:.*/init_pkgs: ['init','math-comp'],/" $@
 exercise6-todo.v: exercise6.v
 	@sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./'  $< > $@
 exercise7.html: exercise7.html.tmp
+	sed -i "s/init_pkgs:.*/init_pkgs: ['init','math-comp'],/" $@
 	@sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' $< > $@
 exercise7-todo.v : exercise7.v
 	@sed -e '/^(\*D\*).*$$/d' -e 's/^(\*A\*).*$$/Admitted./' -e 's/^(\*a\*).*$$/  admit./' exercise7.v > exercise7-todo.v
