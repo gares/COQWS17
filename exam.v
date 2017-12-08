@@ -46,12 +46,6 @@ Proof.
 (*X*)by case: ifP => px; rewrite ihl rev_cons filter_rcons ?px ?cat_rcons.
 (*A*)Qed.
 
-(** Prove that if (s1 :|: s2) is disjoint from (s1 :|: s3) then
-    s1 is empty *)
-Lemma disjoint_setU2l (T : finType) (s1 s2 s3 : {set T}) :
-   [disjoint s1 :|: s2 & s1 :|: s3] -> s1 = set0.
-(*A*)Proof. by rewrite -setI_eq0 -setUIr setU_eq0 => /andP [/eqP]. Qed.
-
 (** Prove the equivalence of these two sums.
     E.g. (n=8)
 <<
@@ -64,6 +58,31 @@ Proof.
 (*X*)rewrite (reindex_inj rev_ord_inj) /= => /negPf n_oddF.
 (*X*)by apply: eq_big => i; rewrite odd_sub ?n_oddF //; case: n i {n_oddF}.
 (*A*)Qed.
+
+(** Even the Mathematical Components library misses some theorems,
+    for example the following one.
+
+    Would you help us improve the library with this lemma? 
+
+    Hint: check out the theory of [iota]
+*)
+
+Lemma big_nat_shift (T : Type) (op: T -> T -> T) (idx : T)
+  m c n (Pr : pred nat) (f : nat -> T):
+  \big[op/idx]_(m + c <= i < n + c | Pr i) f i =
+  \big[op/idx]_(m <= i < n | Pr (i + c)%N) f (i + c)%N.
+Proof.
+(*X*)rewrite [LHS](big_nth 0%N) [RHS](big_nth 0%N).
+(*X*)rewrite !size_iota subnDr.
+(*X*)rewrite [LHS]big_seq_cond [RHS]big_seq_cond.
+(*X*)apply: eq_big.
+(*X*)  move => i; rewrite mem_iota add0n subn0.
+(*X*)  case h : (i < n - m)%N; last by rewrite andbF.
+(*X*)  by rewrite !nth_iota // 1?addnAC // subnDr.
+(*X*)move => i; rewrite mem_iota leq0n andTb add0n subn0 => /andP [] i_s _.
+(*X*)by rewrite !nth_iota // ?subnDr 1?addnAC.
+(*A*)Qed.
+
 (**
 
 Now, some algebra.
@@ -76,6 +95,17 @@ Section AlgebraicHierarchy.
 Section GaussIntegers.
 Import GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
+
+(** Big operations and [zmodType]. Now that [ring_scope] is open we are in
+    an algebraic setting.  Think about the meaning of [+] now, and find
+    the right injectivity lemma. *)
+Lemma big_ord_shift1 (T : Type) (idx : T) (op : Monoid.com_law idx) n
+ P F : \big[op/idx]_(i < n.+2 | P i) F i =
+       \big[op/idx]_(i < n.+2 | P (i + 1)) F (i + 1).
+Proof.
+(*X*)apply: reindex_inj; apply: addIr.
+(*A*)Qed.
+
 (**
 
 We remind what Gauss integer are and recall some theory about it.

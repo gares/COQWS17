@@ -146,6 +146,7 @@ exam.html: exam.html.tmp
 		-e '/^(\*X\*).*$$/d' \
 		-e 's/(\*D\*).*(\*D\*)/.../' \
 		$< > $@
+	sed -i "s/init_pkgs:.*/init_pkgs: ['init','math-comp'],/" $@
 exam-todo.html: exam-todo.html.tmp
 	@sed -e 's/^(\*A\*).*$$/Admitted./' \
 		-e 's/(\*a\*).*$$/admit./' \
