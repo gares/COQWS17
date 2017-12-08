@@ -71,18 +71,7 @@ Lemma big_nat_shift (T : Type) (op: T -> T -> T) (idx : T)
   m c n (Pr : pred nat) (f : nat -> T):
   \big[op/idx]_(m + c <= i < n + c | Pr i) f i =
   \big[op/idx]_(m <= i < n | Pr (i + c)%N) f (i + c)%N.
-Proof.
-(*X*)rewrite [LHS](big_nth 0%N) [RHS](big_nth 0%N).
-(*X*)rewrite !size_iota subnDr.
-(*X*)rewrite [LHS]big_seq_cond [RHS]big_seq_cond.
-(*X*)apply: eq_big.
-(*X*)  move => i; rewrite mem_iota add0n subn0.
-(*X*)  case h : (i < n - m)%N; last by rewrite andbF.
-(*X*)  by rewrite !nth_iota // 1?addnAC // subnDr.
-(*X*)move => i; rewrite mem_iota leq0n andTb add0n subn0 => /andP [] i_s _.
-(*X*)by rewrite !nth_iota // ?subnDr 1?addnAC.
-(*A*)Qed.
-
+(*A*)Proof. by rewrite big_addn addnK. Qed.
 (**
 
 Now, some algebra.
